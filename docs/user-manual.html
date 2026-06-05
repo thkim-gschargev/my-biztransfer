@@ -1,0 +1,1422 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>업무 관리 시스템 — 사용자 매뉴얼</title>
+<style>
+  /* ─── Base ─────────────────────────────────────────────── */
+  *,*::before,*::after { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Apple SD Gothic Neo",
+      "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background: #f8fafc;
+    color: #0f172a;
+    line-height: 1.65;
+    font-size: 15px;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: #2563eb; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  /* ─── Layout ───────────────────────────────────────────── */
+  .container {
+    max-width: 1180px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: 40px;
+    padding: 40px 28px 80px;
+  }
+  .toc {
+    position: sticky;
+    top: 24px;
+    align-self: start;
+    font-size: 13px;
+    max-height: calc(100vh - 48px);
+    overflow-y: auto;
+  }
+  .toc h3 {
+    font-size: 11px;
+    text-transform: uppercase;
+    color: #94a3b8;
+    margin: 0 0 10px;
+    letter-spacing: 0.06em;
+  }
+  .toc ol { list-style: none; padding: 0; margin: 0; counter-reset: t; }
+  .toc li { margin: 2px 0; counter-increment: t; }
+  .toc a {
+    color: #475569;
+    display: block;
+    padding: 4px 10px;
+    border-radius: 4px;
+    border-left: 2px solid transparent;
+  }
+  .toc a::before { content: counter(t) ". "; color: #cbd5e1; }
+  .toc a:hover { background: #f1f5f9; color: #0f172a; text-decoration: none; border-left-color: #cbd5e1; }
+  main { min-width: 0; }
+  @media (max-width: 880px) {
+    .container { grid-template-columns: 1fr; }
+    .toc { position: static; max-height: none; }
+  }
+
+  /* ─── Typography ───────────────────────────────────────── */
+  h1 { font-size: 32px; font-weight: 700; margin: 0 0 8px; letter-spacing: -0.01em; }
+  h2 {
+    font-size: 24px; font-weight: 700; letter-spacing: -0.01em;
+    margin: 56px 0 16px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #e2e8f0;
+    scroll-margin-top: 16px;
+  }
+  h2 .num {
+    display: inline-block;
+    background: #0f172a;
+    color: white;
+    font-size: 14px;
+    width: 26px; height: 26px;
+    line-height: 26px;
+    text-align: center;
+    border-radius: 6px;
+    margin-right: 10px;
+    vertical-align: 2px;
+  }
+  h3 { font-size: 17px; font-weight: 600; margin: 28px 0 10px; }
+  h4 { font-size: 14px; font-weight: 600; margin: 16px 0 6px; color: #334155; }
+  p { margin: 8px 0; color: #334155; }
+  ul, ol { padding-left: 22px; color: #334155; }
+  li { margin: 4px 0; }
+  strong { color: #0f172a; font-weight: 600; }
+  code {
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Consolas, monospace;
+    background: #f1f5f9;
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-size: 0.9em;
+    color: #1e293b;
+  }
+  kbd {
+    display: inline-block;
+    padding: 1px 7px;
+    font-family: ui-monospace, monospace;
+    font-size: 12px;
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
+    border-bottom-width: 2px;
+    border-radius: 4px;
+    color: #334155;
+    margin: 0 1px;
+    line-height: 1.4;
+  }
+
+  /* ─── Cover ────────────────────────────────────────────── */
+  .cover {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    color: white;
+    margin: -40px -28px 40px;
+    padding: 48px 28px;
+    border-radius: 0 0 12px 12px;
+  }
+  .cover h1 { color: white; margin-bottom: 4px; }
+  .cover .sub { color: #cbd5e1; font-size: 15px; }
+  .cover .meta {
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    color: #94a3b8;
+    font-size: 13px;
+  }
+  .cover .meta span { margin-right: 16px; }
+
+  /* ─── Callouts ─────────────────────────────────────────── */
+  .tip, .note, .warn {
+    border-left: 3px solid;
+    padding: 12px 16px;
+    margin: 16px 0;
+    border-radius: 0 6px 6px 0;
+    font-size: 14px;
+  }
+  .tip { border-color: #7dd3fc; background: #f0f9ff; }
+  .note { border-color: #64748b; background: #f8fafc; }
+  .warn { border-color: #f59e0b; background: #fffbeb; }
+  .tip strong, .note strong, .warn strong { display: inline-block; margin-right: 6px; }
+
+  /* ─── Reference tables ─────────────────────────────────── */
+  .ref-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 13px;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  .ref-table th, .ref-table td {
+    text-align: left;
+    padding: 9px 12px;
+    border-bottom: 1px solid #f1f5f9;
+    vertical-align: top;
+  }
+  .ref-table th {
+    background: #f8fafc;
+    font-weight: 600;
+    color: #475569;
+    font-size: 12px;
+  }
+  .ref-table tr:last-child td { border-bottom: 0; }
+  .ref-table td code { white-space: nowrap; }
+
+  /* ─── Mockup frame ─────────────────────────────────────── */
+  .mockup {
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    overflow: hidden;
+    background: white;
+    margin: 20px 0;
+    box-shadow: 0 4px 16px -4px rgba(15,23,42,0.08);
+    font-size: 12px;
+    line-height: 1.4;
+  }
+  .mockup-titlebar {
+    background: #f1f5f9;
+    border-bottom: 1px solid #e2e8f0;
+    padding: 8px 14px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .mockup-dot { width: 11px; height: 11px; border-radius: 50%; flex-shrink: 0; }
+  .mockup-dot.r { background: #ef4444; }
+  .mockup-dot.y { background: #eab308; }
+  .mockup-dot.g { background: #22c55e; }
+  .mockup-titlebar .url {
+    margin-left: 12px;
+    background: white;
+    border: 1px solid #e2e8f0;
+    padding: 2px 10px;
+    border-radius: 4px;
+    font-size: 11px;
+    color: #64748b;
+    font-family: ui-monospace, monospace;
+  }
+
+  .mockup-body { display: grid; grid-template-columns: 200px 1fr; }
+  .mockup-body.no-sidebar { grid-template-columns: 1fr; }
+
+  /* ─── Sidebar mockup ───────────────────────────────────── */
+  .ms {
+    background: white;
+    border-right: 1px solid #e2e8f0;
+    padding: 14px 10px;
+  }
+  .ms-title {
+    font-weight: 700;
+    font-size: 13px;
+    padding: 4px 8px 14px;
+    border-bottom: 1px solid #f1f5f9;
+    margin-bottom: 10px;
+    color: #0f172a;
+  }
+  .ms-nav {
+    display: flex; align-items: center; gap: 8px;
+    padding: 6px 10px;
+    border-radius: 5px;
+    color: #475569;
+    font-size: 12px;
+    margin: 2px 0;
+  }
+  .ms-nav.on { background: #f1f5f9; color: #0f172a; font-weight: 600; }
+  .ms-ico {
+    width: 14px; height: 14px; flex-shrink: 0; opacity: 0.7;
+    background: currentColor; border-radius: 3px;
+    -webkit-mask-size: contain; mask-size: contain;
+  }
+
+  /* ─── Main mockup area ─────────────────────────────────── */
+  .mm {
+    background: #fafbfc;
+    padding: 16px;
+    min-height: 200px;
+  }
+  .mm-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 14px;
+  }
+  .mm-title {
+    font-size: 15px; font-weight: 700; color: #0f172a;
+  }
+  .mm-desc { font-size: 11px; color: #64748b; margin-top: 2px; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 4px 10px;
+    border-radius: 5px;
+    font-size: 11px;
+    border: 1px solid #e2e8f0;
+    background: white;
+    color: #334155;
+    cursor: default;
+  }
+  .btn.primary { background: #0f172a; color: white; border-color: #0f172a; }
+  .btn.ghost { background: transparent; border-color: transparent; }
+  .btn.sm { padding: 2px 8px; font-size: 10px; }
+
+  /* ─── Badges ───────────────────────────────────────────── */
+  .b {
+    display: inline-flex;
+    align-items: center;
+    padding: 1px 7px;
+    border-radius: 4px;
+    font-size: 10px;
+    border: 1px solid;
+    font-weight: 500;
+    line-height: 1.5;
+    white-space: nowrap;
+  }
+  .b-new      { background: #f1f5f9; color: #475569; border-color: #cbd5e1; }
+  .b-prog     { background: #dbeafe; color: #1d4ed8; border-color: #93c5fd; }
+  .b-wait     { background: #fef3c7; color: #b45309; border-color: #fcd34d; }
+  .b-review   { background: #ede9fe; color: #6d28d9; border-color: #c4b5fd; }
+  .b-hold     { background: #f3f4f6; color: #6b7280; border-color: #d1d5db; }
+  .b-delay    { background: #fee2e2; color: #b91c1c; border-color: #fca5a5; }
+  .b-mon      { background: #ccfbf1; color: #0f766e; border-color: #5eead4; }
+  .b-done     { background: #dcfce7; color: #15803d; border-color: #86efac; }
+  .b-cancel   { background: #f3f4f6; color: #6b7280; border-color: #d1d5db; }
+  .b-urgent   { background: #fee2e2; color: #b91c1c; border-color: #fca5a5; }
+  .b-high     { background: #ffedd5; color: #c2410c; border-color: #fdba74; }
+  .b-normal   { background: #f1f5f9; color: #475569; border-color: #cbd5e1; }
+  .b-low      { background: #f9fafb; color: #9ca3af; border-color: #e5e7eb; }
+
+  /* ─── Summary cards (dashboard) ────────────────────────── */
+  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .card {
+    background: white; border: 1px solid #e2e8f0; border-radius: 6px; padding: 10px 12px;
+  }
+  .card .lbl { font-size: 10px; color: #64748b; }
+  .card .val { font-size: 22px; font-weight: 700; line-height: 1.2; margin: 2px 0; }
+  .card .dsc { font-size: 9px; color: #94a3b8; }
+  .card.blue   { background: #eff6ff; border-color: #bfdbfe; } .card.blue   .val { color: #1d4ed8; }
+  .card.red    { background: #fef2f2; border-color: #fecaca; } .card.red    .val { color: #b91c1c; }
+  .card.amber  { background: #fffbeb; border-color: #fde68a; } .card.amber  .val { color: #b45309; }
+  .card.violet { background: #f5f3ff; border-color: #ddd6fe; } .card.violet .val { color: #6d28d9; }
+  .card.green  { background: #f0fdf4; border-color: #bbf7d0; } .card.green  .val { color: #15803d; }
+  .card.sky    { background: #f0f9ff; border-color: #bae6fd; } .card.sky    .val { color: #0369a1; }
+
+  /* ─── Generic table mockup ─────────────────────────────── */
+  .tbl {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    overflow: hidden;
+    margin-top: 6px;
+  }
+  .tbl th, .tbl td {
+    text-align: left;
+    padding: 6px 10px;
+    font-size: 11px;
+    border-bottom: 1px solid #f1f5f9;
+  }
+  .tbl th { background: #f8fafc; color: #475569; font-weight: 600; font-size: 10px; }
+  .tbl tr:last-child td { border-bottom: 0; }
+  .tbl .h-actions { display: inline-flex; gap: 4px; vertical-align: middle; margin-left: 4px; }
+  .sort-ico, .filter-ico {
+    display: inline-block;
+    width: 10px; height: 10px;
+    color: #94a3b8;
+    font-size: 9px;
+    line-height: 10px;
+  }
+  .sort-ico.active { color: #0f172a; }
+  .filter-ico.active { color: #2563eb; }
+
+  /* ─── Kanban mockup ────────────────────────────────────── */
+  .kanban { display: flex; gap: 8px; overflow-x: auto; }
+  .kanban-col {
+    flex: 0 0 140px;
+    background: transparent;
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .kanban-head {
+    display: flex; align-items: center; gap: 6px;
+    padding: 6px 4px;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  .kanban-count { margin-left: auto; font-size: 10px; color: #94a3b8; }
+  .kanban-card {
+    background: white; border: 1px solid #e2e8f0; border-radius: 5px;
+    padding: 7px 8px;
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .kc-title { font-size: 11px; font-weight: 600; color: #0f172a; }
+  .kc-meta { display: flex; gap: 4px; flex-wrap: wrap; }
+
+  /* ─── Calendar mockup ──────────────────────────────────── */
+  .cal-toolbar {
+    display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+    margin-bottom: 8px;
+  }
+  .cal-grid {
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    overflow: hidden;
+    background: white;
+  }
+  .cal-weekrow {
+    display: grid; grid-template-columns: repeat(7, 1fr);
+    background: #f8fafc;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  .cal-weekrow > div {
+    padding: 5px 8px;
+    font-size: 10px; font-weight: 600; color: #475569;
+    border-right: 1px solid #e2e8f0;
+  }
+  .cal-weekrow > div:last-child { border-right: 0; }
+  .cal-weekrow .sun { color: #ef4444; }
+  .cal-weekrow .sat { color: #3b82f6; }
+  .cal-days { display: grid; grid-template-columns: repeat(7, 1fr); }
+  .cal-cell {
+    min-height: 76px;
+    padding: 5px 6px;
+    border-right: 1px solid #e2e8f0;
+    border-bottom: 1px solid #e2e8f0;
+    display: flex; flex-direction: column; gap: 3px;
+    background: white;
+    font-size: 10px;
+  }
+  .cal-cell.dim { background: #f8fafc; color: #94a3b8; }
+  .cal-cell:nth-child(7n) { border-right: 0; }
+  .cal-day {
+    font-size: 10px; font-weight: 500; color: #475569;
+    align-self: flex-start;
+  }
+  .cal-day.sun { color: #ef4444; }
+  .cal-day.sat { color: #3b82f6; }
+  .cal-day.today {
+    background: #0f172a; color: white;
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    text-align: center; line-height: 18px;
+  }
+  .cal-chip {
+    font-size: 9px;
+    padding: 1px 4px;
+    border-radius: 3px;
+    border: 1px solid;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .cal-bar-left { border-radius: 3px 0 0 3px; }
+  .cal-bar-right { border-radius: 0 3px 3px 0; }
+  .cal-bar-mid { border-radius: 0; }
+  .cal-plus {
+    align-self: flex-end;
+    color: #94a3b8;
+    font-size: 11px;
+    margin-top: -16px;
+    background: white;
+    border-radius: 3px;
+    padding: 0 3px;
+  }
+
+  /* ─── Detail dialog mockup ─────────────────────────────── */
+  .dialog {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 16px;
+    box-shadow: 0 10px 40px -10px rgba(15,23,42,0.2);
+    max-width: 560px;
+    margin: 16px 0;
+  }
+  .dialog-title { font-size: 15px; font-weight: 700; margin-bottom: 8px; }
+  .dialog-row {
+    display: grid;
+    grid-template-columns: 110px 1fr;
+    gap: 8px;
+    padding: 6px 0;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 12px;
+  }
+  .dialog-row:last-child { border-bottom: 0; }
+  .dialog-row .lbl { color: #94a3b8; font-size: 11px; }
+  .dialog-row .val { color: #334155; }
+
+  /* ─── Misc ─────────────────────────────────────────────── */
+  .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .gap2 { gap: 4px; }
+  .muted { color: #94a3b8; font-size: 11px; }
+  .pill {
+    display: inline-flex; align-items: center; gap: 4px;
+    background: #f1f5f9; border: 1px solid #e2e8f0;
+    padding: 2px 8px; border-radius: 99px; font-size: 11px;
+    color: #475569;
+  }
+  .pill.on { background: #0f172a; color: white; border-color: #0f172a; }
+  .seg {
+    display: inline-flex; border: 1px solid #e2e8f0; border-radius: 5px; overflow: hidden;
+  }
+  .seg span {
+    padding: 3px 10px; font-size: 11px; color: #475569; border-right: 1px solid #e2e8f0;
+  }
+  .seg span:last-child { border-right: 0; }
+  .seg span.on { background: #0f172a; color: white; }
+
+  hr.sep {
+    border: 0; border-top: 1px solid #e2e8f0; margin: 32px 0;
+  }
+  .anchor-target { scroll-margin-top: 16px; }
+
+  /* Search highlight */
+  .marker {
+    background: #fef9c3; padding: 0 2px; border-radius: 2px;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <!-- ───────────────── Table of Contents ───────────────── -->
+  <aside class="toc">
+    <h3>목차</h3>
+    <ol>
+      <li><a href="#overview">개요</a></li>
+      <li><a href="#getting-started">시작하기</a></li>
+      <li><a href="#layout">화면 구성</a></li>
+      <li><a href="#dashboard">대시보드</a></li>
+      <li><a href="#tasks">업무 목록</a></li>
+      <li><a href="#board">칸반 보드</a></li>
+      <li><a href="#calendar">캘린더</a></li>
+      <li><a href="#projects">프로젝트</a></li>
+      <li><a href="#waiting">회신 대기함</a></li>
+      <li><a href="#settings">설정</a></li>
+      <li><a href="#task-form">업무 추가/수정</a></li>
+      <li><a href="#colors">상태·우선순위 색상</a></li>
+      <li><a href="#shortcuts">키보드 단축키</a></li>
+      <li><a href="#faq">자주 묻는 질문</a></li>
+    </ol>
+  </aside>
+
+  <!-- ───────────────── Main content ───────────────── -->
+  <main>
+    <div class="cover">
+      <h1>업무 관리 시스템 사용자 매뉴얼</h1>
+      <div class="sub">개인 업무 관제판의 모든 기능을 안내합니다.</div>
+      <div class="meta">
+        <span>버전: 1.0</span>
+        <span>대상: 일반 사용자</span>
+        <span>업데이트: 2026-05-15</span>
+      </div>
+    </div>
+
+    <!-- ───────────────── 1. 개요 ───────────────── -->
+    <section id="overview" class="anchor-target">
+      <h2><span class="num">1</span>개요</h2>
+      <p>본 시스템은 개인 업무를 체계적으로 관리하기 위한 웹 기반 업무 관제판입니다. 단순 To-Do 앱이 아니라, <strong>장애 로그 분석·충전기 연동 검증·제조사 문의·펌웨어 업데이트·인증 시험·고객 민원</strong> 같은 실무 업무 흐름을 추적하기 위해 설계되었습니다.</p>
+
+      <h3>주요 기능</h3>
+      <ul>
+        <li><strong>대시보드</strong> — 오늘 처리해야 하는 업무와 주요 지표를 한눈에 확인</li>
+        <li><strong>업무 목록</strong> — 검색·필터·정렬로 전체 업무를 관리</li>
+        <li><strong>칸반 보드</strong> — 상태별 흐름을 카드 드래그로 직관적으로 조정</li>
+        <li><strong>캘린더</strong> — 월/주/일 단위로 일정 확인, 범위 막대, 드래그&드롭</li>
+        <li><strong>프로젝트</strong> — 업무를 프로젝트 단위로 묶어 관리</li>
+        <li><strong>회신 대기함</strong> — 외부 회신을 기다리는 업무의 대기 일수를 자동 집계</li>
+        <li><strong>데이터 백업/복원</strong> — JSON 파일로 안전하게 보관</li>
+      </ul>
+
+      <div class="tip">
+        <strong>💡 팁</strong>
+        본 매뉴얼은 좌측 목차로 빠르게 이동할 수 있습니다. 자주 사용하는 기능은 <a href="#shortcuts">키보드 단축키</a> 섹션을 참고하세요.
+      </div>
+    </section>
+
+    <!-- ───────────────── 2. 시작하기 ───────────────── -->
+    <section id="getting-started" class="anchor-target">
+      <h2><span class="num">2</span>시작하기</h2>
+
+      <h3>2.1 로그인</h3>
+      <p>최초 접속 시 로그인 화면이 표시됩니다. 등록된 이메일과 비밀번호를 입력하여 로그인하면 됩니다. 로그인 정보는 안전하게 보호되며, 본인의 업무 데이터만 표시됩니다.</p>
+
+      <div class="mockup">
+        <div class="mockup-titlebar">
+          <span class="mockup-dot r"></span>
+          <span class="mockup-dot y"></span>
+          <span class="mockup-dot g"></span>
+          <span class="url">/login</span>
+        </div>
+        <div class="mockup-body no-sidebar">
+          <div class="mm" style="padding: 40px; text-align: center;">
+            <div style="max-width: 320px; margin: 0 auto; background: white; padding: 28px; border: 1px solid #e2e8f0; border-radius: 8px;">
+              <div style="font-size: 16px; font-weight: 700; margin-bottom: 4px;">업무 관리 시스템</div>
+              <div style="font-size: 11px; color: #64748b; margin-bottom: 20px;">로그인하세요</div>
+              <div style="display: flex; flex-direction: column; gap: 8px; text-align: left;">
+                <div style="font-size: 10px; color: #475569;">이메일</div>
+                <div style="border: 1px solid #cbd5e1; padding: 6px 10px; border-radius: 4px; background: white; font-size: 11px; color: #94a3b8;">name@example.com</div>
+                <div style="font-size: 10px; color: #475569; margin-top: 4px;">비밀번호</div>
+                <div style="border: 1px solid #cbd5e1; padding: 6px 10px; border-radius: 4px; background: white; font-size: 11px; color: #94a3b8;">••••••••</div>
+                <div class="btn primary" style="justify-content: center; margin-top: 10px;">로그인</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <h3>2.2 처음 사용한다면</h3>
+      <p>업무 데이터가 비어 있다면 대시보드에 안내 카드가 나타납니다. 두 가지 방법으로 시작할 수 있습니다.</p>
+      <ul>
+        <li><strong>업무 추가</strong> — 빈 화면에서 「업무 추가」 버튼을 눌러 수동으로 입력</li>
+        <li><strong>샘플 데이터 불러오기</strong> — 「설정」 메뉴에서 미리 준비된 샘플 데이터로 화면 구성을 미리 확인</li>
+      </ul>
+
+      <div class="note">
+        <strong>📌 안내</strong>
+        샘플 데이터는 학습용입니다. 실제 사용 전 「설정 → 전체 삭제」로 초기화한 뒤 본인 업무를 입력하세요.
+      </div>
+    </section>
+
+    <!-- ───────────────── 3. 화면 구성 ───────────────── -->
+    <section id="layout" class="anchor-target">
+      <h2><span class="num">3</span>화면 구성</h2>
+      <p>모든 페이지는 동일한 레이아웃을 공유합니다. 좌측에 사이드바, 우측에 페이지 콘텐츠가 배치됩니다.</p>
+
+      <div class="mockup">
+        <div class="mockup-titlebar">
+          <span class="mockup-dot r"></span><span class="mockup-dot y"></span><span class="mockup-dot g"></span>
+          <span class="url">/</span>
+        </div>
+        <div class="mockup-body">
+          <div class="ms">
+            <div class="ms-title">업무 관리 시스템</div>
+            <div class="ms-nav on"><span class="ms-ico"></span>대시보드</div>
+            <div class="ms-nav"><span class="ms-ico"></span>업무 목록</div>
+            <div class="ms-nav"><span class="ms-ico"></span>칸반</div>
+            <div class="ms-nav"><span class="ms-ico"></span>캘린더</div>
+            <div class="ms-nav"><span class="ms-ico"></span>프로젝트</div>
+            <div class="ms-nav"><span class="ms-ico"></span>회신 대기</div>
+            <div class="ms-nav"><span class="ms-ico"></span>설정</div>
+          </div>
+          <div class="mm">
+            <div class="mm-header">
+              <div>
+                <div class="mm-title">대시보드</div>
+                <div class="mm-desc">오늘 처리해야 하는 업무와 주요 지표를 한눈에 확인합니다.</div>
+              </div>
+              <div class="btn primary">+ 업무 추가</div>
+            </div>
+            <div style="background: white; border: 1px dashed #cbd5e1; height: 100px; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #94a3b8; font-size: 11px;">
+              메인 콘텐츠 영역
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <h3>3.1 사이드바 (좌측)</h3>
+      <p>총 7개의 메뉴가 있습니다. 현재 위치한 페이지는 회색 배경으로 강조됩니다.</p>
+      <table class="ref-table">
+        <thead><tr><th style="width: 100px;">메뉴</th><th style="width: 90px;">경로</th><th>용도</th></tr></thead>
+        <tbody>
+          <tr><td><strong>대시보드</strong></td><td><code>/</code></td><td>오늘 할 일, 지연/대기 업무 요약</td></tr>
+          <tr><td><strong>업무 목록</strong></td><td><code>/tasks</code></td><td>전체 업무 검색·필터·정렬</td></tr>
+          <tr><td><strong>칸반</strong></td><td><code>/board</code></td><td>상태별 카드 뷰, 드래그&드롭</td></tr>
+          <tr><td><strong>캘린더</strong></td><td><code>/calendar</code></td><td>월/주/일 일정 캘린더</td></tr>
+          <tr><td><strong>프로젝트</strong></td><td><code>/projects</code></td><td>프로젝트별 진행 상황</td></tr>
+          <tr><td><strong>회신 대기</strong></td><td><code>/waiting</code></td><td>외부 회신 대기 업무 모음</td></tr>
+          <tr><td><strong>설정</strong></td><td><code>/settings</code></td><td>데이터 백업·복원, 카테고리 관리</td></tr>
+        </tbody>
+      </table>
+
+      <h3>3.2 페이지 헤더</h3>
+      <p>각 페이지 상단에는 <strong>제목 + 설명 + 우측 액션 버튼</strong>이 배치됩니다. 대부분의 페이지에서 우측 상단에 <strong>「업무 추가」</strong> 버튼이 있어 어느 화면에서든 빠르게 업무를 추가할 수 있습니다.</p>
+    </section>
+
+    <!-- ───────────────── 4. 대시보드 ───────────────── -->
+    <section id="dashboard" class="anchor-target">
+      <h2><span class="num">4</span>대시보드</h2>
+      <p>대시보드는 <strong>요약 카드 → 빠른 업무 추가 → 섹션별 업무 리스트</strong> 순으로 구성됩니다.</p>
+
+      <div class="mockup">
+        <div class="mockup-titlebar">
+          <span class="mockup-dot r"></span><span class="mockup-dot y"></span><span class="mockup-dot g"></span>
+          <span class="url">/</span>
+        </div>
+        <div class="mockup-body">
+          <div class="ms">
+            <div class="ms-title">업무 관리 시스템</div>
+            <div class="ms-nav on">대시보드</div>
+            <div class="ms-nav">업무 목록</div>
+            <div class="ms-nav">칸반</div>
+            <div class="ms-nav">캘린더</div>
+            <div class="ms-nav">프로젝트</div>
+            <div class="ms-nav">회신 대기</div>
+            <div class="ms-nav">설정</div>
+          </div>
+          <div class="mm">
+            <div class="mm-header">
+              <div>
+                <div class="mm-title">대시보드</div>
+                <div class="mm-desc">오늘 처리해야 하는 업무와 주요 지표를 한눈에 확인합니다.</div>
+              </div>
+              <div class="btn primary">+ 업무 추가</div>
+            </div>
+            <div class="cards" style="margin-bottom: 10px;">
+              <div class="card blue"><div class="lbl">오늘 할 일</div><div class="val">5</div><div class="dsc">오늘 처리 예정 업무</div></div>
+              <div class="card red"><div class="lbl">지연 업무</div><div class="val">2</div><div class="dsc">마감 초과 또는 지연 상태</div></div>
+              <div class="card amber"><div class="lbl">회신 대기</div><div class="val">3</div><div class="dsc">외부 회신 대기 중</div></div>
+              <div class="card violet"><div class="lbl">이번 주 마감</div><div class="val">8</div><div class="dsc">이번 주 내 마감 예정</div></div>
+              <div class="card green"><div class="lbl">이번 주 완료</div><div class="val">4</div><div class="dsc">이번 주 처리 완료</div></div>
+              <div class="card sky"><div class="lbl">진행 중 프로젝트</div><div class="val">2</div><div class="dsc">진행 또는 예정 프로젝트</div></div>
+            </div>
+            <div style="background: white; border: 1px solid #e2e8f0; padding: 8px 10px; border-radius: 6px; margin: 10px 0;">
+              <div class="muted" style="margin-bottom: 4px;">빠른 업무 추가</div>
+              <div style="border: 1px solid #cbd5e1; border-radius: 4px; padding: 4px 8px; font-size: 11px; color: #94a3b8;">제목을 입력하고 Enter…</div>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+              <div style="background: white; border: 1px solid #e2e8f0; padding: 10px; border-radius: 6px;">
+                <div style="font-weight: 600; font-size: 11px; margin-bottom: 4px;">오늘 해야 할 업무</div>
+                <div class="muted">→ 충전기 펌웨어 업데이트</div>
+                <div class="muted">→ ABB 충전기 비상정지 점검</div>
+              </div>
+              <div style="background: white; border: 1px solid #e2e8f0; padding: 10px; border-radius: 6px;">
+                <div style="font-weight: 600; font-size: 11px; margin-bottom: 4px;">지연 업무</div>
+                <div class="muted">→ 인증 시험 결과 보고서 작성</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <h3>4.1 요약 카드 6종</h3>
+      <p>현재 상태를 색상으로 직관적으로 표현합니다.</p>
+      <table class="ref-table">
+        <thead><tr><th style="width: 130px;">카드</th><th style="width: 80px;">색상</th><th>설명</th></tr></thead>
+        <tbody>
+          <tr><td><strong>오늘 할 일</strong></td><td>🔵 파랑</td><td>마감일이 오늘인 업무 수</td></tr>
+          <tr><td><strong>지연 업무</strong></td><td>🔴 빨강</td><td>마감일이 지났거나 '지연' 상태인 업무 수</td></tr>
+          <tr><td><strong>회신 대기</strong></td><td>🟡 황색</td><td>상태가 '회신 대기'인 업무 수</td></tr>
+          <tr><td><strong>이번 주 마감</strong></td><td>🟣 보라</td><td>이번 주 내(일~토) 마감 예정 업무</td></tr>
+          <tr><td><strong>이번 주 완료</strong></td><td>🟢 초록</td><td>이번 주에 완료 처리한 업무 수</td></tr>
+          <tr><td><strong>진행 중 프로젝트</strong></td><td>🟦 하늘색</td><td>'진행 중' 또는 '예정' 상태의 프로젝트 수</td></tr>
+        </tbody>
+      </table>
+
+      <h3>4.2 빠른 업무 추가</h3>
+      <p>요약 카드 아래에 <strong>제목만 입력하고 Enter</strong>로 즉시 업무를 만들 수 있는 입력칸이 있습니다. 상세 정보는 나중에 업무 목록에서 수정할 수 있습니다.</p>
+
+      <h3>4.3 하단 섹션 4종</h3>
+      <p>중요한 업무를 4개 영역으로 분리해 표시합니다. 각 섹션은 최대 5건씩만 보여주며, <strong>「전체 보기 →」</strong>를 누르면 해당 분류 전체로 이동합니다.</p>
+      <ul>
+        <li><strong>오늘 해야 할 업무</strong> → 클릭 시 「업무 목록」으로 이동</li>
+        <li><strong>지연 업무</strong> → 마감 초과 또는 상태가 지연인 업무</li>
+        <li><strong>회신 대기 업무</strong> → 「회신 대기함」으로 연결</li>
+        <li><strong>최근 업데이트 업무</strong> → 최근 수정된 진행 중 업무 5건</li>
+      </ul>
+    </section>
+
+    <!-- ───────────────── 5. 업무 목록 ───────────────── -->
+    <section id="tasks" class="anchor-target">
+      <h2><span class="num">5</span>업무 목록</h2>
+      <p>전체 업무를 표 형태로 검색·필터·정렬할 수 있는 핵심 페이지입니다. 화면은 위에서부터 <strong>빠른 필터 → 검색/필터 → 빠른 추가 → 결과 카운트 → 업무 테이블</strong>로 구성됩니다.</p>
+
+      <div class="mockup">
+        <div class="mockup-titlebar">
+          <span class="mockup-dot r"></span><span class="mockup-dot y"></span><span class="mockup-dot g"></span>
+          <span class="url">/tasks</span>
+        </div>
+        <div class="mockup-body no-sidebar">
+          <div class="mm">
+            <div class="mm-header">
+              <div>
+                <div class="mm-title">업무 목록</div>
+                <div class="mm-desc">전체 업무를 검색하고 관리합니다.</div>
+              </div>
+              <div class="btn primary">+ 업무 추가</div>
+            </div>
+
+            <div class="row" style="margin-bottom: 8px;">
+              <span class="pill on">전체</span>
+              <span class="pill">오늘 할 일 <span class="b b-prog" style="margin-left: 4px;">5</span></span>
+              <span class="pill">이번 주 마감 <span class="b b-prog" style="margin-left: 4px;">8</span></span>
+              <span class="pill">지연 업무 <span class="b b-delay" style="margin-left: 4px;">2</span></span>
+              <span class="pill">회신 대기 <span class="b b-wait" style="margin-left: 4px;">3</span></span>
+              <span class="pill">긴급 업무 <span class="b b-urgent" style="margin-left: 4px;">1</span></span>
+              <span class="pill">완료 숨기기</span>
+            </div>
+
+            <div class="row" style="margin-bottom: 8px;">
+              <div style="border: 1px solid #cbd5e1; border-radius: 4px; padding: 3px 8px 3px 22px; font-size: 11px; color: #94a3b8; background: white; position: relative;">
+                <span style="position: absolute; left: 7px; top: 50%; transform: translateY(-50%); color: #94a3b8;">🔍</span> 검색...
+              </div>
+              <div style="border: 1px solid #cbd5e1; border-radius: 4px; padding: 3px 8px; font-size: 11px; color: #475569; background: white;">전체 상태 ▾</div>
+              <div style="border: 1px solid #cbd5e1; border-radius: 4px; padding: 3px 8px; font-size: 11px; color: #475569; background: white;">전체 우선순위 ▾</div>
+              <div style="border: 1px solid #cbd5e1; border-radius: 4px; padding: 3px 8px; font-size: 11px; color: #475569; background: white;">전체 카테고리 ▾</div>
+              <div style="border: 1px solid #cbd5e1; border-radius: 4px; padding: 3px 8px; font-size: 11px; color: #475569; background: white;">전체 프로젝트 ▾</div>
+            </div>
+
+            <div class="muted" style="margin: 6px 0;">업무 7건</div>
+
+            <table class="tbl">
+              <thead>
+                <tr>
+                  <th>제목 <span class="h-actions"><span class="sort-ico active">▲</span></span></th>
+                  <th>상태 <span class="h-actions"><span class="sort-ico">⇅</span><span class="filter-ico active">≡</span></span></th>
+                  <th>우선순위 <span class="h-actions"><span class="sort-ico">⇅</span><span class="filter-ico">≡</span></span></th>
+                  <th>카테고리 <span class="h-actions"><span class="sort-ico">⇅</span><span class="filter-ico">≡</span></span></th>
+                  <th>프로젝트 <span class="h-actions"><span class="sort-ico">⇅</span><span class="filter-ico">≡</span></span></th>
+                  <th>담당자 <span class="h-actions"><span class="sort-ico">⇅</span><span class="filter-ico">≡</span></span></th>
+                  <th>마감일 <span class="h-actions"><span class="sort-ico">⇅</span></span></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>제니스코리아 7S 비상정지 발생</td><td><span class="b b-mon">모니터링</span></td><td><span class="b b-normal">보통</span></td><td>제조사 문의</td><td>미지정</td><td>제니스코리아</td><td>5/14</td></tr>
+                <tr><td>충전기 펌웨어 업데이트</td><td><span class="b b-prog">진행 중</span></td><td><span class="b b-high">높음</span></td><td>펌웨어</td><td>2026 펌웨어 배포</td><td>김기사</td><td>5/16</td></tr>
+                <tr><td>인증 시험 결과 보고서 작성</td><td><span class="b b-delay">지연</span></td><td><span class="b b-urgent">긴급</span></td><td>인증/시험</td><td>2026 인증</td><td>이대리</td><td>5/12</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <h3>5.1 빠른 필터</h3>
+      <p>화면 상단의 알약 모양 버튼으로 자주 쓰는 분류에 즉시 전환합니다.</p>
+      <ul>
+        <li><strong>전체</strong> / <strong>오늘 할 일</strong> / <strong>이번 주 마감</strong> / <strong>지연 업무</strong> / <strong>회신 대기</strong> / <strong>긴급 업무</strong></li>
+        <li><strong>완료 숨기기</strong> 토글 — 완료·취소된 업무를 결과에서 제외</li>
+        <li>각 버튼 우측의 작은 배지는 해당 분류에 해당하는 업무 건수</li>
+      </ul>
+
+      <h3>5.2 검색 + 드롭다운 필터</h3>
+      <p>키워드 검색은 <strong>제목·설명·다음 액션·담당자</strong>를 동시에 검색합니다. 드롭다운으로 상태/우선순위/카테고리/프로젝트를 추가로 좁힐 수 있습니다.</p>
+
+      <h3>5.3 열 정렬 (▲▼)</h3>
+      <p>테이블 각 열 헤더의 <strong>▲▼ 아이콘 버튼</strong>을 누르면 해당 열로 정렬됩니다. 한 번 더 누르면 오름차순↔내림차순이 토글됩니다.</p>
+      <div class="tip">
+        <strong>💡 팁</strong>
+        제목 텍스트가 아니라 <strong>아이콘 버튼</strong>을 눌러야 정렬됩니다. 기본 정렬은 <strong>마감일 오름차순(▲)</strong>이며, 마감일이 없는 업무는 맨 뒤로 정렬됩니다.
+      </div>
+
+      <h3>5.4 컬럼 필터 (≡)</h3>
+      <p>각 열 헤더의 <strong>≡ 깔때기 아이콘</strong>을 누르면 해당 열의 실제 데이터 기준 고유값 목록이 드롭다운으로 나타나며, 클릭 한 번으로 빠르게 필터링됩니다. 활성화된 컬럼 필터는 아이콘이 <strong style="color: #2563eb;">파란색</strong>으로 표시됩니다.</p>
+      <ul>
+        <li>지원 컬럼: <strong>상태, 우선순위, 카테고리, 프로젝트, 담당자</strong></li>
+        <li>프로젝트 필터에는 <strong>"미지정"</strong> 옵션도 포함됩니다 (프로젝트가 없는 업무).</li>
+        <li>해제하려면 드롭다운에서 <strong>"전체"</strong>를 선택하세요.</li>
+      </ul>
+
+      <h3>5.5 빠른 업무 추가</h3>
+      <p>대시보드와 동일하게, 검색칸 아래 <strong>제목만 입력하고 Enter</strong>로 즉시 새 업무 생성이 가능합니다.</p>
+
+      <h3>5.6 행 액션</h3>
+      <p>각 행을 클릭하면 <strong>상세 보기</strong>가 열립니다. 우측 끝의 <strong>⋯ 메뉴</strong>에서는 상태 변경(진행 중/회신 대기/모니터링/지연), 완료 처리, 수정, 삭제를 바로 실행할 수 있습니다.</p>
+    </section>
+
+    <!-- ───────────────── 6. 칸반 보드 ───────────────── -->
+    <section id="board" class="anchor-target">
+      <h2><span class="num">6</span>칸반 보드</h2>
+      <p>업무를 상태별 칼럼으로 나누어 보여주는 카드 뷰입니다. 카드를 다른 칼럼으로 <strong>드래그&드롭</strong>하면 상태가 자동으로 변경됩니다.</p>
+
+      <div class="mockup">
+        <div class="mockup-titlebar">
+          <span class="mockup-dot r"></span><span class="mockup-dot y"></span><span class="mockup-dot g"></span>
+          <span class="url">/board</span>
+        </div>
+        <div class="mockup-body no-sidebar">
+          <div class="mm">
+            <div class="mm-header">
+              <div>
+                <div class="mm-title">칸반 보드</div>
+                <div class="mm-desc">상태별 업무 흐름을 한눈에 확인합니다.</div>
+              </div>
+              <div class="btn primary">+ 업무 추가</div>
+            </div>
+            <div class="kanban">
+              <div class="kanban-col">
+                <div class="kanban-head"><span class="b b-new">신규</span><span class="kanban-count">2</span></div>
+                <div class="kanban-card"><div class="kc-title">고객 민원 응대</div><div class="kc-meta"><span class="b b-high">높음</span></div></div>
+                <div class="kanban-card"><div class="kc-title">신규 사이트 점검</div><div class="kc-meta"><span class="b b-normal">보통</span></div></div>
+              </div>
+              <div class="kanban-col">
+                <div class="kanban-head"><span class="b b-prog">진행 중</span><span class="kanban-count">3</span></div>
+                <div class="kanban-card"><div class="kc-title">충전기 펌웨어 업데이트</div><div class="kc-meta"><span class="b b-urgent">긴급</span></div></div>
+                <div class="kanban-card"><div class="kc-title">로그 분석 자동화</div></div>
+              </div>
+              <div class="kanban-col">
+                <div class="kanban-head"><span class="b b-wait">회신 대기</span><span class="kanban-count">2</span></div>
+                <div class="kanban-card"><div class="kc-title">제조사 RMA 회신</div><div class="kc-meta"><span class="b b-normal">보통</span></div></div>
+              </div>
+              <div class="kanban-col">
+                <div class="kanban-head"><span class="b b-mon">모니터링</span><span class="kanban-count">1</span></div>
+                <div class="kanban-card"><div class="kc-title">제니스코리아 7S 비상정지</div></div>
+              </div>
+              <div class="kanban-col">
+                <div class="kanban-head"><span class="b b-delay">지연</span><span class="kanban-count">1</span></div>
+                <div class="kanban-card"><div class="kc-title">인증 시험 결과 보고</div><div class="kc-meta"><span class="b b-urgent">긴급</span></div></div>
+              </div>
+              <div class="kanban-col" style="opacity: 0.55;">
+                <div class="kanban-head"><span class="b b-done">완료</span><span class="kanban-count">4</span></div>
+                <div class="kanban-card"><div class="kc-title" style="text-decoration: line-through;">CSV 일괄 등록</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <h3>6.1 칼럼 구성</h3>
+      <p>좌→우 순서: <strong>신규 → 진행 중 → 회신 대기 → 모니터링 → 지연 → 검토 필요 → 보류 → 완료 → 취소</strong>. 「완료」와 「취소」 칼럼은 의도적으로 <strong>흐리게(투명도 50%)</strong> 표시되어 활성 업무에 시선이 가도록 합니다.</p>
+
+      <h3>6.2 드래그&드롭으로 상태 변경</h3>
+      <ul>
+        <li>카드를 누른 채로 다른 칼럼 위로 끌면, 해당 칼럼이 강조 표시되고 카드 자체는 반투명으로 변합니다.</li>
+        <li>놓으면 즉시 상태가 변경되며, <strong>활동 로그</strong>에 자동으로 기록됩니다.</li>
+        <li>같은 칼럼 내부에서 놓으면 변경 없이 원위치합니다.</li>
+      </ul>
+
+      <h3>6.3 카드 액션</h3>
+      <p>카드를 클릭하면 상세 보기가 열립니다. 카드 우측의 <strong>⋯</strong> 메뉴에서 수정·삭제·복제 등 기존 메뉴를 그대로 사용할 수 있습니다.</p>
+    </section>
+
+    <!-- ───────────────── 7. 캘린더 ───────────────── -->
+    <section id="calendar" class="anchor-target">
+      <h2><span class="num">7</span>캘린더</h2>
+      <p>월·주·일 단위로 업무 일정을 시각화하는 페이지입니다. 본 시스템에서 <strong>기능이 가장 많은 화면</strong>이므로 항목별로 자세히 안내합니다.</p>
+
+      <div class="mockup">
+        <div class="mockup-titlebar">
+          <span class="mockup-dot r"></span><span class="mockup-dot y"></span><span class="mockup-dot g"></span>
+          <span class="url">/calendar</span>
+        </div>
+        <div class="mockup-body no-sidebar">
+          <div class="mm">
+            <div class="mm-header">
+              <div>
+                <div class="mm-title">캘린더</div>
+                <div class="mm-desc">월/주/일 일정을 확인하고 빠르게 업무를 추가합니다. (← → 이동, T 오늘, M/W/D 모드)</div>
+              </div>
+              <div class="btn primary">+ 업무 추가</div>
+            </div>
+            <div class="cal-toolbar">
+              <div class="btn">◀</div>
+              <span style="font-weight: 700; font-size: 12px;">2026년</span>
+              <span style="font-weight: 700; font-size: 12px;">5월</span>
+              <div class="btn">▶</div>
+              <div class="btn">오늘</div>
+              <div class="seg" style="margin-left: 6px;">
+                <span class="on">월</span><span>주</span><span>일</span>
+              </div>
+              <div style="margin-left: auto; display: flex; align-items: center; gap: 6px;">
+                <label class="muted"><input type="checkbox" style="vertical-align: middle;"> 범위 막대</label>
+                <span class="muted">기준</span>
+                <div style="border: 1px solid #cbd5e1; border-radius: 4px; padding: 2px 6px; font-size: 11px; background: white;">마감일 ▾</div>
+              </div>
+            </div>
+            <div class="cal-grid">
+              <div class="cal-weekrow">
+                <div class="sun">일</div><div>월</div><div>화</div><div>수</div><div>목</div><div>금</div><div class="sat">토</div>
+              </div>
+              <div class="cal-days">
+                <!-- Row 1 -->
+                <div class="cal-cell dim"><span class="cal-day sun">26</span></div>
+                <div class="cal-cell dim"><span class="cal-day">27</span></div>
+                <div class="cal-cell dim"><span class="cal-day">28</span></div>
+                <div class="cal-cell dim"><span class="cal-day">29</span></div>
+                <div class="cal-cell dim"><span class="cal-day">30</span></div>
+                <div class="cal-cell"><span class="cal-day">1</span></div>
+                <div class="cal-cell"><span class="cal-day sat">2</span></div>
+                <!-- Row 2 -->
+                <div class="cal-cell"><span class="cal-day sun">3</span></div>
+                <div class="cal-cell"><span class="cal-day">4</span><div class="cal-chip b-prog">충전기 펌웨어</div></div>
+                <div class="cal-cell"><span class="cal-day">5</span></div>
+                <div class="cal-cell"><span class="cal-day">6</span><div class="cal-chip b-wait">RMA 회신 요청</div></div>
+                <div class="cal-cell"><span class="cal-day">7</span></div>
+                <div class="cal-cell"><span class="cal-day">8</span><div class="cal-chip b-delay">인증 시험 보고서</div></div>
+                <div class="cal-cell"><span class="cal-day sat">9</span></div>
+                <!-- Row 3 with today -->
+                <div class="cal-cell"><span class="cal-day sun">10</span></div>
+                <div class="cal-cell"><span class="cal-day">11</span></div>
+                <div class="cal-cell"><span class="cal-day">12</span></div>
+                <div class="cal-cell"><span class="cal-day">13</span></div>
+                <div class="cal-cell"><span class="cal-day">14</span><div class="cal-chip b-mon">7S 모니터링</div></div>
+                <div class="cal-cell"><span class="cal-day today">15</span><div class="cal-chip b-prog">로그 분석</div></div>
+                <div class="cal-cell"><span class="cal-day sat">16</span><div class="cal-chip b-high">긴급 점검</div></div>
+                <!-- Row 4 -->
+                <div class="cal-cell"><span class="cal-day sun">17</span></div>
+                <div class="cal-cell"><span class="cal-day">18</span></div>
+                <div class="cal-cell"><span class="cal-day">19</span></div>
+                <div class="cal-cell"><span class="cal-day">20</span></div>
+                <div class="cal-cell"><span class="cal-day">21</span></div>
+                <div class="cal-cell"><span class="cal-day">22</span></div>
+                <div class="cal-cell"><span class="cal-day sat">23</span></div>
+                <!-- Row 5 -->
+                <div class="cal-cell"><span class="cal-day sun">24</span></div>
+                <div class="cal-cell"><span class="cal-day">25</span></div>
+                <div class="cal-cell"><span class="cal-day">26</span></div>
+                <div class="cal-cell"><span class="cal-day">27</span></div>
+                <div class="cal-cell"><span class="cal-day">28</span></div>
+                <div class="cal-cell"><span class="cal-day">29</span></div>
+                <div class="cal-cell"><span class="cal-day sat">30</span></div>
+                <!-- Row 6 -->
+                <div class="cal-cell"><span class="cal-day sun">31</span></div>
+                <div class="cal-cell dim"><span class="cal-day">1</span></div>
+                <div class="cal-cell dim"><span class="cal-day">2</span></div>
+                <div class="cal-cell dim"><span class="cal-day">3</span></div>
+                <div class="cal-cell dim"><span class="cal-day">4</span></div>
+                <div class="cal-cell dim"><span class="cal-day">5</span></div>
+                <div class="cal-cell dim"><span class="cal-day sat">6</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <h3>7.1 상단 툴바</h3>
+      <table class="ref-table">
+        <thead><tr><th style="width: 130px;">컨트롤</th><th>동작</th></tr></thead>
+        <tbody>
+          <tr><td><strong>◀ / ▶</strong></td><td>이전 / 다음 단위 이동 (월 뷰=한 달, 주 뷰=7일, 일 뷰=1일)</td></tr>
+          <tr><td><strong>2026년</strong> 버튼</td><td>클릭 시 <strong>연도 선택 팝업</strong>이 열림 (현재 ±12년 범위, 5×5 그리드)</td></tr>
+          <tr><td><strong>오늘</strong></td><td>오늘 날짜로 즉시 이동</td></tr>
+          <tr><td><strong>[월][주][일]</strong></td><td>뷰 모드 전환 (단축키 <kbd>M</kbd> <kbd>W</kbd> <kbd>D</kbd>)</td></tr>
+          <tr><td><strong>범위 막대</strong></td><td>시작일~마감일이 모두 있는 업무를 가로 막대로 표시 (자세히는 7.4)</td></tr>
+          <tr><td><strong>기준</strong></td><td>달력에 표시할 날짜 필드 선택 (마감일/시작일/팔로업일)</td></tr>
+        </tbody>
+      </table>
+
+      <h3>7.2 뷰 모드 3종</h3>
+      <ul>
+        <li><strong>월 뷰</strong>(기본) — 6주 × 7일 그리드. 한 달을 한눈에.</li>
+        <li><strong>주 뷰</strong> — 1주일 × 7일, 셀이 세로로 크게 확장되어 더 많은 업무가 보임.</li>
+        <li><strong>일 뷰</strong> — 단일 날짜의 모든 업무를 카드 형태로 자세히 표시. "이 날짜에 추가" 버튼 포함.</li>
+      </ul>
+
+      <h3>7.3 빈 날짜에 빠르게 추가하기</h3>
+      <p>달력의 <strong>아무 날짜 셀에 마우스를 올리면 우측 상단에 작은 + 버튼</strong>이 나타납니다. 클릭하면 업무 추가 다이얼로그가 열리며 해당 날짜가 <strong>마감일에 자동 입력</strong>된 상태로 시작합니다.</p>
+
+      <div class="mockup" style="max-width: 360px;">
+        <div class="mockup-titlebar">
+          <span class="mockup-dot r"></span><span class="mockup-dot y"></span><span class="mockup-dot g"></span>
+        </div>
+        <div class="mockup-body no-sidebar">
+          <div class="mm" style="padding: 14px;">
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0;">
+              <div class="cal-cell" style="border: 1px solid #e2e8f0; min-height: 70px;">
+                <span class="cal-day">12</span>
+              </div>
+              <div class="cal-cell" style="border: 1px solid #e2e8f0; background: #f1f5f9; min-height: 70px; position: relative;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <span class="cal-day">13</span>
+                  <span style="background: white; border: 1px solid #cbd5e1; border-radius: 3px; padding: 0 4px; font-size: 11px;">+</span>
+                </div>
+              </div>
+              <div class="cal-cell" style="border: 1px solid #e2e8f0; min-height: 70px;">
+                <span class="cal-day">14</span>
+              </div>
+            </div>
+            <div class="muted" style="text-align: center; margin-top: 6px;">↑ 마우스 호버 시 우측 상단에 + 버튼 등장</div>
+          </div>
+        </div>
+      </div>
+
+      <h3>7.4 범위 막대 (시작일 ~ 마감일)</h3>
+      <p>상단 툴바의 <strong>「범위 막대」</strong> 체크박스를 켜면, <strong>시작일과 마감일이 모두 있는</strong> 업무가 가로 막대로 여러 날짜에 걸쳐 표시됩니다.</p>
+      <ul>
+        <li>시작 셀은 <strong>왼쪽 둥근 모서리</strong>, 끝 셀은 <strong>오른쪽 둥근 모서리</strong>로 시각적 시작/끝을 표시합니다.</li>
+        <li>겹치지 않는 업무는 같은 lane을 공유하므로 시각적 정렬이 일관됩니다.</li>
+        <li>시작일·마감일 중 하나만 있는 업무는 기존처럼 단일 칩으로 표시됩니다.</li>
+      </ul>
+
+      <h3>7.5 드래그&드롭으로 마감일 변경</h3>
+      <p>단일 날짜 칩을 다른 날짜로 드래그하면 <strong>현재 활성 "기준" 필드</strong>가 그 날짜로 자동 업데이트됩니다.</p>
+      <ul>
+        <li>기준이 <strong>마감일</strong>이면 마감일이 이동합니다.</li>
+        <li>기준이 <strong>시작일</strong>이면 시작일만, <strong>팔로업일</strong>이면 팔로업일만 이동합니다.</li>
+        <li>범위 막대는 드래그 불가입니다. 시작일 또는 마감일을 변경하려면 "범위 막대"를 끄거나 업무를 클릭해 직접 수정하세요.</li>
+      </ul>
+
+      <h3>7.6 셀당 표시 한도</h3>
+      <p>월 뷰에서는 한 셀에 최대 3개까지의 업무 칩이 보이고, 그 이상은 <strong>「+N개 더 보기」</strong>로 축약됩니다. 클릭하면 해당 날짜의 모든 업무가 팝업으로 표시됩니다.</p>
+
+      <h3>7.7 연도 선택 팝업</h3>
+      <p>툴바의 「<strong>YYYY년</strong>」 버튼을 클릭하면 <strong>현재 연도 ±12년 범위(총 25년)</strong>의 그리드가 나타납니다. 원하는 연도를 클릭하면 같은 달·일을 유지한 채 그 연도로 점프합니다.</p>
+
+      <div class="tip">
+        <strong>💡 팁</strong>
+        키보드 <kbd>←</kbd> <kbd>→</kbd>로 빠른 이동, <kbd>T</kbd>로 오늘 복귀, <kbd>M</kbd>/<kbd>W</kbd>/<kbd>D</kbd>로 뷰 전환이 가능합니다. 단, 입력칸이나 다이얼로그가 열려 있을 때는 단축키가 동작하지 않습니다.
+      </div>
+    </section>
+
+    <!-- ───────────────── 8. 프로젝트 ───────────────── -->
+    <section id="projects" class="anchor-target">
+      <h2><span class="num">8</span>프로젝트</h2>
+      <p>여러 업무를 묶어서 관리하기 위한 그룹입니다. 예: <strong>"2026 인증 프로젝트"</strong>에 속한 모든 업무를 한 곳에서 추적할 수 있습니다.</p>
+
+      <div class="mockup">
+        <div class="mockup-titlebar">
+          <span class="mockup-dot r"></span><span class="mockup-dot y"></span><span class="mockup-dot g"></span>
+          <span class="url">/projects</span>
+        </div>
+        <div class="mockup-body no-sidebar">
+          <div class="mm">
+            <div class="mm-header">
+              <div>
+                <div class="mm-title">프로젝트</div>
+                <div class="mm-desc">프로젝트별 진행 상황을 관리합니다.</div>
+              </div>
+              <div class="btn primary">+ 프로젝트 추가</div>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+              <div style="background: white; border: 1px solid #e2e8f0; border-radius: 6px; padding: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                  <div style="font-weight: 600; font-size: 13px;">2026 펌웨어 배포</div>
+                  <span class="b b-prog">진행 중</span>
+                </div>
+                <div class="muted" style="margin: 4px 0;">2026-04-01 ~ 2026-08-31</div>
+                <div style="display: flex; gap: 6px; margin-top: 6px;">
+                  <span class="muted">진행 중 <strong style="color: #0f172a;">3</strong></span>
+                  <span class="muted">완료 <strong style="color: #15803d;">2</strong></span>
+                  <span class="muted">전체 <strong style="color: #0f172a;">8</strong></span>
+                </div>
+              </div>
+              <div style="background: white; border: 1px solid #e2e8f0; border-radius: 6px; padding: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                  <div style="font-weight: 600; font-size: 13px;">2026 인증 시험</div>
+                  <span class="b b-wait">예정</span>
+                </div>
+                <div class="muted" style="margin: 4px 0;">2026-06-01 ~ 2026-12-31</div>
+                <div style="display: flex; gap: 6px; margin-top: 6px;">
+                  <span class="muted">진행 중 <strong style="color: #0f172a;">1</strong></span>
+                  <span class="muted">전체 <strong style="color: #0f172a;">4</strong></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <h3>8.1 프로젝트 추가</h3>
+      <p>우측 상단 <strong>「프로젝트 추가」</strong> 버튼을 누르면 입력 다이얼로그가 열립니다. 입력 항목은 다음과 같습니다.</p>
+      <ul>
+        <li><strong>이름 *</strong>(필수) — 프로젝트 이름</li>
+        <li><strong>상태</strong> — 예정 / 진행 중 / 보류 / 완료 / 취소</li>
+        <li><strong>시작일·종료일</strong> — 프로젝트 기간</li>
+        <li><strong>설명</strong> — 프로젝트 목적, 범위, 참고사항</li>
+      </ul>
+
+      <h3>8.2 프로젝트 카드 및 업무 보기</h3>
+      <p>각 카드를 클릭하면 해당 프로젝트에 연결된 모든 업무가 펼쳐집니다. 거기서 업무 추가·수정·삭제도 가능합니다.</p>
+
+      <h3>8.3 프로젝트 삭제</h3>
+      <div class="warn">
+        <strong>⚠️ 주의</strong>
+        프로젝트를 삭제해도 연결된 업무는 삭제되지 않습니다. 대신 해당 업무들의 프로젝트 연결만 해제되어 <strong>"미지정"</strong>으로 표시됩니다.
+      </div>
+    </section>
+
+    <!-- ───────────────── 9. 회신 대기함 ───────────────── -->
+    <section id="waiting" class="anchor-target">
+      <h2><span class="num">9</span>회신 대기함</h2>
+      <p>상태가 <strong>「회신 대기」</strong>인 업무만 모아 보여주는 특수 화면입니다. 외부(제조사, 고객, 협력사 등)의 회신을 기다리는 업무를 빠르게 처리할 수 있습니다.</p>
+
+      <div class="mockup">
+        <div class="mockup-titlebar">
+          <span class="mockup-dot r"></span><span class="mockup-dot y"></span><span class="mockup-dot g"></span>
+          <span class="url">/waiting</span>
+        </div>
+        <div class="mockup-body no-sidebar">
+          <div class="mm">
+            <div class="mm-header">
+              <div>
+                <div class="mm-title">회신 대기함</div>
+                <div class="mm-desc">제조사, 고객 등 외부 회신을 기다리는 업무를 모아 봅니다.</div>
+              </div>
+              <div>
+                <span class="muted">대기 <strong style="color: #0f172a;">3</strong>건</span>
+                <span class="b b-delay" style="margin-left: 8px;">팔로업 초과 1건</span>
+              </div>
+            </div>
+            <table class="tbl">
+              <thead><tr>
+                <th>업무명</th><th>요청 대상</th><th>요청일</th><th>대기 일수</th><th>팔로업 예정일</th><th>빠른 처리</th>
+              </tr></thead>
+              <tbody>
+                <tr>
+                  <td>제조사 RMA 회신 요청</td>
+                  <td>ABB 본사</td><td>5/3</td>
+                  <td><span class="b b-urgent">12일</span></td>
+                  <td style="color: #b91c1c; font-weight: 500;">5/10 (!)</td>
+                  <td><span class="btn sm">회신 완료</span> <span class="btn sm">재문의</span></td>
+                </tr>
+                <tr>
+                  <td>충전기 진단 데이터 요청</td>
+                  <td>제니스코리아</td><td>5/12</td>
+                  <td><span class="b b-high">3일</span></td>
+                  <td class="muted">5/20</td>
+                  <td><span class="btn sm">회신 완료</span> <span class="btn sm">재문의</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <h3>9.1 대기 일수 자동 계산</h3>
+      <p>업무에 입력한 <strong>「요청일」</strong> 기준으로 현재까지 대기한 일수가 자동 계산됩니다. 일수에 따라 배지 색상이 달라집니다.</p>
+      <table class="ref-table">
+        <thead><tr><th>대기 일수</th><th>배지 색상</th><th>의미</th></tr></thead>
+        <tbody>
+          <tr><td>0 ~ 2일</td><td><span class="b b-normal">회색</span></td><td>일반</td></tr>
+          <tr><td>3 ~ 6일</td><td><span class="b b-high">주황</span></td><td>주의</td></tr>
+          <tr><td>7일 이상</td><td><span class="b b-urgent">빨강</span></td><td>장기 대기 — 재문의 권장</td></tr>
+        </tbody>
+      </table>
+
+      <h3>9.2 팔로업 예정일</h3>
+      <p>각 업무에 <strong>팔로업 예정일</strong>을 설정해두면 그 날짜가 지났을 때 빨간 「(!)」 표시가 나타나, 후속 조치가 필요한 항목을 놓치지 않도록 도와줍니다. 헤더 우측의 <strong>「팔로업 초과 N건」</strong> 배지로 한눈에 확인할 수 있습니다.</p>
+
+      <h3>9.3 빠른 처리 4종</h3>
+      <table class="ref-table">
+        <thead><tr><th>버튼</th><th>동작</th></tr></thead>
+        <tbody>
+          <tr><td><strong>회신 완료</strong></td><td>상태를 「진행 중」으로 변경. 회신을 받았으니 다시 본인 업무로 전환.</td></tr>
+          <tr><td><strong>재문의</strong></td><td>요청일을 오늘 날짜로 갱신. 대기 일수가 0부터 다시 카운트됨.</td></tr>
+          <tr><td><strong>지연</strong></td><td>상태를 「지연」으로 변경. 장기 대기를 의도적으로 표시할 때 사용.</td></tr>
+          <tr><td><strong>완료</strong></td><td>업무 종결 처리.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ───────────────── 10. 설정 ───────────────── -->
+    <section id="settings" class="anchor-target">
+      <h2><span class="num">10</span>설정</h2>
+      <p>데이터 백업, 복원, 샘플 데이터 불러오기, 카테고리 관리 등 시스템 환경을 다루는 페이지입니다.</p>
+
+      <h3>10.1 JSON 백업 (내보내기)</h3>
+      <p>현재 사용자의 모든 데이터(업무·프로젝트·활동 로그·카테고리)를 하나의 <strong>JSON 파일</strong>로 다운로드합니다. 정기적으로 백업해두면 안전합니다.</p>
+
+      <div class="tip">
+        <strong>💡 권장</strong>
+        매주 금요일에 백업 파일을 다운로드해 두는 습관을 들이시면 좋습니다. 파일명에 날짜가 포함되어 있어 시간순으로 관리할 수 있습니다.
+      </div>
+
+      <h3>10.2 JSON 복원 (가져오기)</h3>
+      <p>이전에 내보낸 JSON 파일을 선택하면 그 시점의 데이터로 복구됩니다.</p>
+      <div class="warn">
+        <strong>⚠️ 주의</strong>
+        복원은 <strong>현재 데이터를 덮어쓰는 작업</strong>입니다. 복원 전, 현재 데이터를 먼저 백업해두세요. 실수로 다른 사람의 백업 파일을 불러오면 본인 데이터가 사라질 수 있습니다.
+      </div>
+
+      <h3>10.3 샘플 데이터 불러오기</h3>
+      <p>처음 사용하거나 데모가 필요할 때 미리 준비된 샘플 업무·프로젝트를 한 번에 불러옵니다. 기존 데이터에 <strong>덧붙여</strong> 추가됩니다(삭제 아님).</p>
+
+      <h3>10.4 전체 삭제</h3>
+      <p>모든 업무·프로젝트·로그를 삭제합니다. 확인 다이얼로그가 두 번 표시됩니다.</p>
+      <div class="warn">
+        <strong>⚠️ 위험</strong>
+        삭제된 데이터는 복구할 수 없습니다. 반드시 사전에 JSON 백업을 받아두세요.
+      </div>
+
+      <h3>10.5 카테고리 관리</h3>
+      <p>업무 분류에 사용되는 카테고리를 추가/수정/삭제합니다. 기본 카테고리는 다음과 같습니다.</p>
+      <ul>
+        <li>장애 로그 분석, 충전기 연동 검증, 펌웨어, 제조사 문의, 고객/민원 대응</li>
+        <li>인증/시험, 프로젝트 관리, 내부 보고, 문서 작성, 기타</li>
+      </ul>
+    </section>
+
+    <!-- ───────────────── 11. 업무 추가/수정 ───────────────── -->
+    <section id="task-form" class="anchor-target">
+      <h2><span class="num">11</span>업무 추가/수정</h2>
+      <p>어느 화면에서든 우측 상단 <strong>「업무 추가」</strong> 버튼 또는 캘린더의 <strong>+ 버튼</strong>으로 입력 다이얼로그를 열 수 있습니다.</p>
+
+      <div class="dialog">
+        <div class="dialog-title">업무 추가</div>
+        <div class="dialog-row"><div class="lbl">제목 *</div><div class="val">충전기 7S 비상정지 점검</div></div>
+        <div class="dialog-row"><div class="lbl">상태 / 우선순위 / 카테고리</div><div class="val"><span class="b b-prog">진행 중</span> <span class="b b-high">높음</span> <span class="b b-normal">제조사 문의</span></div></div>
+        <div class="dialog-row"><div class="lbl">프로젝트 / 담당자</div><div class="val">미지정 · 제니스코리아 김기사</div></div>
+        <div class="dialog-row"><div class="lbl">충전기 모델 / 오류 코드</div><div class="val">GK-SMC-AC-7S · E083</div></div>
+        <div class="dialog-row"><div class="lbl">시작일 / 마감일</div><div class="val">2026-05-14 ~ 2026-05-16</div></div>
+        <div class="dialog-row"><div class="lbl">요청일 / 팔로업 예정일</div><div class="val">— · —</div></div>
+        <div class="dialog-row"><div class="lbl">업무 설명</div><div class="val">위치: 부산 북구 화명롯데캐슬<br />증상: 비상정지 누르지 않았는데 충전이 중단됨</div></div>
+        <div class="dialog-row"><div class="lbl">다음 액션</div><div class="val">제조사에 보드 1차 조치 요청 후 모니터링</div></div>
+        <div class="dialog-row"><div class="lbl">관련 링크 / 메모</div><div class="val">https://… · 동일 사례 5건 발생</div></div>
+        <div style="text-align: right; margin-top: 12px;">
+          <span class="btn">취소</span>
+          <span class="btn primary">추가</span>
+        </div>
+      </div>
+
+      <h3>11.1 필수/선택 항목</h3>
+      <ul>
+        <li><strong>제목 *</strong>(필수) — 비워두면 저장되지 않습니다.</li>
+        <li>그 외 모든 필드는 선택입니다. 채울 수 있는 만큼만 입력하세요.</li>
+      </ul>
+
+      <h3>11.2 필드별 상세 설명</h3>
+      <table class="ref-table">
+        <thead><tr><th style="width: 130px;">필드</th><th>설명</th></tr></thead>
+        <tbody>
+          <tr><td><strong>상태</strong></td><td>업무의 현재 위치. 칸반 보드의 어떤 칼럼에 들어갈지를 결정.</td></tr>
+          <tr><td><strong>우선순위</strong></td><td>긴급 / 높음 / 보통 / 낮음. 대시보드 "긴급 업무" 집계에 활용.</td></tr>
+          <tr><td><strong>카테고리</strong></td><td>업무 종류. 통계와 필터링에 사용.</td></tr>
+          <tr><td><strong>프로젝트</strong></td><td>어떤 프로젝트에 속하는지 선택. "없음" 가능.</td></tr>
+          <tr><td><strong>담당자 / 협력사</strong></td><td>실제 업무를 진행하는 외부 또는 내부 담당자명.</td></tr>
+          <tr><td><strong>충전기 모델 / 오류 코드</strong></td><td>도메인 특화 필드. 충전기 관련 업무에서 모델명과 에러 코드를 빠르게 기록.</td></tr>
+          <tr><td><strong>시작일 / 마감일</strong></td><td>업무 기간. 둘 다 입력하면 캘린더의 "범위 막대"로 표시됩니다.</td></tr>
+          <tr><td><strong>요청일</strong></td><td>외부에 문의·요청을 보낸 날짜. 회신 대기함의 <strong>대기 일수</strong> 계산 기준.</td></tr>
+          <tr><td><strong>팔로업 예정일</strong></td><td>이 날짜가 지나면 회신 대기함에서 "(!)" 경고가 표시됨.</td></tr>
+          <tr><td><strong>업무 설명 / 메모</strong></td><td>긴 텍스트 입력 가능. <strong>줄바꿈이 그대로 보존</strong>됩니다.</td></tr>
+          <tr><td><strong>다음 액션</strong></td><td>"다음에 무엇을 해야 하는지"를 한 줄로. 업무 목록·카드에서 항상 노출됩니다.</td></tr>
+          <tr><td><strong>관련 링크</strong></td><td>외부 URL. 상세 보기에서 클릭 가능한 링크로 표시됩니다.</td></tr>
+        </tbody>
+      </table>
+
+      <div class="tip">
+        <strong>💡 팁</strong>
+        <strong>다음 액션</strong>을 꾸준히 채워두면 업무를 다시 펼쳐볼 필요 없이 "지금 뭘 해야 하지?"가 자동으로 정리됩니다. 가장 활용도가 높은 필드입니다.
+      </div>
+
+      <h3>11.3 수정·삭제·복제</h3>
+      <p>업무 카드/행을 클릭해 상세 보기를 열면 우측 상단에 <strong>수정 / 복제 / 삭제</strong> 액션이 있습니다.</p>
+      <ul>
+        <li><strong>복제</strong> — 동일한 내용의 새 업무를 생성합니다. 제목 앞에 「[복사]」가 붙고 상태는 「신규」로 초기화됩니다.</li>
+        <li><strong>삭제</strong> — 확인 다이얼로그가 나타납니다. 삭제해도 <strong>활동 로그는 보존</strong>되어 누가 언제 무엇을 삭제했는지 추적 가능합니다.</li>
+      </ul>
+    </section>
+
+    <!-- ───────────────── 12. 색상 가이드 ───────────────── -->
+    <section id="colors" class="anchor-target">
+      <h2><span class="num">12</span>상태·우선순위 색상 가이드</h2>
+
+      <h3>12.1 상태 배지</h3>
+      <table class="ref-table">
+        <tbody>
+          <tr><td><span class="b b-new">신규</span></td><td>새로 등록되었으나 아직 시작하지 않은 업무</td></tr>
+          <tr><td><span class="b b-prog">진행 중</span></td><td>현재 작업하고 있는 업무</td></tr>
+          <tr><td><span class="b b-wait">회신 대기</span></td><td>외부 회신을 기다리는 중. 회신 대기함에 자동 등록됨</td></tr>
+          <tr><td><span class="b b-mon">모니터링</span></td><td>조치 후 상태를 지켜보는 중. 동일 현상 재발 여부 관찰</td></tr>
+          <tr><td><span class="b b-delay">지연</span></td><td>예상보다 늦어진 업무. 대시보드 "지연 업무"에 집계</td></tr>
+          <tr><td><span class="b b-review">검토 필요</span></td><td>내부 검토·승인이 필요한 상태</td></tr>
+          <tr><td><span class="b b-hold">보류</span></td><td>일시 중단. 외부 사유로 잠시 멈춤</td></tr>
+          <tr><td><span class="b b-done">완료</span></td><td>종결된 업무</td></tr>
+          <tr><td><span class="b b-cancel">취소</span></td><td>진행하지 않기로 결정된 업무</td></tr>
+        </tbody>
+      </table>
+
+      <h3>12.2 우선순위 배지</h3>
+      <table class="ref-table">
+        <tbody>
+          <tr><td><span class="b b-urgent">긴급</span></td><td>오늘 안에 처리해야 하는 업무</td></tr>
+          <tr><td><span class="b b-high">높음</span></td><td>이번 주 내 처리해야 하는 업무</td></tr>
+          <tr><td><span class="b b-normal">보통</span></td><td>기본값. 일반 업무</td></tr>
+          <tr><td><span class="b b-low">낮음</span></td><td>여유 있을 때 처리해도 되는 업무</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ───────────────── 13. 단축키 ───────────────── -->
+    <section id="shortcuts" class="anchor-target">
+      <h2><span class="num">13</span>키보드 단축키</h2>
+      <p>주로 <strong>캘린더 페이지</strong>에서 사용 가능한 단축키입니다. 입력칸이나 다이얼로그가 열려 있으면 동작하지 않습니다.</p>
+
+      <h3>13.1 캘린더 단축키 (Mac · Windows 공통)</h3>
+      <p>아래 단축키는 <strong>Mac과 Windows 환경에서 동일</strong>하게 작동합니다.</p>
+
+      <table class="ref-table">
+        <thead><tr><th style="width: 160px;">키</th><th>동작</th></tr></thead>
+        <tbody>
+          <tr><td><kbd>←</kbd> <kbd>→</kbd></td><td>이전 / 다음 단위 이동 (현재 뷰 모드 기준)</td></tr>
+          <tr><td><kbd>T</kbd></td><td>오늘로 이동</td></tr>
+          <tr><td><kbd>M</kbd></td><td>월 뷰로 전환</td></tr>
+          <tr><td><kbd>W</kbd></td><td>주 뷰로 전환</td></tr>
+          <tr><td><kbd>D</kbd></td><td>일 뷰로 전환</td></tr>
+        </tbody>
+      </table>
+
+      <h3>13.2 자주 쓰는 브라우저 단축키 (참고)</h3>
+      <p>본 시스템은 일반 웹 페이지이므로 브라우저의 표준 단축키도 그대로 사용할 수 있습니다.</p>
+
+      <table class="ref-table">
+        <thead><tr><th style="width: 140px;">동작</th><th style="width: 180px;">Mac</th><th style="width: 180px;">Windows</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>새로고침</strong></td>
+            <td><kbd>⌘ Cmd</kbd> + <kbd>R</kbd></td>
+            <td><kbd>Ctrl</kbd> + <kbd>R</kbd> 또는 <kbd>F5</kbd></td>
+          </tr>
+          <tr>
+            <td><strong>강력 새로고침</strong><br /><span class="muted">(캐시 무시)</span></td>
+            <td><kbd>⌘ Cmd</kbd> + <kbd>⇧ Shift</kbd> + <kbd>R</kbd></td>
+            <td><kbd>Ctrl</kbd> + <kbd>F5</kbd> 또는 <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>R</kbd></td>
+          </tr>
+          <tr>
+            <td><strong>페이지 내 검색</strong></td>
+            <td><kbd>⌘ Cmd</kbd> + <kbd>F</kbd></td>
+            <td><kbd>Ctrl</kbd> + <kbd>F</kbd></td>
+          </tr>
+          <tr>
+            <td><strong>인쇄 / PDF 저장</strong></td>
+            <td><kbd>⌘ Cmd</kbd> + <kbd>P</kbd></td>
+            <td><kbd>Ctrl</kbd> + <kbd>P</kbd></td>
+          </tr>
+          <tr>
+            <td><strong>탭 닫기</strong></td>
+            <td><kbd>⌘ Cmd</kbd> + <kbd>W</kbd></td>
+            <td><kbd>Ctrl</kbd> + <kbd>W</kbd></td>
+          </tr>
+          <tr>
+            <td><strong>이전 페이지 / 다음 페이지</strong></td>
+            <td><kbd>⌘ Cmd</kbd> + <kbd>←</kbd> / <kbd>→</kbd></td>
+            <td><kbd>Alt</kbd> + <kbd>←</kbd> / <kbd>→</kbd></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="note">
+        <strong>📌 안내</strong>
+        캘린더 단축키는 <kbd>⌘ Cmd</kbd>·<kbd>Ctrl</kbd>·<kbd>Alt</kbd> 조합 키와 함께 누르면 무시되어 브라우저 기본 단축키와 충돌하지 않습니다.
+      </div>
+    </section>
+
+    <!-- ───────────────── 14. FAQ ───────────────── -->
+    <section id="faq" class="anchor-target">
+      <h2><span class="num">14</span>자주 묻는 질문</h2>
+
+      <h3>Q1. 업무 설명에 줄바꿈을 했는데 한 줄로 표시됩니다.</h3>
+      <p>저장 시 줄바꿈은 그대로 보존됩니다. 만약 한 줄로 보인다면 브라우저 캐시 문제일 수 있으니 새로고침을 시도해주세요.</p>
+      <ul>
+        <li>Mac — <kbd>⌘ Cmd</kbd> + <kbd>R</kbd></li>
+        <li>Windows — <kbd>Ctrl</kbd> + <kbd>R</kbd> 또는 <kbd>F5</kbd></li>
+      </ul>
+
+      <h3>Q2. 칸반에서 카드를 옮겼는데 다음 접속 시 원위치되어 있습니다.</h3>
+      <p>드래그&드롭은 서버에 즉시 반영됩니다. 인터넷 연결이 끊긴 상태였다면 변경이 저장되지 않을 수 있습니다. 우상단의 연결 상태를 확인해주세요.</p>
+
+      <h3>Q3. 캘린더에서 같은 업무를 끌어다 놓아도 변하지 않습니다.</h3>
+      <p>같은 날짜로 드롭하면 변경이 없습니다. 또한 <strong>범위 막대</strong>로 표시된 업무는 의도적으로 드래그가 불가능합니다. 마감일을 옮기려면 「범위 막대」 체크박스를 끄고 다시 시도하세요.</p>
+
+      <h3>Q4. 업무를 삭제했는데 활동 로그에는 남아 있습니다.</h3>
+      <p>의도된 동작입니다. 누가 언제 어떤 업무를 삭제했는지 감사(audit) 목적으로 로그는 보존되며, 삭제된 업무 정보는 "(삭제된 업무)"로 표시됩니다.</p>
+
+      <h3>Q5. 컴퓨터를 바꾸면 데이터는 어떻게 옮기나요?</h3>
+      <p>본 시스템은 클라우드 기반(Supabase)이므로 같은 계정으로 어디서나 로그인하면 동일한 데이터를 볼 수 있습니다. 별도의 이관 작업은 필요하지 않습니다.</p>
+
+      <h3>Q6. 동일한 업무를 매주 반복 등록해야 하는데 효율적인 방법은?</h3>
+      <p>현재 자동 반복 기능은 없습니다. 대신 상세 보기의 <strong>「복제」</strong> 버튼으로 빠르게 새 업무를 만들 수 있습니다. 정기 업무가 많다면 백업 JSON을 템플릿처럼 활용하는 방법도 있습니다.</p>
+
+      <h3>Q7. 모바일에서도 사용 가능한가요?</h3>
+      <p>레이아웃은 데스크톱 우선이지만, 모바일 브라우저에서도 접속·기본 조작이 가능합니다. 칸반 드래그&드롭과 캘린더 단축키는 데스크톱 사용을 권장합니다.</p>
+
+      <h3>Q8. 데이터를 잃어버렸어요. 복구할 수 있나요?</h3>
+      <p>최근에 백업한 JSON 파일이 있다면 「설정 → 복원」으로 되돌릴 수 있습니다. 백업이 없는 경우 복구가 어려우니, <strong>정기 백업을 강력히 권장</strong>합니다.</p>
+
+      <hr class="sep" />
+
+      <p style="text-align: center; color: #94a3b8; font-size: 13px;">
+        문서 끝. 추가 문의는 시스템 관리자에게 연락해주세요.
+      </p>
+    </section>
+  </main>
+</div>
+</body>
+</html>
