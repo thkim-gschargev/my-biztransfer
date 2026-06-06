@@ -31,6 +31,7 @@ function rowToTask(row: Record<string, unknown>): Task {
     status: row.status as Task["status"],
     priority: row.priority as Task["priority"],
     category: row.category as Task["category"],
+    ...(row.phase != null && { phase: Number(row.phase) as Task["phase"] }),
     ...(row.project_id != null && { projectId: row.project_id as string }),
     ...(row.description != null && { description: row.description as string }),
     ...(row.next_action != null && { nextAction: row.next_action as string }),
@@ -57,6 +58,7 @@ export function taskToRow(task: Task, userId: string) {
     status: task.status,
     priority: task.priority,
     category: task.category,
+    phase: task.phase ?? null,
     project_id: task.projectId ?? null,
     description: task.description ?? null,
     next_action: task.nextAction ?? null,
@@ -79,7 +81,7 @@ function inputToRow(input: UpdateTaskInput): Record<string, unknown> {
   const row: Record<string, unknown> = {};
   const fields: [keyof UpdateTaskInput, string][] = [
     ["title", "title"], ["status", "status"], ["priority", "priority"],
-    ["category", "category"], ["projectId", "project_id"], ["description", "description"],
+    ["category", "category"], ["phase", "phase"], ["projectId", "project_id"], ["description", "description"],
     ["nextAction", "next_action"], ["assigneeOrPartner", "assignee_or_partner"],
     ["chargerModel", "charger_model"], ["errorCode", "error_code"],
     ["dueDate", "due_date"], ["startDate", "start_date"],

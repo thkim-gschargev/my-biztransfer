@@ -212,7 +212,11 @@ export function CategoriesProvider({ children }: { children: ReactNode }) {
   );
 
   const getCategoryLabel = useCallback(
-    (value: string) => categories.find((c) => c.value === value)?.label ?? value,
+    (value: string) =>
+      categories.find((c) => c.value === value)?.label ??
+      // 원격/로컬 카테고리 목록이 비어있거나 오래된 경우에도 기본 라벨(상수)로 폴백
+      TASK_CATEGORY_LABELS[value] ??
+      value,
     [categories],
   );
 

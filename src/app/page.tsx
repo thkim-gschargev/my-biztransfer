@@ -186,9 +186,9 @@ export default function DashboardPage() {
       tint: "bg-green-500/10 text-green-600 dark:text-green-400",
     },
     {
-      label: "진행 중 프로젝트",
+      label: "진행 중 양수도 건",
       value: activeProjectCount,
-      desc: "진행 또는 예정 프로젝트",
+      desc: "진행 또는 예정 양수도 건",
       icon: FolderKanbanIcon,
       tint: "bg-sky-500/10 text-sky-600 dark:text-sky-400",
     },

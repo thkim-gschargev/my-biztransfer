@@ -107,7 +107,7 @@ export default function LoginPage() {
             <ClipboardList className="h-6 w-6" />
           </span>
           <h1 className="text-xl font-semibold">양수도 사업 관제판</h1>
-          <p className="text-sm text-muted-foreground">업무 관제판</p>
+          <p className="text-sm text-muted-foreground">EV 충전기 운영권 양수도 체크리스트</p>
         </div>
 
         {/* 폼 카드 */}

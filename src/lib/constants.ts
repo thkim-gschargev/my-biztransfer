@@ -1,4 +1,4 @@
-import type { TaskStatus, TaskPriority } from "@/types/task";
+import type { TaskStatus, TaskPriority, TaskPhase } from "@/types/task";
 import type { ProjectStatus } from "@/types/project";
 
 // ─── 라벨 ────────────────────────────────────────────────────────────────────
@@ -22,17 +22,53 @@ export const TASK_PRIORITY_LABELS: Record<TaskPriority, string> = {
   low: "낮음",
 };
 
-// 양수도 사업 업무 영역(카테고리) — 체크리스트 분류 기준.
+// 카테고리 = 주관 담당팀 (체크리스트의 "담당" 컬럼). 다중 팀이면 주관(첫 번째) 팀 기준.
 // (Supabase categories 테이블의 기본 시드값으로도 사용됨)
 export const TASK_CATEGORY_LABELS: Record<string, string> = {
-  asset_mgmt: "자산관리",
-  tech_integration: "기술연동",
-  contract: "계약이관",
-  settlement: "정산/결제",
-  license: "인허가",
-  operation: "운영연계",
-  communication: "협의/커뮤니케이션",
+  tech_support: "충전기술지원팀",
+  tech_planning: "충전기술기획팀",
+  platform: "플랫폼개발팀",
+  planning: "기획관리팀",
+  biz_planning: "경영기획부문",
+  deal: "Deal팀",
+  asset: "구매자산관리팀",
+  construction: "네트워크구축관리팀",
+  network_sales: "네트워크영업팀",
+  network_maint: "네트워크유지보수팀",
+  cx: "고객경험팀",
+  marketing: "마케팅팀",
+  safety: "안전관리팀",
   etc: "기타",
+};
+
+// ─── 양수도 진행 단계 (Phase 1~5) ─────────────────────────────────────────────
+export const PHASE_LABELS: Record<TaskPhase, string> = {
+  1: "1단계 · 사전 준비",
+  2: "2단계 · 계약/연동 준비",
+  3: "3단계 · 연동개발/전환일정",
+  4: "4단계 · 검증/테스트",
+  5: "5단계 · 전환 실행",
+};
+
+export const PHASE_SHORT_LABELS: Record<TaskPhase, string> = {
+  1: "1단계",
+  2: "2단계",
+  3: "3단계",
+  4: "4단계",
+  5: "5단계",
+};
+
+export const PHASE_OPTIONS = (Object.keys(PHASE_LABELS) as unknown as TaskPhase[])
+  .map((n) => Number(n) as TaskPhase)
+  .map((value) => ({ value, label: PHASE_LABELS[value] }));
+
+// Phase 뱃지 색상 (단계별 진행 흐름을 색으로 구분)
+export const PHASE_CLASSES: Record<TaskPhase, string> = {
+  1: "bg-slate-100  text-slate-700  border-slate-300  dark:bg-slate-800/60  dark:text-slate-300  dark:border-slate-600",
+  2: "bg-sky-100    text-sky-700    border-sky-300    dark:bg-sky-900/40    dark:text-sky-300    dark:border-sky-700",
+  3: "bg-indigo-100 text-indigo-700 border-indigo-300 dark:bg-indigo-900/40 dark:text-indigo-300 dark:border-indigo-700",
+  4: "bg-violet-100 text-violet-700 border-violet-300 dark:bg-violet-900/40 dark:text-violet-300 dark:border-violet-700",
+  5: "bg-emerald-100 text-emerald-700 border-emerald-300 dark:bg-emerald-900/40 dark:text-emerald-300 dark:border-emerald-700",
 };
 
 export const PROJECT_STATUS_LABELS: Record<ProjectStatus, string> = {

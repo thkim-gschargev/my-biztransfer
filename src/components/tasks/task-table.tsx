@@ -26,10 +26,11 @@ import {
 import { TaskStatusBadge } from "./task-status-badge";
 import { TaskPriorityBadge } from "./task-priority-badge";
 import { useCategories } from "@/hooks/use-categories";
+import { PHASE_SHORT_LABELS, PHASE_CLASSES } from "@/lib/constants";
 import { formatDisplayDate, isPastDue, daysDiff } from "@/lib/date";
 
 export type SortField =
-  | "title" | "status" | "priority" | "category"
+  | "title" | "status" | "priority" | "phase" | "category"
   | "project" | "assigneeOrPartner" | "nextAction"
   | "dueDate" | "createdAt";
 
@@ -114,10 +115,11 @@ export function TaskTable({
           <TableRow>
             <SortableHead {...headProps("title")} label="제목" className="min-w-[160px]" />
             <SortableHead {...headProps("status")} label="상태" className="min-w-[80px]" />
+            <SortableHead {...headProps("phase")} label="단계" className="hidden sm:table-cell min-w-[64px]" />
             <SortableHead {...headProps("priority")} label="우선순위" className="hidden sm:table-cell min-w-[80px]" />
-            <SortableHead {...headProps("category")} label="카테고리" className="hidden md:table-cell" />
-            <SortableHead {...headProps("project")} label="프로젝트" className="hidden md:table-cell" />
-            <SortableHead {...headProps("assigneeOrPartner")} label="담당자" className="hidden lg:table-cell" />
+            <SortableHead {...headProps("category")} label="담당팀" className="hidden md:table-cell" />
+            <SortableHead {...headProps("project")} label="양수도 건" className="hidden md:table-cell" />
+            <SortableHead {...headProps("assigneeOrPartner")} label="담당자/협력사" className="hidden lg:table-cell" />
             <SortableHead {...headProps("nextAction")} label="다음 액션" className="hidden lg:table-cell min-w-[140px]" />
             <SortableHead {...headProps("dueDate")} label="마감일" className="hidden sm:table-cell" />
             <SortableHead {...headProps("createdAt")} label="생성일" className="hidden xl:table-cell" />
@@ -155,6 +157,17 @@ export function TaskTable({
                 </TableCell>
                 <TableCell>
                   <TaskStatusBadge status={task.status} />
+                </TableCell>
+                <TableCell className="hidden sm:table-cell">
+                  {task.phase ? (
+                    <span
+                      className={`inline-flex items-center rounded-md border px-1.5 py-0.5 text-xs font-medium ${PHASE_CLASSES[task.phase]}`}
+                    >
+                      {PHASE_SHORT_LABELS[task.phase]}
+                    </span>
+                  ) : (
+                    <span className="text-xs text-muted-foreground">-</span>
+                  )}
                 </TableCell>
                 <TableCell className="hidden sm:table-cell">
                   <TaskPriorityBadge priority={task.priority} />

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import type { Task, TaskStatus, TaskPriority } from "@/types/task";
+import type { Task, TaskStatus, TaskPriority, TaskPhase } from "@/types/task";
 import type { Project } from "@/types/project";
 import type { CreateTaskInput, UpdateTaskInput } from "@/hooks/use-tasks";
 import {
@@ -28,8 +28,15 @@ import {
   TASK_PRIORITY_OPTIONS,
   TASK_STATUS_LABELS,
   TASK_PRIORITY_LABELS,
+  PHASE_LABELS,
+  PHASE_OPTIONS,
 } from "@/lib/constants";
 import { useCategories } from "@/hooks/use-categories";
+
+const PHASE_SELECT_ITEMS: Record<string, string> = {
+  __none__: "미지정",
+  ...Object.fromEntries(PHASE_OPTIONS.map((o) => [String(o.value), o.label])),
+};
 
 interface TaskFormDialogProps {
   open: boolean;
@@ -80,6 +87,7 @@ function TaskFormBody({ task, projects, onSubmit, onClose, defaultDueDate }: Tas
   const [category, setCategory] = useState<string>(
     task?.category ?? "etc",
   );
+  const [phase, setPhase] = useState<TaskPhase | undefined>(task?.phase);
   const [projectId, setProjectId] = useState(task?.projectId ?? "");
   const [description, setDescription] = useState(task?.description ?? "");
   const [nextAction, setNextAction] = useState(task?.nextAction ?? "");
@@ -105,6 +113,7 @@ function TaskFormBody({ task, projects, onSubmit, onClose, defaultDueDate }: Tas
       status,
       priority,
       category,
+      phase,
       projectId: projectId || undefined,
       description: description.trim() || undefined,
       nextAction: nextAction.trim() || undefined,
@@ -171,7 +180,7 @@ function TaskFormBody({ task, projects, onSubmit, onClose, defaultDueDate }: Tas
                 </SelectContent>
               </Select>
             </Field>
-            <Field label="카테고리">
+            <Field label="담당팀">
               <Select
                 value={category}
                 onValueChange={(v) => { if (v) setCategory(v); }}
@@ -193,8 +202,8 @@ function TaskFormBody({ task, projects, onSubmit, onClose, defaultDueDate }: Tas
 
           <Separator />
 
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <Field label="프로젝트">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+            <Field label="양수도 건">
               <Select
                 value={projectId || "__none__"}
                 onValueChange={(v) =>
@@ -215,11 +224,32 @@ function TaskFormBody({ task, projects, onSubmit, onClose, defaultDueDate }: Tas
                 </SelectContent>
               </Select>
             </Field>
+            <Field label="단계 (Phase)">
+              <Select
+                value={phase ? String(phase) : "__none__"}
+                onValueChange={(v) =>
+                  setPhase(!v || v === "__none__" ? undefined : (Number(v) as TaskPhase))
+                }
+                items={PHASE_SELECT_ITEMS}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="__none__">미지정</SelectItem>
+                  {PHASE_OPTIONS.map((opt) => (
+                    <SelectItem key={opt.value} value={String(opt.value)}>
+                      {PHASE_LABELS[opt.value]}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </Field>
             <Field label="담당자 / 협력사">
               <Input
                 value={assigneeOrPartner}
                 onChange={(e) => setAssigneeOrPartner(e.target.value)}
-                placeholder="제조사, 담당자명"
+                placeholder="제조사, PG사, 담당자명"
               />
             </Field>
           </div>

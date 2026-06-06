@@ -1,4 +1,4 @@
-import type { Task, TaskStatus, TaskPriority, TaskCategory } from "@/types/task";
+import type { Task, TaskStatus, TaskPriority, TaskCategory, TaskPhase } from "@/types/task";
 import { isToday, isThisWeek, isPastDue } from "@/lib/date";
 
 // ─── 날짜 기반 필터 ──────────────────────────────────────────────────────────
@@ -103,4 +103,23 @@ export function filterByCategory(tasks: Task[], category: TaskCategory | ""): Ta
 export function filterByProject(tasks: Task[], projectId: string | ""): Task[] {
   if (!projectId) return tasks;
   return tasks.filter((t) => t.projectId === projectId);
+}
+
+export function filterByPhase(tasks: Task[], phase: TaskPhase | ""): Task[] {
+  if (!phase) return tasks;
+  return tasks.filter((t) => t.phase === phase);
+}
+
+/** 단계(Phase)별 진행률: 해당 단계 업무 중 완료 비율(0~100)과 개수 */
+export function getPhaseProgress(
+  tasks: Task[],
+  phase: TaskPhase,
+): { total: number; done: number; rate: number } {
+  const phaseTasks = tasks.filter(
+    (t) => t.phase === phase && t.status !== "cancelled",
+  );
+  const done = phaseTasks.filter((t) => t.status === "done").length;
+  const rate =
+    phaseTasks.length > 0 ? Math.round((done / phaseTasks.length) * 100) : 0;
+  return { total: phaseTasks.length, done, rate };
 }

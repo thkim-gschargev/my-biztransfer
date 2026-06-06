@@ -15,6 +15,7 @@ import { Separator } from "@/components/ui/separator";
 import { TaskStatusBadge } from "./task-status-badge";
 import { TaskPriorityBadge } from "./task-priority-badge";
 import { useCategories } from "@/hooks/use-categories";
+import { PHASE_LABELS, PHASE_CLASSES } from "@/lib/constants";
 import { formatDate, waitingDays } from "@/lib/date";
 import {
   PencilIcon,
@@ -100,6 +101,13 @@ export function TaskDetailDialog({
           <div className="flex flex-wrap gap-1.5 pt-1">
             <TaskStatusBadge status={task.status} />
             <TaskPriorityBadge priority={task.priority} />
+            {task.phase && (
+              <span
+                className={`inline-flex items-center rounded-md border px-2 py-0.5 text-xs font-medium ${PHASE_CLASSES[task.phase]}`}
+              >
+                {PHASE_LABELS[task.phase]}
+              </span>
+            )}
           </div>
         </DialogHeader>
 
@@ -166,10 +174,10 @@ export function TaskDetailDialog({
           {/* 기본 정보 */}
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <DetailRow
-              label="카테고리"
+              label="담당팀"
               value={getCategoryLabel(task.category)}
             />
-            <DetailRow label="프로젝트" value={project?.name} />
+            <DetailRow label="양수도 건" value={project?.name} />
             <DetailRow label="담당자 / 협력사" value={task.assigneeOrPartner} />
             <DetailRow label="충전기 모델" value={task.chargerModel} />
             <DetailRow label="오류 코드" value={task.errorCode} />

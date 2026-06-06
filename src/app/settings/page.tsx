@@ -372,6 +372,12 @@ export default function SettingsPage() {
       await supabase.from("activity_logs").delete().eq("user_id", userId);
       await supabase.from("tasks").delete().eq("user_id", userId);
       await supabase.from("projects").delete().eq("user_id", userId);
+      // 담당팀(카테고리) 기본값을 새로 시드하도록 기존 카테고리도 초기화한다.
+      await supabase.from("categories").delete().eq("user_id", userId);
+      try {
+        localStorage.removeItem("bt_categories");
+        localStorage.removeItem("wcb_categories");
+      } catch {}
       const sampleProjects = getSampleProjects();
       const sampleTasks = getSampleTasks();
       await supabase.from("projects").insert(sampleProjects.map((p) => projectToRow(p, userId)));
@@ -428,7 +434,7 @@ export default function SettingsPage() {
               { label: "완료 업무", value: stats.done },
               { label: "진행 중", value: stats.inProgress },
               { label: "회신 대기", value: stats.waiting },
-              { label: "프로젝트", value: stats.projects },
+              { label: "양수도 건", value: stats.projects },
             ].map((item) => (
               <div key={item.label} className="flex flex-col gap-1 text-center">
                 <span className="text-2xl font-semibold tabular-nums">
@@ -445,9 +451,9 @@ export default function SettingsPage() {
         {/* 샘플 데이터 */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">샘플 데이터 불러오기</CardTitle>
+            <CardTitle className="text-base">체크리스트 데이터 불러오기</CardTitle>
             <CardDescription className="text-xs">
-              EV 충전기 업무 관련 샘플 데이터를 불러옵니다. 기존 데이터가 있으면 덮어씁니다.
+              양수도 체크리스트(신세계·IMK·표준 템플릿) 데이터를 불러옵니다. 기존 데이터가 있으면 덮어씁니다.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -570,10 +576,10 @@ export default function SettingsPage() {
         <CardHeader>
           <CardTitle className="text-base flex items-center gap-2">
             <TagIcon className="h-4 w-4" />
-            카테고리 관리
+            담당팀 관리
           </CardTitle>
           <CardDescription className="text-xs">
-            업무 카테고리를 추가하거나 이름을 수정할 수 있습니다. 변경사항은 이 기기에 저장됩니다.
+            담당팀(카테고리)을 추가하거나 이름을 수정할 수 있습니다. 변경사항은 클라우드에 동기화됩니다.
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-3">
@@ -616,7 +622,7 @@ export default function SettingsPage() {
               value={newCategoryLabel}
               onChange={(e) => setNewCategoryLabel(e.target.value)}
               onKeyDown={handleAddKeyDown}
-              placeholder="새 카테고리 이름"
+              placeholder="새 담당팀 이름"
               className="h-8 text-sm"
             />
             <Button

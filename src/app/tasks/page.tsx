@@ -12,6 +12,7 @@ import {
   filterByPriority,
   filterByCategory,
   filterByProject,
+  filterByPhase,
   getTodayTasks,
   getDelayedTasks,
   getWaitingTasks,
@@ -22,11 +23,17 @@ import {
   TASK_PRIORITY_OPTIONS,
   TASK_STATUS_LABELS,
   TASK_PRIORITY_LABELS,
+  PHASE_LABELS,
+  PHASE_OPTIONS,
 } from "@/lib/constants";
 import { useCategories } from "@/hooks/use-categories";
 
 const STATUS_FILTER_ITEMS = { __all__: "전체 상태", ...TASK_STATUS_LABELS };
 const PRIORITY_FILTER_ITEMS = { __all__: "전체 우선순위", ...TASK_PRIORITY_LABELS };
+const PHASE_FILTER_ITEMS: Record<string, string> = {
+  __all__: "전체 단계",
+  ...Object.fromEntries(PHASE_OPTIONS.map((o) => [String(o.value), PHASE_LABELS[o.value]])),
+};
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -44,7 +51,7 @@ import { TaskDetailDialog } from "@/components/tasks/task-detail-dialog";
 import { ConfirmDialog } from "@/components/common/confirm-dialog";
 import { EmptyState } from "@/components/common/empty-state";
 import { PageTitle } from "@/components/common/page-title";
-import type { TaskStatus, TaskPriority } from "@/types/task";
+import type { TaskStatus, TaskPriority, TaskPhase } from "@/types/task";
 
 type QuickFilter = "all" | "today" | "week" | "delayed" | "waiting" | "urgent";
 
@@ -53,7 +60,7 @@ export default function TasksPage() {
   const { projects } = useProjects();
   const { activityLogs } = useActivityLogs();
   const { categories } = useCategories();
-  const categoryFilterItems = { __all__: "전체 카테고리", ...Object.fromEntries(categories.map((c) => [c.value, c.label])) };
+  const categoryFilterItems = { __all__: "전체 담당팀", ...Object.fromEntries(categories.map((c) => [c.value, c.label])) };
   const {
     formOpen, setFormOpen,
     detailOpen, setDetailOpen,
@@ -72,6 +79,7 @@ export default function TasksPage() {
   const [statusFilter, setStatusFilter] = useState<TaskStatus | "">("");
   const [priorityFilter, setPriorityFilter] = useState<TaskPriority | "">("");
   const [categoryFilter, setCategoryFilter] = useState<string>("");
+  const [phaseFilter, setPhaseFilter] = useState<TaskPhase | "">("");
   const [projectFilter, setProjectFilter] = useState("");
   const [quickFilter, setQuickFilter] = useState<QuickFilter>("all");
   const [hideCompleted, setHideCompleted] = useState(false);
@@ -83,7 +91,7 @@ export default function TasksPage() {
 
   const projectFilterItems = useMemo(
     () => ({
-      __all__: "전체 프로젝트",
+      __all__: "전체 양수도 건",
       ...Object.fromEntries(projects.map((p) => [p.id, p.name])),
     }),
     [projects],
@@ -141,6 +149,7 @@ export default function TasksPage() {
     if (statusFilter) result = filterByStatus(result, statusFilter);
     if (priorityFilter) result = filterByPriority(result, priorityFilter);
     if (categoryFilter) result = filterByCategory(result, categoryFilter);
+    if (phaseFilter) result = filterByPhase(result, phaseFilter);
     if (projectFilter) result = filterByProject(result, projectFilter);
 
     if (sortField) {
@@ -164,6 +173,7 @@ export default function TasksPage() {
             va = PRIORITY_WEIGHT[a.priority] ?? 0;
             vb = PRIORITY_WEIGHT[b.priority] ?? 0;
             break;
+          case "phase": va = a.phase ?? 99; vb = b.phase ?? 99; break;
           case "category": va = a.category ?? ""; vb = b.category ?? ""; break;
           case "project":
             va = projectMap.get(a.projectId ?? "") ?? "";
@@ -191,6 +201,7 @@ export default function TasksPage() {
     statusFilter,
     priorityFilter,
     categoryFilter,
+    phaseFilter,
     projectFilter,
     sortField,
     sortDir,
@@ -211,6 +222,7 @@ export default function TasksPage() {
     statusFilter !== "" ||
     priorityFilter !== "" ||
     categoryFilter !== "" ||
+    phaseFilter !== "" ||
     projectFilter !== "" ||
     quickFilter !== "all" ||
     hideCompleted;
@@ -220,6 +232,7 @@ export default function TasksPage() {
     setStatusFilter("");
     setPriorityFilter("");
     setCategoryFilter("");
+    setPhaseFilter("");
     setProjectFilter("");
     setQuickFilter("all");
     setHideCompleted(false);
@@ -240,8 +253,8 @@ export default function TasksPage() {
   return (
     <div className="flex flex-col gap-4">
       <PageTitle
-        title="업무 목록"
-        description="전체 업무를 검색하고 관리합니다."
+        title="체크리스트"
+        description="양수도 체크리스트 항목을 검색하고 관리합니다."
       >
         <Button size="sm" onClick={openAdd}>
           <PlusIcon className="h-4 w-4" />
@@ -345,6 +358,28 @@ export default function TasksPage() {
 
         <div className="w-[150px]">
           <Select
+            value={phaseFilter ? String(phaseFilter) : "__all__"}
+            onValueChange={(v) =>
+              setPhaseFilter(!v || v === "__all__" ? "" : (Number(v) as TaskPhase))
+            }
+            items={PHASE_FILTER_ITEMS}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="__all__">전체 단계</SelectItem>
+              {PHASE_OPTIONS.map((opt) => (
+                <SelectItem key={opt.value} value={String(opt.value)}>
+                  {PHASE_LABELS[opt.value]}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="w-[150px]">
+          <Select
             value={categoryFilter || "__all__"}
             onValueChange={(v) => setCategoryFilter(!v || v === "__all__" ? "" : v)}
             items={categoryFilterItems}
@@ -353,7 +388,7 @@ export default function TasksPage() {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="__all__">전체 카테고리</SelectItem>
+              <SelectItem value="__all__">전체 담당팀</SelectItem>
               {categories.map((c) => (
                 <SelectItem key={c.value} value={c.value}>
                   {c.label}
@@ -376,7 +411,7 @@ export default function TasksPage() {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="__all__">전체 프로젝트</SelectItem>
+                <SelectItem value="__all__">전체 양수도 건</SelectItem>
                 {projects.map((p) => (
                   <SelectItem key={p.id} value={p.id}>
                     {p.name}
