@@ -8,6 +8,9 @@ import { createBrowserClient } from "@supabase/ssr";
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
+/** 실제 Supabase 환경변수가 번들에 주입되었는지 여부. false 면 placeholder 로 동작(네트워크 호출 실패). */
+export const isSupabaseConfigured = Boolean(SUPABASE_URL && SUPABASE_ANON_KEY);
+
 if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
   console.warn(
     "[supabase] NEXT_PUBLIC_SUPABASE_URL / NEXT_PUBLIC_SUPABASE_ANON_KEY 가 설정되지 않았습니다. " +

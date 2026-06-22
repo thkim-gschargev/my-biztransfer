@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ClipboardList } from "lucide-react";
-import { createClient } from "@/lib/supabase/client";
+import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -78,7 +78,11 @@ export default function LoginPage() {
       }
     } catch (err) {
       const msg = err instanceof Error ? err.message : "오류가 발생했습니다.";
-      if (msg === "Invalid login credentials") {
+      if (!isSupabaseConfigured || /failed to fetch|networkerror|load failed/i.test(msg)) {
+        setError(
+          "서버에 연결하지 못했습니다. Supabase 환경변수(NEXT_PUBLIC_SUPABASE_URL / ANON_KEY)가 설정된 상태에서 앱을 실행 중인지 확인해 주세요. (로컬: .env.local 저장 후 개발 서버 재시작 / 배포: Vercel 환경변수 등록 후 재배포)",
+        );
+      } else if (msg === "Invalid login credentials") {
         setError("이메일 또는 비밀번호가 올바르지 않습니다.");
       } else if (msg.includes("already registered")) {
         setError("이미 가입된 이메일입니다. 로그인해 주세요.");
@@ -109,6 +113,15 @@ export default function LoginPage() {
           <h1 className="text-xl font-semibold">양수도 사업 관제판</h1>
           <p className="text-sm text-muted-foreground">EV 충전기 운영권 양수도 체크리스트</p>
         </div>
+
+        {/* Supabase 미설정 경고 */}
+        {!isSupabaseConfigured && (
+          <div className="rounded-lg border border-amber-300 bg-amber-50 px-3 py-2.5 text-xs text-amber-800 dark:border-amber-700 dark:bg-amber-900/30 dark:text-amber-300">
+            Supabase 환경변수가 감지되지 않았습니다. 로그인이 동작하지 않습니다.
+            <br />
+            <span className="font-mono">.env.local</span> 설정 후 개발 서버를 재시작(배포 시 Vercel 환경변수 등록)해 주세요.
+          </div>
+        )}
 
         {/* 폼 카드 */}
         <Card>

@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ClipboardList } from "lucide-react";
-import { createClient } from "@/lib/supabase/client";
+import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -62,7 +62,14 @@ export default function ResetPasswordPage() {
         router.refresh();
       }, 1200);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "오류가 발생했습니다.");
+      const msg = err instanceof Error ? err.message : "오류가 발생했습니다.";
+      if (!isSupabaseConfigured || /failed to fetch|networkerror|load failed/i.test(msg)) {
+        setError(
+          "서버에 연결하지 못했습니다. Supabase 환경변수가 설정된 상태에서 앱을 실행 중인지 확인해 주세요.",
+        );
+      } else {
+        setError(msg);
+      }
     } finally {
       setLoading(false);
     }
