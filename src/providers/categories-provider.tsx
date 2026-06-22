@@ -60,6 +60,7 @@ interface CategoriesContextValue {
   deleteCategory: (value: string) => void;
   reorderCategories: (orderedValues: string[]) => void;
   getCategoryLabel: (value: string) => string;
+  refresh: () => Promise<void>;
 }
 
 const CategoriesContext = createContext<CategoriesContextValue | null>(null);
@@ -76,45 +77,49 @@ export function CategoriesProvider({ children }: { children: ReactNode }) {
     categoriesRef.current = categories;
   }, [categories]);
 
+  // 원격 카테고리를 로드하고, 비어 있으면 기본값을 시드한다. 결과 배열을 반환(실패 시 null).
+  const fetchOrSeedCategories = useCallback(async (): Promise<Category[] | null> => {
+    if (!userId) return null;
+    const { data, error } = await supabase
+      .from("categories")
+      .select("*")
+      .order("sort_order", { ascending: true })
+      .order("created_at", { ascending: true });
+    if (error) {
+      // 테이블 부재(마이그레이션 미적용) 또는 권한 문제 → 로컬 전용 유지
+      console.warn("[CategoriesProvider] 원격 카테고리 사용 불가, 로컬 전용으로 동작:", error.message);
+      remoteRef.current = false;
+      return null;
+    }
+    remoteRef.current = true;
+    const remote = (data as Record<string, unknown>[]).map(rowToCategory);
+    if (remote.length > 0) {
+      persistLocal(remote);
+      return remote;
+    }
+    // 신규 사용자(또는 카테고리 초기화 후): 현재 로컬/기본 카테고리를 원격에 시드
+    const seed = loadLocal();
+    const { error: seedError } = await supabase
+      .from("categories")
+      .insert(seed.map((c, i) => categoryToRow(c, userId, i)));
+    if (seedError) console.error("[CategoriesProvider] seed INSERT error:", seedError);
+    persistLocal(seed);
+    return seed;
+  }, [userId, supabase]);
+
   useEffect(() => {
     if (!userId) {
       remoteRef.current = false;
       return;
     }
     let active = true;
-    void (async () => {
-      const { data, error } = await supabase
-        .from("categories")
-        .select("*")
-        .order("sort_order", { ascending: true })
-        .order("created_at", { ascending: true });
-      if (!active) return;
-      if (error) {
-        // 테이블 부재(마이그레이션 미적용) 또는 권한 문제 → 로컬 전용 유지
-        console.warn("[CategoriesProvider] 원격 카테고리 사용 불가, 로컬 전용으로 동작:", error.message);
-        remoteRef.current = false;
-        return;
-      }
-      remoteRef.current = true;
-      const remote = (data as Record<string, unknown>[]).map(rowToCategory);
-      if (remote.length > 0) {
-        setCategories(remote);
-        persistLocal(remote);
-      } else {
-        // 신규 사용자: 현재 로컬/기본 카테고리를 원격에 시드
-        const seed = loadLocal();
-        const { error: seedError } = await supabase
-          .from("categories")
-          .insert(seed.map((c, i) => categoryToRow(c, userId, i)));
-        if (seedError) console.error("[CategoriesProvider] seed INSERT error:", seedError);
-        setCategories(seed);
-        persistLocal(seed);
-      }
-    })();
+    void fetchOrSeedCategories().then((cats) => {
+      if (active && cats) setCategories(cats);
+    });
     return () => {
       active = false;
     };
-  }, [userId, supabase]);
+  }, [userId, fetchOrSeedCategories]);
 
   const addCategory = useCallback(
     (label: string) => {
@@ -220,9 +225,15 @@ export function CategoriesProvider({ children }: { children: ReactNode }) {
     [categories],
   );
 
+  // 벌크 작업(샘플 로드 등 카테고리 초기화 포함) 후 재동기화
+  const refresh = useCallback(async (): Promise<void> => {
+    const cats = await fetchOrSeedCategories();
+    if (cats) setCategories(cats);
+  }, [fetchOrSeedCategories]);
+
   const ctx = useMemo(
-    () => ({ categories, addCategory, updateCategory, deleteCategory, reorderCategories, getCategoryLabel }),
-    [categories, addCategory, updateCategory, deleteCategory, reorderCategories, getCategoryLabel],
+    () => ({ categories, addCategory, updateCategory, deleteCategory, reorderCategories, getCategoryLabel, refresh }),
+    [categories, addCategory, updateCategory, deleteCategory, reorderCategories, getCategoryLabel, refresh],
   );
 
   return <CategoriesContext.Provider value={ctx}>{children}</CategoriesContext.Provider>;

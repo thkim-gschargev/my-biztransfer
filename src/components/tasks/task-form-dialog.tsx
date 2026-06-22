@@ -95,7 +95,6 @@ function TaskFormBody({ task, projects, onSubmit, onClose, defaultDueDate }: Tas
     task?.assigneeOrPartner ?? "",
   );
   const [chargerModel, setChargerModel] = useState(task?.chargerModel ?? "");
-  const [errorCode, setErrorCode] = useState(task?.errorCode ?? "");
   const [dueDate, setDueDate] = useState(task?.dueDate ?? defaultDueDate ?? "");
   const [startDate, setStartDate] = useState(task?.startDate ?? "");
   const [requestedAt, setRequestedAt] = useState(
@@ -119,7 +118,6 @@ function TaskFormBody({ task, projects, onSubmit, onClose, defaultDueDate }: Tas
       nextAction: nextAction.trim() || undefined,
       assigneeOrPartner: assigneeOrPartner.trim() || undefined,
       chargerModel: chargerModel.trim() || undefined,
-      errorCode: errorCode.trim() || undefined,
       dueDate: dueDate || undefined,
       startDate: startDate || undefined,
       requestedAt: requestedAt ? new Date(requestedAt).toISOString() : undefined,
@@ -254,22 +252,13 @@ function TaskFormBody({ task, projects, onSubmit, onClose, defaultDueDate }: Tas
             </Field>
           </div>
 
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <Field label="충전기 모델">
-              <Input
-                value={chargerModel}
-                onChange={(e) => setChargerModel(e.target.value)}
-                placeholder="GK-SMC-AC-7S"
-              />
-            </Field>
-            <Field label="오류 코드">
-              <Input
-                value={errorCode}
-                onChange={(e) => setErrorCode(e.target.value)}
-                placeholder="E001"
-              />
-            </Field>
-          </div>
+          <Field label="충전기 모델">
+            <Input
+              value={chargerModel}
+              onChange={(e) => setChargerModel(e.target.value)}
+              placeholder="EVD100DK-PK, IMK-EV7 등"
+            />
+          </Field>
 
           <Separator />
 

@@ -29,7 +29,6 @@ export interface Task {
   projectId?: string;
   assigneeOrPartner?: string;
   chargerModel?: string;
-  errorCode?: string;
   relatedLink?: string;
   dueDate?: string;
   startDate?: string;
@@ -41,17 +40,3 @@ export interface Task {
   updatedAt: string;
   completedAt?: string;
 }
-
-export const ACTIVE_STATUSES: TaskStatus[] = [
-  "new",
-  "in_progress",
-  "waiting",
-  "review",
-  "hold",
-  "delayed",
-  "monitoring",
-];
-
-export const TERMINAL_STATUSES: TaskStatus[] = ["done", "cancelled"];
-
-export const ALL_STATUSES: TaskStatus[] = [...ACTIVE_STATUSES, ...TERMINAL_STATUSES];

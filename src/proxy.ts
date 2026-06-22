@@ -2,8 +2,16 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
 export async function proxy(request: NextRequest) {
-  // 환경변수 없으면 인증 체크 건너뜀 (빌드 환경 등)
+  // 환경변수 미설정 처리: 프로덕션에서는 보호 경로를 막고(fail-closed) 로그인으로 보낸다.
+  // 개발/프리뷰에서는 통과시켜 로컬 개발 편의를 유지한다.
   if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+    const { pathname } = request.nextUrl;
+    const isAuthPath = pathname.startsWith("/login") || pathname.startsWith("/auth");
+    if (process.env.NODE_ENV === "production" && !isAuthPath) {
+      const url = request.nextUrl.clone();
+      url.pathname = "/login";
+      return NextResponse.redirect(url);
+    }
     return NextResponse.next({ request });
   }
 

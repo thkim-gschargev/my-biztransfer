@@ -102,22 +102,22 @@ export default function ProjectsPage() {
   return (
     <div className="flex flex-col gap-6">
       <PageTitle
-        title="프로젝트"
-        description="프로젝트별 진행 상황과 관련 업무를 관리합니다."
+        title="양수도 건"
+        description="양수도 건별 진행 상황과 체크리스트를 관리합니다."
       >
         <Button size="sm" onClick={openProjectAdd}>
           <PlusIcon className="h-4 w-4" />
-          프로젝트 추가
+          양수도 건 추가
         </Button>
       </PageTitle>
 
       {projects.length === 0 ? (
         <EmptyState
-          title="프로젝트가 없습니다"
-          description="새 프로젝트를 추가해보세요."
+          title="양수도 건이 없습니다"
+          description="새 양수도 건을 추가해보세요."
         >
           <Button size="sm" onClick={openProjectAdd}>
-            프로젝트 추가
+            양수도 건 추가
           </Button>
         </EmptyState>
       ) : (
@@ -195,8 +195,8 @@ export default function ProjectsPage() {
       <ConfirmDialog
         open={projectDeleteOpen}
         onOpenChange={setProjectDeleteOpen}
-        title="프로젝트 삭제"
-        description={`"${projectToDelete?.name ?? ""}"을(를) 삭제하시겠습니까? 연결된 업무에서 프로젝트 정보가 제거됩니다.`}
+        title="양수도 건 삭제"
+        description={`"${projectToDelete?.name ?? ""}"을(를) 삭제하시겠습니까? 연결된 체크리스트 항목에서 양수도 건 정보가 제거됩니다.`}
         onConfirm={handleProjectDelete}
       />
 

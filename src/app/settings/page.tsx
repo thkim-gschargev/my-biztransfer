@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, type ChangeEvent, type KeyboardEvent } fro
 import { useTasks } from "@/hooks/use-tasks";
 import { useProjects } from "@/hooks/use-projects";
 import { useCategories, type Category } from "@/hooks/use-categories";
+import { useActivityLogs } from "@/hooks/use-activity-logs";
 import { useAuth } from "@/hooks/use-auth";
 import { LOCAL_MIRROR_KEY } from "@/components/local-mirror";
 import { createClient } from "@/lib/supabase/client";
@@ -169,11 +170,17 @@ function SortableCategoryRow({
 }
 
 export default function SettingsPage() {
-  const { tasks } = useTasks();
-  const { projects } = useProjects();
-  const { categories, addCategory, updateCategory, deleteCategory, reorderCategories } =
+  const { tasks, refresh: refreshTasks } = useTasks();
+  const { projects, refresh: refreshProjects } = useProjects();
+  const { categories, addCategory, updateCategory, deleteCategory, reorderCategories, refresh: refreshCategories } =
     useCategories();
+  const { refresh: refreshLogs } = useActivityLogs();
   const { userId } = useAuth();
+
+  // 벌크 작업 후 전체 페이지 새로고침(window.location.reload) 대신 Provider 들을 재동기화
+  async function refreshAll() {
+    await Promise.all([refreshProjects(), refreshTasks(), refreshLogs(), refreshCategories()]);
+  }
   const supabase = useRef(createClient()).current;
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [importError, setImportError] = useState<string | null>(null);
@@ -332,7 +339,7 @@ export default function SettingsPage() {
     try {
       await applyBackup(JSON.parse(raw));
       setImportError(null);
-      window.location.reload();
+      await refreshAll();
     } catch (err) {
       setImportError(err instanceof Error ? err.message : "복원에 실패했습니다.");
     } finally {
@@ -350,7 +357,8 @@ export default function SettingsPage() {
         setLoading(true);
         await applyBackup(data);
         setImportError(null);
-        window.location.reload();
+        e.target.value = "";
+        await refreshAll();
       } catch (err) {
         setImportError(err instanceof Error ? err.message : "올바르지 않은 JSON 파일입니다.");
         e.target.value = "";
@@ -376,13 +384,12 @@ export default function SettingsPage() {
       await supabase.from("categories").delete().eq("user_id", userId);
       try {
         localStorage.removeItem("bt_categories");
-        localStorage.removeItem("wcb_categories");
       } catch {}
       const sampleProjects = getSampleProjects();
       const sampleTasks = getSampleTasks();
       await supabase.from("projects").insert(sampleProjects.map((p) => projectToRow(p, userId)));
       await supabase.from("tasks").insert(sampleTasks.map((t) => taskToRow(t, userId)));
-      window.location.reload();
+      await refreshAll();
     } finally {
       setLoading(false);
     }
@@ -403,7 +410,7 @@ export default function SettingsPage() {
       await supabase.from("activity_logs").delete().eq("user_id", userId);
       await supabase.from("tasks").delete().eq("user_id", userId);
       await supabase.from("projects").delete().eq("user_id", userId);
-      window.location.reload();
+      await refreshAll();
     } finally {
       setLoading(false);
     }

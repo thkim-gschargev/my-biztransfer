@@ -154,7 +154,7 @@ export default function TasksPage() {
 
     if (sortField) {
       const PRIORITY_WEIGHT: Record<string, number> = {
-        urgent: 4, high: 3, medium: 2, low: 1,
+        urgent: 4, high: 3, normal: 2, low: 1,
       };
       const STATUS_ORDER = [
         "new", "in_progress", "waiting", "monitoring",

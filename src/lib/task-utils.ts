@@ -80,7 +80,6 @@ export function filterByKeyword(tasks: Task[], keyword: string): Task[] {
       t.nextAction?.toLowerCase().includes(q) ||
       t.assigneeOrPartner?.toLowerCase().includes(q) ||
       t.chargerModel?.toLowerCase().includes(q) ||
-      t.errorCode?.toLowerCase().includes(q) ||
       t.memo?.toLowerCase().includes(q),
   );
 }

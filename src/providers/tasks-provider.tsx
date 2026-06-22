@@ -37,7 +37,6 @@ function rowToTask(row: Record<string, unknown>): Task {
     ...(row.next_action != null && { nextAction: row.next_action as string }),
     ...(row.assignee_or_partner != null && { assigneeOrPartner: row.assignee_or_partner as string }),
     ...(row.charger_model != null && { chargerModel: row.charger_model as string }),
-    ...(row.error_code != null && { errorCode: row.error_code as string }),
     ...(row.due_date != null && { dueDate: (row.due_date as string).substring(0, 10) }),
     ...(row.start_date != null && { startDate: (row.start_date as string).substring(0, 10) }),
     ...(row.requested_at != null && { requestedAt: row.requested_at as string }),
@@ -64,7 +63,6 @@ export function taskToRow(task: Task, userId: string) {
     next_action: task.nextAction ?? null,
     assignee_or_partner: task.assigneeOrPartner ?? null,
     charger_model: task.chargerModel ?? null,
-    error_code: task.errorCode ?? null,
     due_date: task.dueDate ?? null,
     start_date: task.startDate ?? null,
     requested_at: task.requestedAt ?? null,
@@ -83,7 +81,7 @@ function inputToRow(input: UpdateTaskInput): Record<string, unknown> {
     ["title", "title"], ["status", "status"], ["priority", "priority"],
     ["category", "category"], ["phase", "phase"], ["projectId", "project_id"], ["description", "description"],
     ["nextAction", "next_action"], ["assigneeOrPartner", "assignee_or_partner"],
-    ["chargerModel", "charger_model"], ["errorCode", "error_code"],
+    ["chargerModel", "charger_model"],
     ["dueDate", "due_date"], ["startDate", "start_date"],
     ["requestedAt", "requested_at"], ["followUpDate", "follow_up_date"],
     ["relatedLink", "related_link"], ["memo", "memo"], ["completedAt", "completed_at"],
@@ -104,6 +102,7 @@ interface TasksContextValue {
   completeTask: (id: string) => void;
   duplicateTask: (id: string) => Task | null;
   getTaskById: (id: string) => Task | undefined;
+  refresh: () => Promise<void>;
 }
 
 const TasksContext = createContext<TasksContextValue | null>(null);
@@ -182,9 +181,21 @@ export function TasksProvider({ children }: { children: ReactNode }) {
       }
       const prevTask = tasksRef.current.find((t) => t.id === id);
       const ts = now();
-      const row = { ...inputToRow(input), updated_at: ts };
+      const row: Record<string, unknown> = { ...inputToRow(input), updated_at: ts };
+      // 편집 폼으로 status 를 바꿀 때도 completedAt 정합성 유지 (changeTaskStatus 와 동일 규칙)
+      let completedPatch: Partial<Task> = {};
+      if (input.status !== undefined && prevTask) {
+        if (input.status === "done" && prevTask.status !== "done") {
+          const completedAt = prevTask.completedAt ?? ts;
+          row.completed_at = completedAt;
+          completedPatch = { completedAt };
+        } else if (input.status !== "done" && prevTask.status === "done") {
+          row.completed_at = null;
+          completedPatch = { completedAt: undefined };
+        }
+      }
       setTasks((prev) =>
-        prev.map((t) => (t.id === id ? { ...t, ...input, id, updatedAt: ts } : t)),
+        prev.map((t) => (t.id === id ? { ...t, ...input, ...completedPatch, id, updatedAt: ts } : t)),
       ); // 낙관적 수정
       void (async () => {
         const { error, count } = await supabase
@@ -356,9 +367,26 @@ export function TasksProvider({ children }: { children: ReactNode }) {
     [tasks],
   );
 
+  // 벌크 작업(샘플 로드/백업 복원/초기화) 후 전체 페이지 새로고침 없이 재동기화하기 위한 refetch
+  const refresh = useCallback(async (): Promise<void> => {
+    if (!userId) {
+      setTasks([]);
+      return;
+    }
+    const { data, error } = await supabase
+      .from("tasks")
+      .select("*")
+      .order("created_at", { ascending: false });
+    if (error) {
+      console.error("[TasksProvider] refresh SELECT error:", error);
+      return;
+    }
+    if (data) setTasks((data as Record<string, unknown>[]).map(rowToTask));
+  }, [supabase, userId]);
+
   const value = useMemo(
-    () => ({ tasks, loading, addTask, updateTask, deleteTask, changeTaskStatus, completeTask, duplicateTask, getTaskById }),
-    [tasks, loading, addTask, updateTask, deleteTask, changeTaskStatus, completeTask, duplicateTask, getTaskById],
+    () => ({ tasks, loading, addTask, updateTask, deleteTask, changeTaskStatus, completeTask, duplicateTask, getTaskById, refresh }),
+    [tasks, loading, addTask, updateTask, deleteTask, changeTaskStatus, completeTask, duplicateTask, getTaskById, refresh],
   );
 
   return <TasksContext.Provider value={value}>{children}</TasksContext.Provider>;

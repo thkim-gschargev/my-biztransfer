@@ -5,9 +5,11 @@
 -- (개별 마이그레이션 파일을 따로 적용할 필요 없음)
 --
 -- 도메인 매핑:
---   projects   = 양수도 건(딜)   예) 신세계 I&C 양수도, IMK 양수도
---   tasks      = 체크리스트 항목  (category = 업무영역: 자산관리/기술연동/계약이관 등)
---   categories = 업무영역 분류(기기 간 동기화)
+--   projects   = 양수도 건(딜)    예) 신세계 I&C 양수도, IMK 양수도
+--   tasks      = 체크리스트 항목
+--     · category = 주관 담당팀(키: tech_support, deal, asset, planning, … 또는 custom_xxxx)
+--     · phase    = 양수도 진행 단계 1~5 (표준 체크리스트 Phase)
+--   categories = 담당팀 분류(기기 간 동기화)
 -- ============================================================================
 
 create extension if not exists pgcrypto;
@@ -40,7 +42,6 @@ create table if not exists tasks (
   next_action         text,
   assignee_or_partner text,
   charger_model       text,
-  error_code          text,
   due_date            date,
   start_date          date,
   requested_at        timestamptz,

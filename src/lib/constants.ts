@@ -31,6 +31,7 @@ export const TASK_CATEGORY_LABELS: Record<string, string> = {
   planning: "기획관리팀",
   biz_planning: "경영기획부문",
   deal: "Deal팀",
+  legal: "법무팀",
   asset: "구매자산관리팀",
   construction: "네트워크구축관리팀",
   network_sales: "네트워크영업팀",
@@ -89,10 +90,6 @@ export const TASK_PRIORITY_OPTIONS = (
   Object.entries(TASK_PRIORITY_LABELS) as [TaskPriority, string][]
 ).map(([value, label]) => ({ value, label }));
 
-export const TASK_CATEGORY_OPTIONS = Object.entries(TASK_CATEGORY_LABELS).map(
-  ([value, label]) => ({ value, label }),
-);
-
 export const PROJECT_STATUS_OPTIONS = (
   Object.entries(PROJECT_STATUS_LABELS) as [ProjectStatus, string][]
 ).map(([value, label]) => ({ value, label }));
@@ -109,13 +106,6 @@ export const TASK_STATUS_CLASSES: Record<TaskStatus, string> = {
   monitoring: "bg-teal-100   text-teal-700   border-teal-300   dark:bg-teal-900/40   dark:text-teal-300   dark:border-teal-700",
   done:       "bg-green-100  text-green-700  border-green-300  dark:bg-green-900/40  dark:text-green-300  dark:border-green-700",
   cancelled:  "bg-muted      text-muted-foreground border-border",
-};
-
-export const TASK_PRIORITY_CLASSES: Record<TaskPriority, string> = {
-  urgent: "bg-red-100    text-red-700    border-red-300    dark:bg-red-900/40    dark:text-red-300    dark:border-red-700",
-  high:   "bg-orange-100 text-orange-700 border-orange-300 dark:bg-orange-900/40 dark:text-orange-300 dark:border-orange-700",
-  normal: "bg-slate-100  text-slate-600  border-slate-300  dark:bg-slate-800/60  dark:text-slate-300  dark:border-slate-600",
-  low:    "bg-gray-50    text-gray-400   border-gray-200   dark:bg-gray-900/60   dark:text-gray-500   dark:border-gray-700",
 };
 
 export const PROJECT_STATUS_CLASSES: Record<ProjectStatus, string> = {

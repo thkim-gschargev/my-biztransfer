@@ -315,8 +315,8 @@ const MASTER_BIZ: MasterItem[] = [
   {
     phase: 1,
     title: "우발채무·진술보장 및 손해배상 범위 협의",
-    category: "deal",
-    teams: "Deal팀, 경영기획부문, 법무팀",
+    category: "legal",
+    teams: "법무팀, Deal팀, 경영기획부문",
     action:
       "보조금 반환 사유·미납 조세·미완료 인허가 등 우발채무에 대한 진술보장·손해배상책임 기간 협의(개통 후 1~2년 시점 인지 가능).",
   },
@@ -950,5 +950,9 @@ function templateTasks(): Task[] {
 }
 
 export function getSampleTasks(): Task[] {
-  return [...sseTasks(), ...imkTasks(), ...templateTasks()];
+  const all = [...sseTasks(), ...imkTasks(), ...templateTasks()];
+  // status가 done인데 completedAt이 없으면 updatedAt으로 보정(완료일 기반 집계 정합성)
+  return all.map((t) =>
+    t.status === "done" && !t.completedAt ? { ...t, completedAt: t.updatedAt } : t,
+  );
 }

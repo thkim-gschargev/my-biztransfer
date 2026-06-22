@@ -68,6 +68,7 @@ interface ProjectsContextValue {
   updateProject: (id: string, input: UpdateProjectInput) => void;
   deleteProject: (id: string) => void;
   getProjectById: (id: string) => Project | undefined;
+  refresh: () => Promise<void>;
 }
 
 const ProjectsContext = createContext<ProjectsContextValue | null>(null);
@@ -199,9 +200,26 @@ export function ProjectsProvider({ children }: { children: ReactNode }) {
     [projects],
   );
 
+  // 벌크 작업 후 전체 페이지 새로고침 없이 재동기화하기 위한 refetch
+  const refresh = useCallback(async (): Promise<void> => {
+    if (!userId) {
+      setProjects([]);
+      return;
+    }
+    const { data, error } = await supabase
+      .from("projects")
+      .select("*")
+      .order("created_at", { ascending: false });
+    if (error) {
+      console.error("[ProjectsProvider] refresh SELECT error:", error);
+      return;
+    }
+    if (data) setProjects((data as Record<string, unknown>[]).map(rowToProject));
+  }, [supabase, userId]);
+
   const value = useMemo(
-    () => ({ projects, loading, addProject, updateProject, deleteProject, getProjectById }),
-    [projects, loading, addProject, updateProject, deleteProject, getProjectById],
+    () => ({ projects, loading, addProject, updateProject, deleteProject, getProjectById, refresh }),
+    [projects, loading, addProject, updateProject, deleteProject, getProjectById, refresh],
   );
 
   return <ProjectsContext.Provider value={value}>{children}</ProjectsContext.Provider>;

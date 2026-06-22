@@ -180,7 +180,6 @@ export function TaskDetailDialog({
             <DetailRow label="양수도 건" value={project?.name} />
             <DetailRow label="담당자 / 협력사" value={task.assigneeOrPartner} />
             <DetailRow label="충전기 모델" value={task.chargerModel} />
-            <DetailRow label="오류 코드" value={task.errorCode} />
           </div>
 
           {/* 일정 */}

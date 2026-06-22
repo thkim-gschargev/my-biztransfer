@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ClipboardList } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
@@ -37,7 +37,7 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
 
   const router = useRouter();
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
 
   function switchMode(next: Mode) {
     setMode(next);
