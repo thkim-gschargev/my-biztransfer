@@ -27,6 +27,7 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { ConfirmDialog } from "@/components/common/confirm-dialog";
 import { PageTitle } from "@/components/common/page-title";
+import { UserManagement } from "@/components/admin/user-management";
 import {
   DownloadIcon,
   UploadIcon,
@@ -422,6 +423,9 @@ export default function SettingsPage() {
         title="설정"
         description="데이터 백업, 복원, 초기화 등을 관리합니다."
       />
+
+      {/* 팀원 계정 관리 (관리자에게만 표시) */}
+      <UserManagement />
 
       {/* 현재 데이터 요약 */}
       <Card>
