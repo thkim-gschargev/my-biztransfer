@@ -1,6 +1,7 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { useEffect, type ReactNode } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import { AppSidebar } from "@/components/layout/app-sidebar";
 import { AppHeader } from "@/components/layout/app-header";
 import { AuthProvider } from "@/providers/auth-provider";
@@ -8,6 +9,9 @@ import { TasksProvider } from "@/providers/tasks-provider";
 import { ProjectsProvider } from "@/providers/projects-provider";
 import { ActivityLogsProvider } from "@/providers/activity-logs-provider";
 import { CategoriesProvider } from "@/providers/categories-provider";
+import { CurrentDealProvider } from "@/providers/current-deal-provider";
+import { useProjects } from "@/hooks/use-projects";
+import { useCurrentDeal } from "@/hooks/use-current-deal";
 import { LocalMirror } from "@/components/local-mirror";
 
 interface AppShellProps {
@@ -24,22 +28,67 @@ export function AppShell({ children }: AppShellProps) {
         <ActivityLogsProvider>
           <TasksProvider>
             <CategoriesProvider>
-              <LocalMirror />
-              <div className="bg-app flex min-h-screen w-full">
-                <AppSidebar />
-                <div className="flex min-w-0 flex-1 flex-col">
-                  <AppHeader />
-                  <main className="flex-1 overflow-x-hidden">
-                    <div className="mx-auto w-full max-w-7xl px-4 py-4 sm:px-6 sm:py-6 lg:px-8 lg:py-8">
-                      {children}
-                    </div>
-                  </main>
-                </div>
-              </div>
+              <CurrentDealProvider>
+                <LocalMirror />
+                <ShellBody>{children}</ShellBody>
+              </CurrentDealProvider>
             </CategoriesProvider>
           </TasksProvider>
         </ActivityLogsProvider>
       </ProjectsProvider>
     </AuthProvider>
+  );
+}
+
+// 양수도 건(딜) 선택 게이트 + 레이아웃 분기.
+// - /select: 사이드바 없는 전체화면 선택 화면
+// - 딜 미선택: /select 로 리다이렉트
+// - 딜 선택됨: 일반 셸(사이드바 + 헤더)
+function ShellBody({ children }: { children: ReactNode }) {
+  const pathname = usePathname();
+  const router = useRouter();
+  const { dealId, ready, setDeal } = useCurrentDeal();
+  const { projects, loading } = useProjects();
+
+  // 선택된 딜이 삭제/부재하면 초기화
+  useEffect(() => {
+    if (ready && dealId && !loading && !projects.some((p) => p.id === dealId)) {
+      setDeal(null);
+    }
+  }, [ready, dealId, loading, projects, setDeal]);
+
+  // 딜 미선택 시 선택 화면으로 이동
+  useEffect(() => {
+    if (ready && !dealId && pathname !== "/select") {
+      router.replace("/select");
+    }
+  }, [ready, dealId, pathname, router]);
+
+  // 선택 화면은 전체화면(셸 크롬 없이)
+  if (pathname === "/select") {
+    return <div className="bg-app min-h-screen w-full">{children}</div>;
+  }
+
+  // 초기 로드 중이거나 딜 미선택 → 리다이렉트 대기(빈 화면 깜빡임 방지)
+  if (!ready || !dealId) {
+    return (
+      <div className="bg-app flex min-h-screen w-full items-center justify-center">
+        <p className="text-sm text-muted-foreground">불러오는 중…</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-app flex min-h-screen w-full">
+      <AppSidebar />
+      <div className="flex min-w-0 flex-1 flex-col">
+        <AppHeader />
+        <main className="flex-1 overflow-x-hidden">
+          <div className="mx-auto w-full max-w-7xl px-4 py-4 sm:px-6 sm:py-6 lg:px-8 lg:py-8">
+            {children}
+          </div>
+        </main>
+      </div>
+    </div>
   );
 }

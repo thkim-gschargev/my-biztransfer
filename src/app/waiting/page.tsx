@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { useTasks } from "@/hooks/use-tasks";
 import { useTaskDialogs } from "@/hooks/use-task-dialogs";
 import { useProjects } from "@/hooks/use-projects";
+import { useCurrentDeal } from "@/hooks/use-current-deal";
 import { useActivityLogs } from "@/hooks/use-activity-logs";
 import { waitingDays, formatDate, isPastDue } from "@/lib/date";
 import {
@@ -37,9 +38,14 @@ function getDaysVariant(days: number): "destructive" | "outline" | "secondary" {
 }
 
 export default function WaitingPage() {
-  const { tasks, updateTask } = useTasks();
+  const { tasks: allTasks, updateTask } = useTasks();
   const { projects } = useProjects();
+  const { dealId } = useCurrentDeal();
   const { activityLogs } = useActivityLogs();
+  const tasks = useMemo(
+    () => allTasks.filter((t) => t.projectId === dealId),
+    [allTasks, dealId],
+  );
   const {
     formOpen, setFormOpen,
     detailOpen, setDetailOpen,

@@ -27,6 +27,7 @@ import {
   PHASE_OPTIONS,
 } from "@/lib/constants";
 import { useCategories } from "@/hooks/use-categories";
+import { useCurrentDeal } from "@/hooks/use-current-deal";
 
 const STATUS_FILTER_ITEMS = { __all__: "전체 상태", ...TASK_STATUS_LABELS };
 const PRIORITY_FILTER_ITEMS = { __all__: "전체 우선순위", ...TASK_PRIORITY_LABELS };
@@ -56,10 +57,16 @@ import type { TaskStatus, TaskPriority, TaskPhase } from "@/types/task";
 type QuickFilter = "all" | "today" | "week" | "delayed" | "waiting" | "urgent";
 
 export default function TasksPage() {
-  const { tasks, loading } = useTasks();
+  const { tasks: allTasks, loading } = useTasks();
   const { projects } = useProjects();
+  const { dealId } = useCurrentDeal();
   const { activityLogs } = useActivityLogs();
   const { categories } = useCategories();
+  // 현재 선택된 양수도 건으로 스코프
+  const tasks = useMemo(
+    () => allTasks.filter((t) => t.projectId === dealId),
+    [allTasks, dealId],
+  );
   const categoryFilterItems = { __all__: "전체 담당팀", ...Object.fromEntries(categories.map((c) => [c.value, c.label])) };
   const {
     formOpen, setFormOpen,
@@ -398,7 +405,7 @@ export default function TasksPage() {
           </Select>
         </div>
 
-        {projects.length > 0 && (
+        {!dealId && projects.length > 0 && (
           <div className="w-[150px]">
             <Select
               value={projectFilter || "__all__"}

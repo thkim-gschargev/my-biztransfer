@@ -16,6 +16,7 @@ import { useTasks } from "@/hooks/use-tasks";
 import { useTaskDialogs } from "@/hooks/use-task-dialogs";
 import { TaskQuickAdd } from "@/components/tasks/task-quick-add";
 import { useProjects } from "@/hooks/use-projects";
+import { useCurrentDeal } from "@/hooks/use-current-deal";
 import { useActivityLogs } from "@/hooks/use-activity-logs";
 import {
   getTodayTasks,
@@ -107,10 +108,18 @@ function Section({
 // ─── 대시보드 ─────────────────────────────────────────────────────────────────
 
 export default function DashboardPage() {
-  const { tasks, loading } = useTasks();
+  const { tasks: allTasks, loading } = useTasks();
   const { projects } = useProjects();
+  const { dealId } = useCurrentDeal();
   const { activityLogs } = useActivityLogs();
   const router = useRouter();
+
+  // 현재 선택된 양수도 건으로 스코프
+  const currentDeal = projects.find((p) => p.id === dealId);
+  const tasks = useMemo(
+    () => allTasks.filter((t) => t.projectId === dealId),
+    [allTasks, dealId],
+  );
   const {
     formOpen, setFormOpen,
     detailOpen, setDetailOpen,
@@ -132,13 +141,6 @@ export default function DashboardPage() {
   const weekDoneCount = useMemo(
     () => getThisWeekCompletedTasks(tasks).length,
     [tasks],
-  );
-  const activeProjectCount = useMemo(
-    () =>
-      projects.filter(
-        (p) => p.status === "in_progress" || p.status === "planned",
-      ).length,
-    [projects],
   );
   const recentTasks = useMemo(
     () =>
@@ -186,9 +188,9 @@ export default function DashboardPage() {
       tint: "bg-green-500/10 text-green-600 dark:text-green-400",
     },
     {
-      label: "진행 중 양수도 건",
-      value: activeProjectCount,
-      desc: "진행 또는 예정 양수도 건",
+      label: "전체 항목",
+      value: tasks.length,
+      desc: "이 양수도 건의 전체 체크리스트 항목",
       icon: FolderKanbanIcon,
       tint: "bg-sky-500/10 text-sky-600 dark:text-sky-400",
     },
@@ -207,7 +209,11 @@ export default function DashboardPage() {
     <div className="flex flex-col gap-6">
       <PageTitle
         title="대시보드"
-        description="오늘 처리해야 하는 업무와 주요 지표를 한눈에 확인합니다."
+        description={
+          currentDeal
+            ? `${currentDeal.name} · 오늘 처리할 업무와 주요 지표`
+            : "오늘 처리해야 하는 업무와 주요 지표를 한눈에 확인합니다."
+        }
       >
         <Button size="sm" onClick={openAdd}>
           <PlusIcon className="h-4 w-4" />

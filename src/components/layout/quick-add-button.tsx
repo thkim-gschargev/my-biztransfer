@@ -6,11 +6,13 @@ import { Button } from "@/components/ui/button";
 import { TaskFormDialog } from "@/components/tasks/task-form-dialog";
 import { useTasks, type CreateTaskInput } from "@/hooks/use-tasks";
 import { useProjects } from "@/hooks/use-projects";
+import { useCurrentDeal } from "@/hooks/use-current-deal";
 
 export function QuickAddButton() {
   const [open, setOpen] = useState(false);
   const { addTask } = useTasks();
   const { projects } = useProjects();
+  const { dealId } = useCurrentDeal();
 
   return (
     <>
@@ -27,7 +29,10 @@ export function QuickAddButton() {
         open={open}
         onOpenChange={setOpen}
         projects={projects}
-        onSubmit={(input) => addTask(input as CreateTaskInput)}
+        onSubmit={(input) => {
+          const i = input as CreateTaskInput;
+          addTask({ ...i, projectId: i.projectId ?? dealId ?? undefined });
+        }}
       />
     </>
   );

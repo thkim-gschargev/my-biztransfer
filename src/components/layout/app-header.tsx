@@ -1,5 +1,6 @@
 import { MobileSidebar } from "@/components/layout/mobile-sidebar";
 import { HeaderPageTitle } from "@/components/layout/header-page-title";
+import { DealSwitcher } from "@/components/layout/deal-switcher";
 import { QuickAddButton } from "@/components/layout/quick-add-button";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { UserMenu } from "@/components/layout/user-menu";
@@ -10,6 +11,7 @@ export function AppHeader() {
       <MobileSidebar />
       <HeaderPageTitle />
       <div className="ml-auto flex items-center gap-2">
+        <DealSwitcher />
         <QuickAddButton />
         <ThemeToggle />
         <UserMenu />

@@ -7,6 +7,7 @@ import {
   type CreateTaskInput,
   type UpdateTaskInput,
 } from "@/hooks/use-tasks";
+import { useCurrentDeal } from "@/hooks/use-current-deal";
 
 export function useTaskDialogs(tasks: Task[]) {
   const {
@@ -17,6 +18,12 @@ export function useTaskDialogs(tasks: Task[]) {
     completeTask,
     duplicateTask,
   } = useTasks();
+  const { dealId } = useCurrentDeal();
+
+  // 신규 항목은 기본적으로 현재 선택된 양수도 건에 속하도록 한다(미지정 시).
+  function withDeal(input: CreateTaskInput): CreateTaskInput {
+    return { ...input, projectId: input.projectId ?? dealId ?? undefined };
+  }
 
   const [formOpen, setFormOpen] = useState(false);
   const [detailOpen, setDetailOpen] = useState(false);
@@ -55,7 +62,7 @@ export function useTaskDialogs(tasks: Task[]) {
     if (editTaskId) {
       updateTask(editTaskId, input as UpdateTaskInput);
     } else {
-      addTask(input as CreateTaskInput);
+      addTask(withDeal(input as CreateTaskInput));
     }
     setEditTaskId(undefined);
   }
@@ -68,7 +75,7 @@ export function useTaskDialogs(tasks: Task[]) {
   }
 
   function handleQuickAdd(input: CreateTaskInput) {
-    addTask(input);
+    addTask(withDeal(input));
   }
 
   function handleDelete() {

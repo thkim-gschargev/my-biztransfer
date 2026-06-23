@@ -16,6 +16,7 @@ import {
 import { useTasks } from "@/hooks/use-tasks";
 import { useTaskDialogs } from "@/hooks/use-task-dialogs";
 import { useProjects } from "@/hooks/use-projects";
+import { useCurrentDeal } from "@/hooks/use-current-deal";
 import { useActivityLogs } from "@/hooks/use-activity-logs";
 import { Button } from "@/components/ui/button";
 import {
@@ -51,9 +52,14 @@ import { TASK_STATUS_CLASSES } from "@/lib/constants";
 import type { Task } from "@/types/task";
 
 export default function CalendarPage() {
-  const { tasks, updateTask } = useTasks();
+  const { tasks: allTasks, updateTask } = useTasks();
   const { projects } = useProjects();
+  const { dealId } = useCurrentDeal();
   const { activityLogs } = useActivityLogs();
+  const tasks = useMemo(
+    () => allTasks.filter((t) => t.projectId === dealId),
+    [allTasks, dealId],
+  );
   const {
     formOpen, setFormOpen,
     detailOpen, setDetailOpen,
