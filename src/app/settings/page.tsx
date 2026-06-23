@@ -8,6 +8,7 @@ import { useActivityLogs } from "@/hooks/use-activity-logs";
 import { useAuth } from "@/hooks/use-auth";
 import { LOCAL_MIRROR_KEY } from "@/components/local-mirror";
 import { createClient } from "@/lib/supabase/client";
+import { toast } from "@/lib/toast";
 import { getSampleTasks, getSampleProjects } from "@/lib/sample-data";
 import { taskToRow } from "@/providers/tasks-provider";
 import { projectToRow } from "@/providers/projects-provider";
@@ -325,9 +326,18 @@ export default function SettingsPage() {
     await supabase.from("tasks").delete().eq("user_id", userId);
     await supabase.from("projects").delete().eq("user_id", userId);
     // FK 의존성 순서로 삽입: projects → tasks(project_id 참조) → activity_logs(task_id 참조)
-    if (d.projects.length > 0) await supabase.from("projects").insert(d.projects.map((p) => projectToRow(p, userId)));
-    if (d.tasks.length > 0) await supabase.from("tasks").insert(d.tasks.map((t) => taskToRow(t, userId)));
-    if (d.activityLogs.length > 0) await supabase.from("activity_logs").insert(d.activityLogs.map((l) => logToRow(l, userId)));
+    if (d.projects.length > 0) {
+      const { error } = await supabase.from("projects").insert(d.projects.map((p) => projectToRow(p, userId)));
+      if (error) throw new Error(`양수도 건 복원 실패: ${error.message}`);
+    }
+    if (d.tasks.length > 0) {
+      const { error } = await supabase.from("tasks").insert(d.tasks.map((t) => taskToRow(t, userId)));
+      if (error) throw new Error(`체크리스트 항목 복원 실패: ${error.message}`);
+    }
+    if (d.activityLogs.length > 0) {
+      const { error } = await supabase.from("activity_logs").insert(d.activityLogs.map((l) => logToRow(l, userId)));
+      if (error) throw new Error(`활동 로그 복원 실패: ${error.message}`);
+    }
   }
 
   async function handleRestoreMirror() {
@@ -375,9 +385,12 @@ export default function SettingsPage() {
   }
 
   async function handleLoadSample() {
+    if (!userId) {
+      toast.error("로그인이 필요합니다. 다시 로그인 후 시도해 주세요.");
+      return;
+    }
     setLoading(true);
     try {
-      if (!userId) return;
       await supabase.from("activity_logs").delete().eq("user_id", userId);
       await supabase.from("tasks").delete().eq("user_id", userId);
       await supabase.from("projects").delete().eq("user_id", userId);
@@ -388,9 +401,21 @@ export default function SettingsPage() {
       } catch {}
       const sampleProjects = getSampleProjects();
       const sampleTasks = getSampleTasks();
-      await supabase.from("projects").insert(sampleProjects.map((p) => projectToRow(p, userId)));
-      await supabase.from("tasks").insert(sampleTasks.map((t) => taskToRow(t, userId)));
+      const { error: pErr } = await supabase
+        .from("projects")
+        .insert(sampleProjects.map((p) => projectToRow(p, userId)));
+      if (pErr) throw new Error(`양수도 건 저장 실패: ${pErr.message}`);
+      const { error: tErr } = await supabase
+        .from("tasks")
+        .insert(sampleTasks.map((t) => taskToRow(t, userId)));
+      if (tErr) throw new Error(`체크리스트 항목 저장 실패: ${tErr.message}`);
       await refreshAll();
+      toast.success(
+        `체크리스트를 불러왔습니다. (양수도 건 ${sampleProjects.length} · 항목 ${sampleTasks.length})`,
+      );
+    } catch (err) {
+      console.error("[handleLoadSample]", err);
+      toast.error(err instanceof Error ? err.message : "데이터 불러오기에 실패했습니다.");
     } finally {
       setLoading(false);
     }
@@ -405,13 +430,20 @@ export default function SettingsPage() {
   }
 
   async function handleClearAll() {
+    if (!userId) {
+      toast.error("로그인이 필요합니다.");
+      return;
+    }
     setLoading(true);
     try {
-      if (!userId) return;
       await supabase.from("activity_logs").delete().eq("user_id", userId);
       await supabase.from("tasks").delete().eq("user_id", userId);
       await supabase.from("projects").delete().eq("user_id", userId);
       await refreshAll();
+      toast.success("모든 데이터를 삭제했습니다.");
+    } catch (err) {
+      console.error("[handleClearAll]", err);
+      toast.error("삭제 중 오류가 발생했습니다.");
     } finally {
       setLoading(false);
     }

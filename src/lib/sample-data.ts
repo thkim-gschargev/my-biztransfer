@@ -17,12 +17,21 @@ function iso(date: string, time = "09:00:00"): string {
   return `${date}T${time}.000Z`;
 }
 
+// DB의 projects.id / tasks.id / project_id 컬럼은 uuid 타입이므로 실제 UUID 가 필요하다.
+// 논리 키("biz-sse" 등)는 내부 참조용으로만 쓰고, 출력 시 UUID 로 치환한다.
+// 세션당 1회 생성되어 projects 와 tasks(project_id) 가 동일 UUID 를 공유한다.
+const PROJECT_UUID: Record<string, string> = {
+  "biz-sse": crypto.randomUUID(),
+  "biz-imk": crypto.randomUUID(),
+  "biz-template": crypto.randomUUID(),
+};
+
 // ─── 양수도 건 (projects) ──────────────────────────────────────────────────────
 
 export function getSampleProjects(): Project[] {
   return [
     {
-      id: "biz-sse",
+      id: PROJECT_UUID["biz-sse"],
       name: "신세계 I&C 양수도",
       description:
         "신세계아이앤씨 EV충전 사업 양수도 — 약 7,331대(에바 5,657·시그넷 1,295·LG·휴맥스·모던텍 등) GS차지비 서버 전환. 전환계획서 base20260529, 6/1 전환 개시.",
@@ -33,7 +42,7 @@ export function getSampleProjects(): Project[] {
       updatedAt: iso("2026-05-29"),
     },
     {
-      id: "biz-imk",
+      id: PROJECT_UUID["biz-imk"],
       name: "IMK(아이마켓코리아) 양수도",
       description:
         "아이마켓코리아 EV충전 사업 양수도 — 프록시 서버 방식 전환(IMK→GS차지비). 계약서 검토로 5/31 일정 지연, 6~7월 프록시 순차 전환.",
@@ -44,7 +53,7 @@ export function getSampleProjects(): Project[] {
       updatedAt: iso("2026-05-18"),
     },
     {
-      id: "biz-template",
+      id: PROJECT_UUID["biz-template"],
       name: "양수도 표준 체크리스트 (템플릿)",
       description:
         "기존 양수도 사례 기반 범용 표준 체크리스트(Phase 1~5, 24개 항목). 신규 양수도 건 시작 시 복제하여 사용.",
@@ -951,8 +960,13 @@ function templateTasks(): Task[] {
 
 export function getSampleTasks(): Task[] {
   const all = [...sseTasks(), ...imkTasks(), ...templateTasks()];
-  // status가 done인데 completedAt이 없으면 updatedAt으로 보정(완료일 기반 집계 정합성)
-  return all.map((t) =>
-    t.status === "done" && !t.completedAt ? { ...t, completedAt: t.updatedAt } : t,
-  );
+  // - id 는 uuid 컬럼이므로 실제 UUID 로 생성
+  // - projectId 는 논리 키("biz-sse" 등) → 실제 프로젝트 UUID 로 치환
+  // - status가 done인데 completedAt이 없으면 updatedAt으로 보정(완료일 기반 집계 정합성)
+  return all.map((t) => ({
+    ...t,
+    id: crypto.randomUUID(),
+    projectId: t.projectId ? PROJECT_UUID[t.projectId] ?? undefined : undefined,
+    completedAt: t.status === "done" && !t.completedAt ? t.updatedAt : t.completedAt,
+  }));
 }
