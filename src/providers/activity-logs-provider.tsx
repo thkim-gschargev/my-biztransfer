@@ -81,6 +81,35 @@ export function ActivityLogsProvider({ children }: { children: ReactNode }) {
     };
   }, [userId, authLoading, supabase]);
 
+  // 실시간 동기화(공유 워크스페이스): 다른 팀원의 활동 로그를 행 단위로 머지.
+  useEffect(() => {
+    if (!userId) return;
+    const channel = supabase
+      .channel("realtime:activity_logs")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "activity_logs" },
+        (payload) => {
+          setActivityLogs((prev) => {
+            if (payload.eventType === "DELETE") {
+              const oldId = (payload.old as { id?: string }).id;
+              return oldId ? prev.filter((l) => l.id !== oldId) : prev;
+            }
+            const log = rowToLog(payload.new as Record<string, unknown>);
+            const idx = prev.findIndex((l) => l.id === log.id);
+            if (idx === -1) return [log, ...prev];
+            const next = [...prev];
+            next[idx] = log;
+            return next;
+          });
+        },
+      )
+      .subscribe();
+    return () => {
+      void supabase.removeChannel(channel);
+    };
+  }, [userId, supabase]);
+
   const addActivityLog = useCallback(
     async (input: CreateActivityLogInput): Promise<void> => {
       if (!userId) {

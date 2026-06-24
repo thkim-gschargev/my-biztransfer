@@ -149,6 +149,36 @@ export function TasksProvider({ children }: { children: ReactNode }) {
     };
   }, [userId, authLoading, supabase]);
 
+  // 실시간 동기화(공유 워크스페이스): 다른 팀원의 변경을 행 단위로 머지.
+  // 자신이 일으킨 낙관적 변경의 에코는 id 기준 upsert/삭제라 멱등하게 흡수된다.
+  useEffect(() => {
+    if (!userId) return;
+    const channel = supabase
+      .channel("realtime:tasks")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "tasks" },
+        (payload) => {
+          setTasks((prev) => {
+            if (payload.eventType === "DELETE") {
+              const oldId = (payload.old as { id?: string }).id;
+              return oldId ? prev.filter((t) => t.id !== oldId) : prev;
+            }
+            const task = rowToTask(payload.new as Record<string, unknown>);
+            const idx = prev.findIndex((t) => t.id === task.id);
+            if (idx === -1) return [task, ...prev];
+            const next = [...prev];
+            next[idx] = task;
+            return next;
+          });
+        },
+      )
+      .subscribe();
+    return () => {
+      void supabase.removeChannel(channel);
+    };
+  }, [userId, supabase]);
+
   const addTask = useCallback(
     (input: CreateTaskInput): Task => {
       const ts = now();

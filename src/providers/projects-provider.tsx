@@ -114,6 +114,35 @@ export function ProjectsProvider({ children }: { children: ReactNode }) {
     };
   }, [userId, authLoading, supabase]);
 
+  // 실시간 동기화(공유 워크스페이스): 다른 팀원의 양수도 건 변경을 행 단위로 머지.
+  useEffect(() => {
+    if (!userId) return;
+    const channel = supabase
+      .channel("realtime:projects")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "projects" },
+        (payload) => {
+          setProjects((prev) => {
+            if (payload.eventType === "DELETE") {
+              const oldId = (payload.old as { id?: string }).id;
+              return oldId ? prev.filter((p) => p.id !== oldId) : prev;
+            }
+            const project = rowToProject(payload.new as Record<string, unknown>);
+            const idx = prev.findIndex((p) => p.id === project.id);
+            if (idx === -1) return [project, ...prev];
+            const next = [...prev];
+            next[idx] = project;
+            return next;
+          });
+        },
+      )
+      .subscribe();
+    return () => {
+      void supabase.removeChannel(channel);
+    };
+  }, [userId, supabase]);
+
   const addProject = useCallback(
     (input: CreateProjectInput): Project => {
       const ts = now();

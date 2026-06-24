@@ -112,3 +112,20 @@ create policy "categories_select_own" on categories for select using (auth.uid()
 create policy "categories_insert_own" on categories for insert with check (auth.uid() = user_id);
 create policy "categories_update_own" on categories for update using (auth.uid() = user_id) with check (auth.uid() = user_id);
 create policy "categories_delete_own" on categories for delete using (auth.uid() = user_id);
+
+-- ─── Realtime (실시간 동기화) ─────────────────────────────────────────────────
+-- projects/tasks/activity_logs 변경을 클라이언트로 푸시(RLS 존중). categories 제외.
+do $$
+declare
+  t text;
+begin
+  foreach t in array array['projects', 'tasks', 'activity_logs']
+  loop
+    if not exists (
+      select 1 from pg_publication_tables
+      where pubname = 'supabase_realtime' and schemaname = 'public' and tablename = t
+    ) then
+      execute format('alter publication supabase_realtime add table public.%I', t);
+    end if;
+  end loop;
+end $$;
