@@ -151,8 +151,7 @@ export function ProjectsProvider({ children }: { children: ReactNode }) {
         const { error, count } = await supabase
           .from("projects")
           .update({ ...inputToRow(input), updated_at: ts }, { count: "exact" })
-          .eq("id", id)
-          .eq("user_id", userId);
+          .eq("id", id);
         if (error || count === 0) {
           console.error("[ProjectsProvider] UPDATE error:", error ?? "0 rows (RLS?)");
           if (prevProject) setProjects((prev) => prev.map((p) => (p.id === id ? prevProject : p))); // 롤백
@@ -176,15 +175,13 @@ export function ProjectsProvider({ children }: { children: ReactNode }) {
         const { error: tasksError } = await supabase
           .from("tasks")
           .update({ project_id: null })
-          .eq("project_id", id)
-          .eq("user_id", userId);
+          .eq("project_id", id);
         if (tasksError) console.error("[ProjectsProvider] tasks UPDATE error:", tasksError);
 
         const { error, count } = await supabase
           .from("projects")
           .delete({ count: "exact" })
-          .eq("id", id)
-          .eq("user_id", userId);
+          .eq("id", id);
         if (error || count === 0) {
           console.error("[ProjectsProvider] DELETE error:", error ?? "0 rows (RLS?)");
           setProjects(() => snapshot); // 롤백

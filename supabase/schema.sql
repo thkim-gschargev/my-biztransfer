@@ -84,25 +84,30 @@ alter table tasks         enable row level security;
 alter table activity_logs enable row level security;
 alter table categories    enable row level security;
 
+-- projects / tasks / activity_logs: 팀 공유 워크스페이스
+-- 로그인한(authenticated) 사용자는 누구나 모든 양수도 건/체크리스트를 조회·생성·수정·삭제할 수 있다.
+-- (계정은 관리자가 발급하는 폐쇄형이므로 authenticated = 팀원. user_id 컬럼은 생성자 감사용으로 유지)
+-- anon(미로그인)은 어떤 작업도 불가. service_role 은 RLS 우회.
+
 -- projects
-create policy "projects_select_own" on projects for select using (auth.uid() = user_id);
-create policy "projects_insert_own" on projects for insert with check (auth.uid() = user_id);
-create policy "projects_update_own" on projects for update using (auth.uid() = user_id) with check (auth.uid() = user_id);
-create policy "projects_delete_own" on projects for delete using (auth.uid() = user_id);
+create policy "projects_select_shared" on projects for select using (auth.role() = 'authenticated');
+create policy "projects_insert_shared" on projects for insert with check (auth.role() = 'authenticated');
+create policy "projects_update_shared" on projects for update using (auth.role() = 'authenticated') with check (auth.role() = 'authenticated');
+create policy "projects_delete_shared" on projects for delete using (auth.role() = 'authenticated');
 
 -- tasks
-create policy "tasks_select_own" on tasks for select using (auth.uid() = user_id);
-create policy "tasks_insert_own" on tasks for insert with check (auth.uid() = user_id);
-create policy "tasks_update_own" on tasks for update using (auth.uid() = user_id) with check (auth.uid() = user_id);
-create policy "tasks_delete_own" on tasks for delete using (auth.uid() = user_id);
+create policy "tasks_select_shared" on tasks for select using (auth.role() = 'authenticated');
+create policy "tasks_insert_shared" on tasks for insert with check (auth.role() = 'authenticated');
+create policy "tasks_update_shared" on tasks for update using (auth.role() = 'authenticated') with check (auth.role() = 'authenticated');
+create policy "tasks_delete_shared" on tasks for delete using (auth.role() = 'authenticated');
 
 -- activity_logs
-create policy "activity_logs_select_own" on activity_logs for select using (auth.uid() = user_id);
-create policy "activity_logs_insert_own" on activity_logs for insert with check (auth.uid() = user_id);
-create policy "activity_logs_update_own" on activity_logs for update using (auth.uid() = user_id) with check (auth.uid() = user_id);
-create policy "activity_logs_delete_own" on activity_logs for delete using (auth.uid() = user_id);
+create policy "activity_logs_select_shared" on activity_logs for select using (auth.role() = 'authenticated');
+create policy "activity_logs_insert_shared" on activity_logs for insert with check (auth.role() = 'authenticated');
+create policy "activity_logs_update_shared" on activity_logs for update using (auth.role() = 'authenticated') with check (auth.role() = 'authenticated');
+create policy "activity_logs_delete_shared" on activity_logs for delete using (auth.role() = 'authenticated');
 
--- categories
+-- categories: 담당팀 목록은 사용자별 유지(기본 시드 동일 + 앱의 상수 폴백으로 표시 일관)
 create policy "categories_select_own" on categories for select using (auth.uid() = user_id);
 create policy "categories_insert_own" on categories for insert with check (auth.uid() = user_id);
 create policy "categories_update_own" on categories for update using (auth.uid() = user_id) with check (auth.uid() = user_id);

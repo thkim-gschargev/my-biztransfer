@@ -322,9 +322,9 @@ export default function SettingsPage() {
       throw new Error("백업 데이터 구조가 올바르지 않습니다.");
     }
     if (!userId) throw new Error("로그인이 필요합니다.");
-    await supabase.from("activity_logs").delete().eq("user_id", userId);
-    await supabase.from("tasks").delete().eq("user_id", userId);
-    await supabase.from("projects").delete().eq("user_id", userId);
+    await supabase.from("activity_logs").delete().not("id", "is", null);
+    await supabase.from("tasks").delete().not("id", "is", null);
+    await supabase.from("projects").delete().not("id", "is", null);
     // FK 의존성 순서로 삽입: projects → tasks(project_id 참조) → activity_logs(task_id 참조)
     if (d.projects.length > 0) {
       const { error } = await supabase.from("projects").insert(d.projects.map((p) => projectToRow(p, userId)));
@@ -391,9 +391,9 @@ export default function SettingsPage() {
     }
     setLoading(true);
     try {
-      await supabase.from("activity_logs").delete().eq("user_id", userId);
-      await supabase.from("tasks").delete().eq("user_id", userId);
-      await supabase.from("projects").delete().eq("user_id", userId);
+      await supabase.from("activity_logs").delete().not("id", "is", null);
+      await supabase.from("tasks").delete().not("id", "is", null);
+      await supabase.from("projects").delete().not("id", "is", null);
       // 담당팀(카테고리) 기본값을 새로 시드하도록 기존 카테고리도 초기화한다.
       await supabase.from("categories").delete().eq("user_id", userId);
       try {
@@ -436,9 +436,9 @@ export default function SettingsPage() {
     }
     setLoading(true);
     try {
-      await supabase.from("activity_logs").delete().eq("user_id", userId);
-      await supabase.from("tasks").delete().eq("user_id", userId);
-      await supabase.from("projects").delete().eq("user_id", userId);
+      await supabase.from("activity_logs").delete().not("id", "is", null);
+      await supabase.from("tasks").delete().not("id", "is", null);
+      await supabase.from("projects").delete().not("id", "is", null);
       await refreshAll();
       toast.success("모든 데이터를 삭제했습니다.");
     } catch (err) {

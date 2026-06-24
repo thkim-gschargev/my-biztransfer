@@ -201,8 +201,7 @@ export function TasksProvider({ children }: { children: ReactNode }) {
         const { error, count } = await supabase
           .from("tasks")
           .update(row, { count: "exact" })
-          .eq("id", id)
-          .eq("user_id", userId);
+          .eq("id", id);
         if (error || count === 0) {
           console.error("[TasksProvider] UPDATE error:", error ?? "0 rows (RLS?)");
           if (prevTask) setTasks((prev) => prev.map((t) => (t.id === id ? prevTask : t))); // 롤백
@@ -232,8 +231,7 @@ export function TasksProvider({ children }: { children: ReactNode }) {
         const { error, count } = await supabase
           .from("tasks")
           .delete({ count: "exact" })
-          .eq("id", id)
-          .eq("user_id", userId);
+          .eq("id", id);
         if (error || count === 0) {
           console.error("[TasksProvider] DELETE error:", error ?? "0 rows (RLS?)");
           setTasks(() => snapshot); // 롤백
@@ -274,8 +272,7 @@ export function TasksProvider({ children }: { children: ReactNode }) {
         const { error, count } = await supabase
           .from("tasks")
           .update(updateData, { count: "exact" })
-          .eq("id", id)
-          .eq("user_id", userId);
+          .eq("id", id);
         if (error || count === 0) {
           console.error("[TasksProvider] STATUS UPDATE error:", error ?? "0 rows (RLS?)");
           setTasks((prev) => prev.map((t) => (t.id === id ? prevTask : t))); // 롤백
@@ -314,8 +311,7 @@ export function TasksProvider({ children }: { children: ReactNode }) {
         const { error, count } = await supabase
           .from("tasks")
           .update({ status: "done", completed_at: completedAt, updated_at: ts }, { count: "exact" })
-          .eq("id", id)
-          .eq("user_id", userId);
+          .eq("id", id);
         if (error || count === 0) {
           console.error("[TasksProvider] COMPLETE UPDATE error:", error ?? "0 rows (RLS?)");
           setTasks((prev) => prev.map((t) => (t.id === id ? prevTask : t))); // 롤백
