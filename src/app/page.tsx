@@ -185,7 +185,6 @@ export default function DashboardPage() {
           {/* ③ 단계별 진행 현황 (단계 펼치면 업무 목록 → 클릭 시 상세 팝업) */}
           <PhaseProgressTable
             rows={phaseRows}
-            current={currentPhase}
             tasks={tasks}
             onTaskClick={openDetail}
           />

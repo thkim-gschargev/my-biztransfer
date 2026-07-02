@@ -31,6 +31,29 @@ const SEGMENTS: {
   { key: "delayed", color: "bg-red-500", label: "지연" },
 ];
 
+// 단계 상태: 업무 상태 집계 → 시작전 / 진행중 / 완료
+type PhaseStatus = "notStarted" | "inProgress" | "done";
+
+const PHASE_STATUS: Record<PhaseStatus, { label: string; cls: string }> = {
+  notStarted: { label: "시작전", cls: "bg-muted text-muted-foreground" },
+  inProgress: {
+    label: "진행중",
+    cls: "bg-blue-500/10 text-blue-600 dark:text-blue-400",
+  },
+  done: {
+    label: "완료",
+    cls: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
+  },
+};
+
+/** 취소 제외 업무 기준: 전부 완료→완료, 전부 신규→시작전, 그 외→진행중. */
+function computePhaseStatus(tasks: Task[]): PhaseStatus | null {
+  if (tasks.length === 0) return null;
+  if (tasks.every((t) => t.status === "done")) return "done";
+  if (tasks.every((t) => t.status === "new")) return "notStarted";
+  return "inProgress";
+}
+
 // 펼침 목록 내 업무 정렬: 지연 → 진행/검토/대기 → 완료/취소, 그다음 마감·제목순
 const STATUS_ORDER: Record<Task["status"], number> = {
   delayed: 0,
@@ -109,12 +132,10 @@ function TaskLine({
 
 export function PhaseProgressTable({
   rows,
-  current,
   tasks,
   onTaskClick,
 }: {
   rows: PhaseRow[];
-  current: TaskPhase | null;
   tasks: Task[];
   onTaskClick: (task: Task) => void;
 }) {
@@ -188,16 +209,14 @@ export function PhaseProgressTable({
         </TableHeader>
         <TableBody>
           {rows.map((r) => {
-            const isCurrent = r.phase === current;
             const isOpen = expanded.has(r.phase);
             const canExpand = r.total > 0;
             const phaseTasks = tasksByPhase.get(r.phase) ?? [];
+            const status = computePhaseStatus(phaseTasks);
             return (
               <Fragment key={r.phase}>
                 <TableRow
-                  className={`${isCurrent ? "bg-primary/5" : ""} ${
-                    canExpand ? "cursor-pointer" : ""
-                  }`}
+                  className={canExpand ? "cursor-pointer" : undefined}
                   onClick={canExpand ? () => toggle(r.phase) : undefined}
                   aria-expanded={canExpand ? isOpen : undefined}
                   tabIndex={canExpand ? 0 : undefined}
@@ -221,9 +240,11 @@ export function PhaseProgressTable({
                         aria-hidden
                       />
                       {phaseTitle(r.phase)}
-                      {isCurrent && (
-                        <span className="ml-1 rounded bg-primary/10 px-1.5 py-0.5 text-[10px] font-semibold text-primary">
-                          현재
+                      {status && (
+                        <span
+                          className={`ml-1 rounded px-1.5 py-0.5 text-[10px] font-semibold ${PHASE_STATUS[status].cls}`}
+                        >
+                          {PHASE_STATUS[status].label}
                         </span>
                       )}
                     </span>
