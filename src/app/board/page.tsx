@@ -18,7 +18,7 @@ import { CSS } from "@dnd-kit/utilities";
 import { useTasks } from "@/hooks/use-tasks";
 import { useTaskDialogs } from "@/hooks/use-task-dialogs";
 import { useProjects } from "@/hooks/use-projects";
-import { useCurrentDeal } from "@/hooks/use-current-deal";
+import { useDealTasks } from "@/hooks/use-deal-tasks";
 import { useActivityLogs } from "@/hooks/use-activity-logs";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -117,14 +117,10 @@ function DroppableColumn({ status, isOver, isEmpty, children }: DroppableColumnP
 // ─── Board page ───────────────────────────────────────────────────────────────
 
 export default function BoardPage() {
-  const { tasks: allTasks, changeTaskStatus } = useTasks();
+  const { changeTaskStatus } = useTasks();
+  const { tasks } = useDealTasks();
   const { projects } = useProjects();
-  const { dealId } = useCurrentDeal();
   const { activityLogs } = useActivityLogs();
-  const tasks = useMemo(
-    () => allTasks.filter((t) => t.projectId === dealId),
-    [allTasks, dealId],
-  );
   const {
     formOpen, setFormOpen,
     detailOpen, setDetailOpen,

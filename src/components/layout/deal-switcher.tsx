@@ -21,7 +21,11 @@ export function DealSwitcher() {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className="flex max-w-[180px] items-center gap-1.5 rounded-lg border border-border/70 bg-background/60 px-2.5 py-1.5 text-sm font-medium transition-colors hover:bg-accent sm:max-w-[240px]">
+      <DropdownMenuTrigger
+        title={current?.name ?? "양수도 건 선택"}
+        aria-label={`현재 양수도 건: ${current?.name ?? "미선택"} · 전환`}
+        className="flex max-w-[180px] items-center gap-1.5 rounded-lg border border-border/70 bg-background/60 px-2.5 py-1.5 text-sm font-medium transition-colors hover:bg-accent sm:max-w-[240px]"
+      >
         <span className="truncate">{current?.name ?? "양수도 건 선택"}</span>
         <ChevronsUpDownIcon className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
       </DropdownMenuTrigger>
@@ -35,7 +39,7 @@ export function DealSwitcher() {
             <CheckIcon
               className={`h-3.5 w-3.5 shrink-0 ${p.id === dealId ? "opacity-100 text-primary" : "opacity-0"}`}
             />
-            <span className="truncate">{p.name}</span>
+            <span className="truncate" title={p.name}>{p.name}</span>
           </DropdownMenuItem>
         ))}
         <DropdownMenuSeparator />

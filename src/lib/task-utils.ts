@@ -40,34 +40,6 @@ export function getThisWeekCompletedTasks(tasks: Task[]): Task[] {
   );
 }
 
-// ─── 집계 ────────────────────────────────────────────────────────────────────
-
-export function countByStatus(tasks: Task[]): Record<TaskStatus, number> {
-  const counts: Record<TaskStatus, number> = {
-    new: 0,
-    in_progress: 0,
-    waiting: 0,
-    review: 0,
-    hold: 0,
-    delayed: 0,
-    monitoring: 0,
-    done: 0,
-    cancelled: 0,
-  };
-  for (const t of tasks) {
-    counts[t.status] += 1;
-  }
-  return counts;
-}
-
-/** 프로젝트에 속한 업무 중 완료 비율 (0~100) */
-export function getProjectCompletionRate(tasks: Task[], projectId: string): number {
-  const projectTasks = tasks.filter((t) => t.projectId === projectId);
-  if (projectTasks.length === 0) return 0;
-  const done = projectTasks.filter((t) => t.status === "done").length;
-  return Math.round((done / projectTasks.length) * 100);
-}
-
 // ─── 검색 / 필터 ──────────────────────────────────────────────────────────────
 
 export function filterByKeyword(tasks: Task[], keyword: string): Task[] {
@@ -109,7 +81,8 @@ export function filterByPhase(tasks: Task[], phase: TaskPhase | ""): Task[] {
   return tasks.filter((t) => t.phase === phase);
 }
 
-/** 단계(Phase)별 진행률: 해당 단계 업무 중 완료 비율(0~100)과 개수 */
+/** 단계(Phase)별 진행률: 해당 단계 항목 중 완료 비율(0~100)과 개수.
+ *  (예약됨: 향후 대시보드 단계별 진행률 위젯용 — 현재 미사용) */
 export function getPhaseProgress(
   tasks: Task[],
   phase: TaskPhase,

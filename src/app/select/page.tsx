@@ -15,7 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import { PROJECT_STATUS_LABELS, PROJECT_STATUS_CLASSES } from "@/lib/constants";
 
 export default function SelectDealPage() {
-  const { projects, addProject } = useProjects();
+  const { projects, addProject, loading } = useProjects();
   const { tasks } = useTasks();
   const { setDeal } = useCurrentDeal();
   const router = useRouter();
@@ -52,6 +52,11 @@ export default function SelectDealPage() {
           </p>
         </div>
 
+        {/* 로딩 중에는 빈 상태 대신 로더 표시(깜빡임 방지) */}
+        {loading ? (
+          <p className="py-8 text-center text-sm text-muted-foreground">불러오는 중…</p>
+        ) : (
+        <>
         {/* 딜 카드 그리드 */}
         <div className="grid gap-3 sm:grid-cols-2">
           {projects.map((p) => {
@@ -96,9 +101,20 @@ export default function SelectDealPage() {
         </div>
 
         {projects.length === 0 && (
-          <p className="text-center text-xs text-muted-foreground">
-            아직 등록된 양수도 건이 없습니다. 신규로 생성하거나, 설정에서 체크리스트 데이터를 불러오세요.
-          </p>
+          <div className="flex flex-col items-center gap-2 text-center">
+            <p className="text-xs text-muted-foreground">
+              아직 등록된 양수도 건이 없습니다. 신규로 생성하거나, 설정에서 체크리스트 데이터를 불러오세요.
+            </p>
+            <button
+              type="button"
+              onClick={() => router.push("/settings")}
+              className="text-xs text-primary underline underline-offset-2 hover:opacity-80"
+            >
+              설정에서 체크리스트 데이터 불러오기 →
+            </button>
+          </div>
+        )}
+        </>
         )}
       </div>
 

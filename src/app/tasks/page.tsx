@@ -2,9 +2,9 @@
 
 import { useState, useMemo } from "react";
 import { PlusIcon, SearchIcon, XIcon } from "lucide-react";
-import { useTasks } from "@/hooks/use-tasks";
 import { useTaskDialogs } from "@/hooks/use-task-dialogs";
 import { useProjects } from "@/hooks/use-projects";
+import { useDealTasks } from "@/hooks/use-deal-tasks";
 import { useActivityLogs } from "@/hooks/use-activity-logs";
 import {
   filterByKeyword,
@@ -27,7 +27,6 @@ import {
   PHASE_OPTIONS,
 } from "@/lib/constants";
 import { useCategories } from "@/hooks/use-categories";
-import { useCurrentDeal } from "@/hooks/use-current-deal";
 
 const STATUS_FILTER_ITEMS = { __all__: "전체 상태", ...TASK_STATUS_LABELS };
 const PRIORITY_FILTER_ITEMS = { __all__: "전체 우선순위", ...TASK_PRIORITY_LABELS };
@@ -57,16 +56,10 @@ import type { TaskStatus, TaskPriority, TaskPhase } from "@/types/task";
 type QuickFilter = "all" | "today" | "week" | "delayed" | "waiting" | "urgent";
 
 export default function TasksPage() {
-  const { tasks: allTasks, loading } = useTasks();
+  const { tasks, loading, dealId } = useDealTasks();
   const { projects } = useProjects();
-  const { dealId } = useCurrentDeal();
   const { activityLogs } = useActivityLogs();
   const { categories } = useCategories();
-  // 현재 선택된 양수도 건으로 스코프
-  const tasks = useMemo(
-    () => allTasks.filter((t) => t.projectId === dealId),
-    [allTasks, dealId],
-  );
   const categoryFilterItems = { __all__: "전체 담당팀", ...Object.fromEntries(categories.map((c) => [c.value, c.label])) };
   const {
     formOpen, setFormOpen,

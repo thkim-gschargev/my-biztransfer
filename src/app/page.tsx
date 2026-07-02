@@ -12,11 +12,10 @@ import {
   CircleCheckIcon,
   FolderKanbanIcon,
 } from "lucide-react";
-import { useTasks } from "@/hooks/use-tasks";
 import { useTaskDialogs } from "@/hooks/use-task-dialogs";
 import { TaskQuickAdd } from "@/components/tasks/task-quick-add";
 import { useProjects } from "@/hooks/use-projects";
-import { useCurrentDeal } from "@/hooks/use-current-deal";
+import { useDealTasks } from "@/hooks/use-deal-tasks";
 import { useActivityLogs } from "@/hooks/use-activity-logs";
 import {
   getTodayTasks,
@@ -108,18 +107,13 @@ function Section({
 // ─── 대시보드 ─────────────────────────────────────────────────────────────────
 
 export default function DashboardPage() {
-  const { tasks: allTasks, loading } = useTasks();
+  const { tasks, loading, dealId } = useDealTasks();
   const { projects } = useProjects();
-  const { dealId } = useCurrentDeal();
   const { activityLogs } = useActivityLogs();
   const router = useRouter();
 
-  // 현재 선택된 양수도 건으로 스코프
+  // 현재 선택된 양수도 건
   const currentDeal = projects.find((p) => p.id === dealId);
-  const tasks = useMemo(
-    () => allTasks.filter((t) => t.projectId === dealId),
-    [allTasks, dealId],
-  );
   const {
     formOpen, setFormOpen,
     detailOpen, setDetailOpen,

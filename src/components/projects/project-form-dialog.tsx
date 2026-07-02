@@ -76,11 +76,11 @@ function ProjectFormBody({ project, onSubmit, onClose }: ProjectFormBodyProps) {
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
       <div className="flex flex-col gap-4">
-        <Field label="프로젝트명 *">
+        <Field label="양수도 건 이름 *">
           <Input
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder="프로젝트 이름을 입력하세요"
+            placeholder="예: 신세계 I&C 양수도"
             required
           />
         </Field>
@@ -125,7 +125,7 @@ function ProjectFormBody({ project, onSubmit, onClose }: ProjectFormBodyProps) {
           <Textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            placeholder="프로젝트 설명"
+            placeholder="양수도 건 설명"
             rows={3}
           />
         </Field>
@@ -154,7 +154,7 @@ export function ProjectFormDialog({
       <DialogContent showCloseButton={false}>
         <DialogHeader>
           <DialogTitle>
-            {project ? "프로젝트 수정" : "프로젝트 추가"}
+            {project ? "양수도 건 수정" : "양수도 건 추가"}
           </DialogTitle>
         </DialogHeader>
         <ProjectFormBody

@@ -6,8 +6,7 @@ import { AppShell } from "@/components/layout/app-shell";
 
 export function ConditionalShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
-  const isAuthPage =
-    pathname.startsWith("/login") || pathname.startsWith("/auth");
+  const isAuthPage = pathname.startsWith("/login");
 
   if (isAuthPage) return <>{children}</>;
   return <AppShell>{children}</AppShell>;

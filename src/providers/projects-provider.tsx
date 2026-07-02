@@ -104,7 +104,7 @@ export function ProjectsProvider({ children }: { children: ReactNode }) {
       if (!active) return;
       if (error) {
         console.error("[ProjectsProvider] SELECT error:", error);
-        toast.error("프로젝트 목록을 불러오지 못했습니다.");
+        toast.error("양수도 건 목록을 불러오지 못했습니다.");
       }
       if (data) setProjects((data as Record<string, unknown>[]).map(rowToProject));
       setLoading(false);
@@ -157,7 +157,7 @@ export function ProjectsProvider({ children }: { children: ReactNode }) {
         if (error) {
           console.error("[ProjectsProvider] INSERT error:", error);
           setProjects((prev) => prev.filter((p) => p.id !== project.id)); // 롤백
-          toast.error("프로젝트 저장에 실패했습니다.");
+          toast.error("양수도 건 저장에 실패했습니다.");
         }
       })();
       return project;
@@ -184,7 +184,7 @@ export function ProjectsProvider({ children }: { children: ReactNode }) {
         if (error || count === 0) {
           console.error("[ProjectsProvider] UPDATE error:", error ?? "0 rows (RLS?)");
           if (prevProject) setProjects((prev) => prev.map((p) => (p.id === id ? prevProject : p))); // 롤백
-          toast.error("프로젝트 수정에 실패했습니다.");
+          toast.error("양수도 건 수정에 실패했습니다.");
         }
       })();
     },
@@ -214,7 +214,7 @@ export function ProjectsProvider({ children }: { children: ReactNode }) {
         if (error || count === 0) {
           console.error("[ProjectsProvider] DELETE error:", error ?? "0 rows (RLS?)");
           setProjects(() => snapshot); // 롤백
-          toast.error("프로젝트 삭제에 실패했습니다.");
+          toast.error("양수도 건 삭제에 실패했습니다.");
         }
       })();
     },

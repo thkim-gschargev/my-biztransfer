@@ -54,6 +54,18 @@ export function UserManagement() {
   const [newPassword, setNewPassword] = useState("");
   const [formError, setFormError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
+  // 복사용 자격증명(이메일 / 비밀번호). 발급·재설정 시 설정되고 "복사" 버튼으로 클립보드에 복사.
+  const [noticeCopy, setNoticeCopy] = useState<string | null>(null);
+
+  async function copyNotice() {
+    if (!noticeCopy) return;
+    try {
+      await navigator.clipboard.writeText(noticeCopy);
+      setNotice((n) => (n ? `${n} (복사됨)` : n));
+    } catch {
+      // 클립보드 접근 불가 시 무시(사용자가 수동 선택 가능)
+    }
+  }
 
   // 비밀번호 재설정 다이얼로그
   const [resetTarget, setResetTarget] = useState<AdminUser | null>(null);
@@ -114,6 +126,7 @@ export function UserManagement() {
       setNotice(
         `계정 발급 완료: ${newEmail.trim()} / 비밀번호: ${newPassword} — 담당자에게 전달하세요.`,
       );
+      setNoticeCopy(`${newEmail.trim()} / ${newPassword}`);
       setNewEmail("");
       setNewPassword("");
       await load();
@@ -144,6 +157,7 @@ export function UserManagement() {
       setNotice(
         `비밀번호 재설정 완료: ${resetTarget.email} / 새 비밀번호: ${resetPassword} — 담당자에게 전달하세요.`,
       );
+      setNoticeCopy(`${resetTarget.email} / ${resetPassword}`);
       setResetTarget(null);
       setResetPassword("");
     } finally {
@@ -247,9 +261,20 @@ export function UserManagement() {
           </div>
 
           {notice && (
-            <p className="rounded-md bg-green-500/10 px-3 py-2 text-xs text-green-700 dark:text-green-400 break-all">
-              {notice}
-            </p>
+            <div className="flex items-start gap-2 rounded-md bg-green-500/10 px-3 py-2">
+              <p className="flex-1 text-xs text-green-700 dark:text-green-400 break-all">
+                {notice}
+              </p>
+              {noticeCopy && (
+                <button
+                  type="button"
+                  onClick={() => void copyNotice()}
+                  className="shrink-0 rounded border border-green-600/30 px-2 py-1 text-xs text-green-700 hover:bg-green-500/10 dark:text-green-400"
+                >
+                  복사
+                </button>
+              )}
+            </div>
           )}
 
           {/* 계정 목록 */}

@@ -9,6 +9,12 @@ function adminEmails(): string[] {
     .filter(Boolean);
 }
 
+/** 주어진 이메일이 관리자 허용목록에 있는지 여부 */
+export function isAdminEmail(email: string | null | undefined): boolean {
+  if (!email) return false;
+  return adminEmails().includes(email.toLowerCase());
+}
+
 /**
  * 현재 로그인 사용자가 관리자이면 { id, email } 반환, 아니면 null.
  * - ADMIN_EMAILS 미설정이면 누구도 관리자가 아니다(기본 거부).

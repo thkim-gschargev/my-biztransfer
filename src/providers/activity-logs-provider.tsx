@@ -15,6 +15,9 @@ import { useAuth } from "@/providers/auth-provider";
 
 export type CreateActivityLogInput = Omit<ActivityLog, "id">;
 
+// 메모리/LocalMirror 부담을 막기 위해 클라이언트에 보관하는 활동 로그 상한.
+const MAX_LOGS = 500;
+
 function rowToLog(row: Record<string, unknown>): ActivityLog {
   return {
     id: row.id as string,
@@ -73,7 +76,7 @@ export function ActivityLogsProvider({ children }: { children: ReactNode }) {
         .order("created_at", { ascending: false });
       if (!active) return;
       if (error) console.error("[ActivityLogsProvider] SELECT error:", error);
-      if (data) setActivityLogs((data as Record<string, unknown>[]).map(rowToLog));
+      if (data) setActivityLogs((data as Record<string, unknown>[]).map(rowToLog).slice(0, MAX_LOGS));
       setLoading(false);
     })();
     return () => {
@@ -97,7 +100,7 @@ export function ActivityLogsProvider({ children }: { children: ReactNode }) {
             }
             const log = rowToLog(payload.new as Record<string, unknown>);
             const idx = prev.findIndex((l) => l.id === log.id);
-            if (idx === -1) return [log, ...prev];
+            if (idx === -1) return [log, ...prev].slice(0, MAX_LOGS);
             const next = [...prev];
             next[idx] = log;
             return next;
@@ -118,7 +121,7 @@ export function ActivityLogsProvider({ children }: { children: ReactNode }) {
       }
       const log: ActivityLog = { ...input, id: crypto.randomUUID() };
       // 낙관적 추가: 화면에는 즉시 반영
-      setActivityLogs((prev) => [log, ...prev]);
+      setActivityLogs((prev) => [log, ...prev].slice(0, MAX_LOGS));
       const { error } = await supabase.from("activity_logs").insert(logToRow(log, userId));
       if (error) {
         console.error("[ActivityLogsProvider] INSERT error:", error);

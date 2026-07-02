@@ -6,6 +6,7 @@ import { useProjects } from "@/hooks/use-projects";
 import { useCategories, type Category } from "@/hooks/use-categories";
 import { useActivityLogs } from "@/hooks/use-activity-logs";
 import { useAuth } from "@/hooks/use-auth";
+import { useIsAdmin } from "@/hooks/use-is-admin";
 import { LOCAL_MIRROR_KEY } from "@/components/local-mirror";
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "@/lib/toast";
@@ -178,6 +179,9 @@ export default function SettingsPage() {
     useCategories();
   const { refresh: refreshLogs } = useActivityLogs();
   const { userId } = useAuth();
+  const { isAdmin, ready: adminReady } = useIsAdmin();
+  // 데이터는 팀 공유이므로 파괴적 작업(불러오기/가져오기/복원/삭제)은 관리자만 실행 가능
+  const canManageData = isAdmin;
 
   // 벌크 작업 후 전체 페이지 새로고침(window.location.reload) 대신 Provider 들을 재동기화
   async function refreshAll() {
@@ -496,13 +500,16 @@ export default function SettingsPage() {
           <CardHeader>
             <CardTitle className="text-base">체크리스트 데이터 불러오기</CardTitle>
             <CardDescription className="text-xs">
-              양수도 체크리스트(신세계·IMK·표준 템플릿) 데이터를 불러옵니다. 기존 데이터가 있으면 덮어씁니다.
+              양수도 체크리스트(신세계·IMK·표준 템플릿) 데이터를 불러옵니다. ⚠️ 팀 전체의 기존 데이터를 덮어씁니다.
             </CardDescription>
           </CardHeader>
-          <CardContent>
-            <Button variant="outline" onClick={handleSampleClick} disabled={loading}>
-              샘플 데이터 불러오기
+          <CardContent className="flex flex-col gap-2">
+            <Button variant="outline" onClick={handleSampleClick} disabled={loading || !canManageData}>
+              {loading ? "불러오는 중…" : "샘플 데이터 불러오기"}
             </Button>
+            {adminReady && !canManageData && (
+              <p className="text-xs text-muted-foreground">관리자만 실행할 수 있습니다.</p>
+            )}
           </CardContent>
         </Card>
 
@@ -540,7 +547,7 @@ export default function SettingsPage() {
             <Button
               variant="outline"
               onClick={() => fileInputRef.current?.click()}
-              disabled={loading}
+              disabled={loading || !canManageData}
             >
               <UploadIcon className="h-4 w-4" />
               파일 선택
@@ -552,6 +559,9 @@ export default function SettingsPage() {
               className="sr-only"
               onChange={handleFileChange}
             />
+            {adminReady && !canManageData && (
+              <p className="text-xs text-muted-foreground">관리자만 실행할 수 있습니다.</p>
+            )}
             {importError && (
               <p className="text-xs text-destructive">{importError}</p>
             )}
@@ -584,11 +594,14 @@ export default function SettingsPage() {
             <Button
               variant="outline"
               onClick={() => setRestoreMirrorOpen(true)}
-              disabled={loading || !mirrorInfo}
+              disabled={loading || !mirrorInfo || !canManageData}
             >
               <RotateCcwIcon className="h-4 w-4" />
               이 백업으로 복원
             </Button>
+            {adminReady && !canManageData && (
+              <p className="text-xs text-muted-foreground">관리자만 실행할 수 있습니다.</p>
+            )}
           </CardContent>
         </Card>
 
@@ -600,14 +613,17 @@ export default function SettingsPage() {
               전체 데이터 삭제
             </CardTitle>
             <CardDescription className="text-xs">
-              모든 업무, 프로젝트, 활동 로그를 삭제합니다. 이 작업은 되돌릴 수 없습니다.
+              ⚠️ 팀 전체의 모든 양수도 건·체크리스트·활동 로그를 삭제합니다. 이 작업은 되돌릴 수 없습니다.
             </CardDescription>
           </CardHeader>
-          <CardContent>
-            <Button variant="destructive" onClick={() => setDeleteOpen(true)} disabled={loading}>
+          <CardContent className="flex flex-col gap-2">
+            <Button variant="destructive" onClick={() => setDeleteOpen(true)} disabled={loading || !canManageData}>
               <Trash2Icon className="h-4 w-4" />
               전체 삭제
             </Button>
+            {adminReady && !canManageData && (
+              <p className="text-xs text-muted-foreground">관리자만 실행할 수 있습니다.</p>
+            )}
           </CardContent>
         </Card>
       </div>
@@ -694,7 +710,7 @@ export default function SettingsPage() {
         open={restoreMirrorOpen}
         onOpenChange={setRestoreMirrorOpen}
         title="이 기기 백업으로 복원"
-        description="이 브라우저에 저장된 자동 백업으로 복원합니다. 현재 클라우드 데이터를 덮어씁니다. 계속하시겠습니까?"
+        description="이 브라우저에 저장된 자동 백업으로 복원합니다. ⚠️ 팀 전체의 현재 데이터를 덮어씁니다. 계속하시겠습니까?"
         confirmLabel="복원"
         onConfirm={() => void handleRestoreMirror()}
       />
@@ -702,7 +718,7 @@ export default function SettingsPage() {
         open={deleteOpen}
         onOpenChange={setDeleteOpen}
         title="전체 데이터 삭제"
-        description="모든 업무, 프로젝트, 활동 로그가 삭제됩니다. 이 작업은 되돌릴 수 없습니다. 계속하시겠습니까?"
+        description="⚠️ 팀 전체의 모든 양수도 건·체크리스트·활동 로그가 삭제됩니다. 이 작업은 되돌릴 수 없습니다. 계속하시겠습니까?"
         confirmLabel="전체 삭제"
         onConfirm={() => void handleClearAll()}
       />
@@ -710,7 +726,7 @@ export default function SettingsPage() {
         open={sampleConfirmOpen}
         onOpenChange={setSampleConfirmOpen}
         title="샘플 데이터 불러오기"
-        description="기존 데이터가 샘플 데이터로 덮어씌워집니다. 계속하시겠습니까?"
+        description="⚠️ 팀 전체의 기존 데이터가 샘플 데이터로 덮어씌워집니다. 계속하시겠습니까?"
         confirmLabel="덮어쓰기"
         onConfirm={() => void handleLoadSample()}
       />

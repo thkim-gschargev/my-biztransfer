@@ -36,7 +36,7 @@ create table if not exists tasks (
   status              text        not null,   -- new|in_progress|waiting|review|hold|delayed|monitoring|done|cancelled
   priority            text        not null,
   category            text        not null,   -- 주관 담당팀 키 또는 custom_xxxxxxxx
-  phase               smallint,                -- 양수도 진행 단계 1~5 (표준 체크리스트 Phase)
+  phase               smallint    check (phase is null or phase between 1 and 5),  -- 양수도 진행 단계 1~5
   project_id          uuid        references projects (id) on delete set null,
   description         text,
   next_action         text,
