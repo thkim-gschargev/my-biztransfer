@@ -33,7 +33,7 @@ export const TASK_CATEGORY_LABELS: Record<string, string> = {
   deal: "Deal팀",
   legal: "법무팀",
   asset: "구매자산관리팀",
-  construction: "네트워크구축관리팀",
+  construction: "구축관리팀",
   network_sales: "네트워크영업팀",
   network_maint: "네트워크유지보수팀",
   cx: "고객경험팀",

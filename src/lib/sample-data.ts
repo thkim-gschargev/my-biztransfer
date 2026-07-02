@@ -333,7 +333,7 @@ const MASTER_BIZ: MasterItem[] = [
     phase: 1,
     title: "행위신고·전기안전점검 등 인허가 이관",
     category: "safety",
-    teams: "안전관리팀, 네트워크구축관리팀",
+    teams: "안전관리팀, 구축관리팀",
     action:
       "행위신고·전기안전점검 완료 여부 확인(거래 선행조건, 불법시설물 행정명령 리스크). 전기안전관리자 선임(한전 명의변경 후), 법정 정기검사 대상 확인.",
   },
@@ -341,7 +341,7 @@ const MASTER_BIZ: MasterItem[] = [
     phase: 1,
     title: "충전시설 신고 (지자체)",
     category: "construction",
-    teams: "네트워크구축관리팀",
+    teams: "구축관리팀",
     action:
       "충전시설 신고 완료. 연동 후 신고는 지자체별 대응 불가하므로 사전 완료 필요. 양도사 신고완료 후 변경신고.",
   },
@@ -357,7 +357,7 @@ const MASTER_BIZ: MasterItem[] = [
     phase: 5,
     title: "한전 전기요금 명의변경 및 정산",
     category: "construction",
-    teams: "네트워크구축관리팀, 구매자산관리팀",
+    teams: "구축관리팀, 구매자산관리팀",
     action:
       "한전 전기요금 명의 일괄 변경(한전ON 계정). 거래종결일 기준 검침일·세금계산서 주체에 따라 일할 정산.",
   },
@@ -365,7 +365,7 @@ const MASTER_BIZ: MasterItem[] = [
     phase: 5,
     title: "통신 회선 약정 명의변경",
     category: "construction",
-    teams: "네트워크구축관리팀",
+    teams: "구축관리팀",
     action:
       "양도사 직영 통신 약정을 차지비 담당 대리점으로 양도. 잔여 약정기간 통신 수수료 일괄지급 절차 확인.",
   },
@@ -396,7 +396,7 @@ function pad2(n: number): string {
 const SSE_OVERRIDES: Record<number, Partial<Task>> = {
   0: {
     status: "done",
-    assigneeOrPartner: "신세계I&C, 네트워크구축관리팀",
+    assigneeOrPartner: "신세계I&C, 구축관리팀",
     memo: "자산확정 기준 20251117. 충전기현황표 확보 — 총 약 7,331대(에바 5,657·시그넷 1,295 등).",
     startDate: "2025-11-17",
     completedAt: iso("2026-02-25"),
@@ -438,7 +438,7 @@ const SSE_OVERRIDES: Record<number, Partial<Task>> = {
   },
   8: {
     status: "done",
-    assigneeOrPartner: "네트워크구축팀, 구매자산관리팀",
+    assigneeOrPartner: "구축관리팀, 구매자산관리팀",
     memo: "CNO 6자리 확정(26.03.18). 충전소ID 10자리·충전기ID 11자리(구분+타입+지역+시퀀스) 규칙 수립.",
     completedAt: iso("2026-03-18"),
   },
@@ -583,7 +583,7 @@ const SSE_BIZ_OVERRIDES: Record<number, Partial<Task>> = {
   9: {
     status: "in_progress",
     priority: "high",
-    assigneeOrPartner: "네트워크구축관리팀(김송요)",
+    assigneeOrPartner: "구축관리팀(김송요)",
     memo: "5/27까지 신고 완료 요청. 연동 후 신고는 지자체별 대응 불가. 신세계 신고완료 후 변경신고.",
     dueDate: "2026-05-27",
   },
@@ -749,7 +749,7 @@ function imkTasks(): Task[] {
       category: "tech_support",
       phase: 1,
       projectId: "biz-imk",
-      assigneeOrPartner: "충전기술기획팀, 네트워크구축팀, 구매자산관리팀",
+      assigneeOrPartner: "충전기술기획팀, 구축관리팀, 구매자산관리팀",
       description:
         "충전기ID는 기존 IMK-ID 그대로 사용(충전소ID 8자리=IMK+6자리 Seq + 충전기ID 2자리). CNO 별도 부여 여부 검토.",
       nextAction: "CNO 부여 시점·주체 협의 (이해관계자 다수)",
