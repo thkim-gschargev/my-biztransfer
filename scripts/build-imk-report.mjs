@@ -17,6 +17,7 @@ import { createClient } from "@supabase/supabase-js";
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const IMK_NAME = "IMK(아이마켓코리아) 양수도";
 const OUT = join(ROOT, "report", "관제판-imk.html");
+const DO_UPLOAD = process.argv.includes("--upload");
 
 // ─── 라벨 (constants.ts 미러) ─────────────────────────────────────────────────
 const PHASE_LABELS = {
@@ -210,7 +211,7 @@ function render({ project, tasks, generatedAt }) {
   const phaseBlocks = rows.map((r) => {
     const ps = phaseStatus(r.tasks);
     const title = r.phase === 0 ? "단계 미지정" : PHASE_LABELS[r.phase];
-    return `<details class="phase"${r.rate < 100 && r.total ? " open" : ""}>
+    return `<details class="phase">
       <summary>
         <span class="pname">
           <span class="chev">›</span>${esc(title)}
@@ -380,6 +381,54 @@ function render({ project, tasks, generatedAt }) {
 </html>`;
 }
 
+// ─── R2 업로드 (S3 호환 API, SigV4) ──────────────────────────────────────────
+async function uploadToR2(html, env) {
+  const key = env.R2_OBJECT_KEY || "관제판-imk.html";
+  const cacheControl = env.R2_CACHE_CONTROL || "no-cache";
+  const endpoint =
+    env.R2_ENDPOINT ||
+    (env.R2_ACCOUNT_ID ? `https://${env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com` : "");
+
+  const missing = [];
+  if (!endpoint) missing.push("R2_ACCOUNT_ID (또는 R2_ENDPOINT)");
+  if (!env.R2_BUCKET) missing.push("R2_BUCKET");
+  if (!env.R2_ACCESS_KEY_ID) missing.push("R2_ACCESS_KEY_ID");
+  if (!env.R2_SECRET_ACCESS_KEY) missing.push("R2_SECRET_ACCESS_KEY");
+  if (missing.length) {
+    console.error(
+      `\n❌ R2 업로드 설정이 없습니다. .env.local 에 아래 값을 추가하세요:\n   - ${missing.join("\n   - ")}\n` +
+        `   (Cloudflare 대시보드 → R2 → Manage R2 API Tokens 에서 S3 자격증명 발급)`,
+    );
+    process.exit(1);
+  }
+
+  const { AwsClient } = await import("aws4fetch");
+  const aws = new AwsClient({
+    accessKeyId: env.R2_ACCESS_KEY_ID,
+    secretAccessKey: env.R2_SECRET_ACCESS_KEY,
+    service: "s3",
+    region: "auto",
+  });
+
+  const url = `${endpoint.replace(/\/$/, "")}/${env.R2_BUCKET}/${encodeURIComponent(key)}`;
+  const res = await aws.fetch(url, {
+    method: "PUT",
+    body: Buffer.from(html, "utf8"),
+    headers: {
+      "content-type": "text/html; charset=utf-8",
+      "cache-control": cacheControl,
+    },
+  });
+  if (!res.ok) {
+    throw new Error(`R2 업로드 실패 ${res.status} ${res.statusText}\n${await res.text()}`);
+  }
+
+  console.log(`☁️  R2 업로드 완료: ${env.R2_BUCKET}/${key}  (cache-control: ${cacheControl})`);
+  if (env.R2_PUBLIC_BASE) {
+    console.log(`   URL: ${env.R2_PUBLIC_BASE.replace(/\/$/, "")}/${encodeURIComponent(key)}`);
+  }
+}
+
 // ─── main ─────────────────────────────────────────────────────────────────────
 function loadEnv() {
   const raw = readFileSync(join(ROOT, ".env.local"), "utf8");
@@ -427,7 +476,12 @@ async function main() {
   const kb = (Buffer.byteLength(html, "utf8") / 1024).toFixed(0);
   console.log(`✅ 생성 완료: report/관제판-imk.html  (${tasks.length}개 업무, ${kb} KB)`);
   console.log(`   보고 기준: ${generatedAt}`);
-  console.log(`   → 이 파일을 R2에 덮어쓰기 업로드하세요.`);
+
+  if (DO_UPLOAD) {
+    await uploadToR2(html, env);
+  } else {
+    console.log(`   → R2 업로드까지 하려면: npm run report:imk:deploy`);
+  }
 }
 
 main().catch((e) => {
