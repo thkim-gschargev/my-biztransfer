@@ -182,8 +182,13 @@ export default function DashboardPage() {
             })}
           </div>
 
-          {/* ③ 단계별 진행 현황 */}
-          <PhaseProgressTable rows={phaseRows} current={currentPhase} />
+          {/* ③ 단계별 진행 현황 (단계 펼치면 업무 목록 → 클릭 시 상세 팝업) */}
+          <PhaseProgressTable
+            rows={phaseRows}
+            current={currentPhase}
+            tasks={tasks}
+            onTaskClick={openDetail}
+          />
 
           {/* ④ 리스크 + 다가오는 일정 */}
           <div className="grid gap-4 lg:grid-cols-2">
