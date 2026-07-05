@@ -42,7 +42,7 @@ const DATA = {
     endMonth: 12,
     currentMonth: 7,
     lanes: [
-      { track: "transfer", sub: "기존 충전기 (아이마켓→GS차지비)", from: 6, to: 7, text: "6/5 개발 완료 · 7월 전환 완료 예정" },
+      { track: "transfer", sub: "기존 충전기 아이마켓 프록시 주소로 전환", from: 6, to: 7, text: "6/5 개발 완료 · 7월 전환 완료 예정" },
       { track: "direct", sub: "IMK-EV7 · 대유플러스 (펌웨어)", from: 6, to: 7, text: "펌웨어 개발·검증 (~7/17)" },
       { track: "proxy", sub: "EVSIS · 시그넷", from: 7, to: 12, text: "프록시 연결 → GS-OCPP 펌웨어 ~12월" },
       { track: "rollout", sub: "이관 동의 상면", from: 7, to: 12, text: "7월 일부 우선 · 8월~ 순차" },
