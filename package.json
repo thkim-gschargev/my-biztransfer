@@ -11,7 +11,9 @@
     "start": "next start",
     "lint": "eslint",
     "report:imk": "node scripts/build-imk-report.mjs",
-    "report:imk:deploy": "node scripts/build-imk-report.mjs --upload"
+    "report:imk:deploy": "node scripts/build-imk-report.mjs --upload",
+    "report:schedule": "node scripts/build-tech-schedule.mjs",
+    "report:schedule:deploy": "node scripts/build-tech-schedule.mjs --upload"
   },
   "dependencies": {
     "@base-ui/react": "^1.4.1",
