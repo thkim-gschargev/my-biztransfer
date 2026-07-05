@@ -2,9 +2,12 @@
  * 충전기술지원팀 연동 관련 일정 → 자체완결 단일 HTML 생성기 (R2 배포용).
  *
  * 소스: reference/개인 페이지 & 공유된 페이지 (노션 내보내기, 대외비) 내용을
- *       최신 일정(IMK-EV7 릴리즈 7/3 오전 · 대유 시료 7/9 오후 · TC 회신 이브이시스 7/2 / 시그넷 7/7)
- *       으로 업데이트해 이 파일의 DATA 에 구조화해 두었다. 내용 변경 시 DATA 만 고치면 된다.
+ *       최신 일정으로 업데이트해 이 파일 DATA 에 구조화. 내용 변경 시 DATA 만 수정.
  * 출력 HTML에는 키·백엔드 연결이 전혀 없다(완전 정적).
+ *
+ * 연동 방식 2갈래(요청):
+ *   • GS-OCPP 직접 연동(프록시 없음): IMK-EV7 · 대유플러스 — 펌웨어로 서버 직접 연동
+ *   • 프록시 우선 연동: EVSIS(이브이시스) · 시그넷 — 프록시로 먼저 연결, 펌웨어는 이후(~12월)
  *
  * 사용:  npm run report:schedule           → report/연동일정-충전기술지원팀.html 생성
  *        npm run report:schedule:deploy    → 생성 + R2 업로드(같은 키 덮어쓰기)
@@ -18,6 +21,14 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const OUT = join(ROOT, "report", "연동일정-충전기술지원팀.html");
 const DO_UPLOAD = process.argv.includes("--upload");
 
+// 트랙 색 (로드맵 레인 · 경로 카드 · 일정 태그에서 공통 사용)
+const TRACK = {
+  transfer: { color: "#2563eb", bg: "#dbeafe", label: "프록시 서버 전환" },
+  direct: { color: "#7c3aed", bg: "#ede9fe", label: "GS-OCPP 직접 연동" },
+  proxy: { color: "#0d9488", bg: "#ccfbf1", label: "프록시 우선 연동" },
+  rollout: { color: "#d97706", bg: "#fef3c7", label: "상면 전환" },
+};
+
 // ═══════════════════════════════════════════════════════════════════════════
 // DATA — 일정이 바뀌면 여기만 수정
 // ═══════════════════════════════════════════════════════════════════════════
@@ -25,17 +36,30 @@ const DATA = {
   title: "충전기술지원팀 연동 관련 일정",
   subtitle: "IMK(아이마켓코리아) 양수도 · 연동 개발/전환",
 
-  // 7월 주요 일정 (D-day 자동 계산)
+  // 최상단 로드맵 (월별 스윔레인). from/to = 월(inclusive).
+  roadmap: {
+    startMonth: 6,
+    endMonth: 12,
+    currentMonth: 7,
+    lanes: [
+      { track: "transfer", sub: "기존 충전기 (아이마켓→GS차지비)", from: 6, to: 7, text: "6/5 개발 완료 · 7월 전환 완료 예정" },
+      { track: "direct", sub: "IMK-EV7 · 대유플러스 (펌웨어)", from: 6, to: 7, text: "펌웨어 개발·검증 (~7/17)" },
+      { track: "proxy", sub: "EVSIS · 시그넷", from: 7, to: 12, text: "프록시 연결 → GS-OCPP 펌웨어 ~12월" },
+      { track: "rollout", sub: "이관 동의 상면", from: 7, to: 12, text: "7월 일부 우선 · 8월~ 순차" },
+    ],
+  },
+
+  // 7월 주요 일정 (D-day 자동). track = 트랙 키.
   keyDates: [
-    { date: "2026-07-02", label: "이브이시스 프록시 TestCase 문서 회신", tag: "Proxy" },
-    { date: "2026-07-03", label: "IMK-EV7 수정 펌웨어 릴리즈 (오전)", tag: "펌웨어" },
-    { date: "2026-07-07", label: "시그넷 프록시 TestCase 문서 회신", tag: "Proxy" },
-    { date: "2026-07-07", label: "모니트 프록시 테스트 결과 회신", tag: "Proxy" },
-    { date: "2026-07-09", label: "대유플러스 시료 전달 (오후)", tag: "검증" },
-    { date: "2026-07-10", label: "GS차지비 Proxy 검증 완료 목표 (삼성전자DS 평택 16기 선전환)", tag: "검증" },
-    { date: "2026-07-10", label: "EVSIS UI 시나리오 전달 — 12.1인치 급속", tag: "EVSIS" },
-    { date: "2026-07-17", label: "IMK-EV7·대유플러스 GS-OCPP 검증 완료 목표", tag: "검증" },
-    { date: "2026-07-31", label: "EVSIS UI 시나리오 전달 — 24인치 급속/초급속", tag: "EVSIS" },
+    { date: "2026-07-02", label: "이브이시스 프록시 TestCase 문서 회신", track: "proxy" },
+    { date: "2026-07-03", label: "IMK-EV7 수정 펌웨어 릴리즈 (오전)", track: "direct" },
+    { date: "2026-07-07", label: "시그넷 프록시 TestCase 문서 회신", track: "proxy" },
+    { date: "2026-07-07", label: "모니트 프록시 테스트 결과 회신", track: "transfer" },
+    { date: "2026-07-09", label: "대유플러스 시료 전달 (오후)", track: "direct" },
+    { date: "2026-07-10", label: "GS차지비 Proxy 검증 (삼성전자DS 평택 16기 선전환)", track: "transfer" },
+    { date: "2026-07-10", label: "EVSIS UI 시나리오 전달 — 12.1인치 급속", track: "proxy" },
+    { date: "2026-07-17", label: "IMK-EV7·대유플러스 GS-OCPP 검증 완료 목표", track: "direct" },
+    { date: "2026-07-31", label: "EVSIS UI 시나리오 전달 — 24인치 급속/초급속", track: "proxy" },
   ],
 
   transition: {
@@ -46,11 +70,66 @@ const DATA = {
     ],
   },
 
-  proxy: {
+  // ── 모델별 연동 방식 (핵심 구분) ──
+  routing: {
+    direct: {
+      track: "direct",
+      tag: "프록시 없음",
+      desc: "펌웨어 개발로 GS차지비 서버에 직접 연동 (프록시 미경유)",
+      models: [
+        {
+          name: "JS테크 완속 IMK-EV7",
+          qty: "713기",
+          facts: [
+            ["시료", "6/24 전달 완료"],
+            ["펌웨어", "7/3(금) 오전 릴리즈"],
+            ["검증", "6/25 ~ 7/17"],
+            ["비고", "시료 수령 지연(6/12→6/19→6/24, 모니트 사유) · 펌웨어 수정 위해 모니트 추가 개발"],
+          ],
+        },
+        {
+          name: "대유플러스 완속 DY1007-11R",
+          qty: "483기",
+          facts: [
+            ["시료", "7/9(목) 오후 전달"],
+            ["검증", "~ 7/17"],
+            ["비고", "시료 수령 지연(6/19→6/30→7/9, 모니트 사유) · Proxy 테스트 우선이라 추가 지연 가능"],
+          ],
+        },
+      ],
+    },
+    proxy: {
+      track: "proxy",
+      tag: "우선",
+      desc: "프록시로 먼저 연결 · GS-OCPP 펌웨어 개발은 이후(~12월)",
+      models: [
+        {
+          name: "EVSIS(이브이시스) 완/급속 9모델",
+          qty: "498기",
+          facts: [
+            ["TC 회신", "7/2(목)"],
+            ["펌웨어", "~ 12월 개발·현장 적용"],
+            ["비고", "기존 운영 중 필드이슈 동일 모델(487기)에도 해당 펌웨어 적용 가능"],
+          ],
+        },
+        {
+          name: "시그넷 완속 HB14K-EV-C1C1-G1",
+          qty: "142기",
+          facts: [
+            ["TC 회신", "7/7(화)"],
+            ["펌웨어", "~ 12월 개발·현장 적용"],
+          ],
+        },
+      ],
+    },
+  },
+
+  // 프록시 서버 전환 (기존 충전기 인프라)
+  proxyInfra: {
     step1: {
       title: "단계 1 · 아이마켓코리아 연동 Proxy 개발 및 전환",
       status: "전환 진행 중",
-      statusTone: "blue",
+      statusTone: "#2563eb",
       items: [
         { done: true, text: "6/5 아이마켓코리아–모니트 간 Proxy 연동 개발 완료" },
         { done: true, text: "6/9 현장 연동 테스트 진행" },
@@ -61,7 +140,7 @@ const DATA = {
     step2: {
       title: "단계 2 · GS차지비 연동 Proxy 개발 및 전환",
       status: "테스트/검증 중 · 일정 지연",
-      statusTone: "amber",
+      statusTone: "#d97706",
       items: [
         { done: true, text: "6/10부터 GS차지비 Proxy 연동 개발 시작, 6/16부터 테스트 진행" },
         { done: false, text: "모니트 측 테스트 진행 중 — 개발 지연으로 7/7(화)까지 프록시 테스트 결과 회신 예정", was: "6/29까지 완료·회신 예정" },
@@ -69,26 +148,6 @@ const DATA = {
         { done: false, text: "GS차지비 검증(6/30~): 삼성전자DS 평택 2단지 주차동 16기(미운영 예정) 테스트 후 선전환 — 모니트 개발 지연으로 ~7/10", was: "~7/1" },
       ],
     },
-  },
-
-  ocppDirect: {
-    title: "직접 연동 모델 (Proxy 미적용)",
-    head: ["제조사/모델", "수량(기)", "진행 현황", "검증 일정(목표)", "비고"],
-    rows: [
-      ["JS테크 완속 IMK-EV7", "713", "6/24 시료 전달 완료", "6/25 ~ 7/17",
-        "시료 수령 지연(6/12→6/19→6/24, 모니트 측 사유) · 펌웨어 수정 필요 — 수정 펌웨어 7/3(금) 오전 릴리즈"],
-      ["대유플러스 완속 DY1007-11R", "483", "7/9(목) 오후 시료 전달 예정", "~ 7/17",
-        "시료 수령 지연(6/19→6/30→7/9, 모니트 측 사유) · Proxy 테스트 우선이라 추가 지연 가능"],
-    ],
-  },
-  ocppProxyFirst: {
-    title: "Proxy 선적용 후 연동 모델",
-    head: ["제조사/모델", "수량(기)", "진행 현황", "비고"],
-    rows: [
-      ["시그넷 완속 HB14K-EV-C1C1-G1", "142", "~ 12월 개발 및 현장 적용 예정", "프록시 TestCase 문서 회신 7/7(화) 예정"],
-      ["EVSIS 완/급속 9모델", "498", "~ 12월 개발 및 현장 적용 예정",
-        "프록시 TestCase 문서 회신 7/2(목) · 기존 운영 중 필드이슈 동일 모델(487기)에도 해당 펌웨어 적용 가능"],
-    ],
   },
 
   evsisUi: {
@@ -125,7 +184,7 @@ const DATA = {
 };
 
 // ═══════════════════════════════════════════════════════════════════════════
-// 렌더
+// 유틸
 // ═══════════════════════════════════════════════════════════════════════════
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const DAY = 24 * 60 * 60 * 1000;
@@ -135,8 +194,7 @@ const parseYMD = (iso) => {
   const [y, m, d] = iso.split("-").map(Number);
   return new Date(y, m - 1, d);
 };
-const kstTodayISO = () =>
-  new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Seoul" }); // YYYY-MM-DD
+const kstTodayISO = () => new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Seoul" });
 const daysFromToday = (iso) => Math.round((parseYMD(iso) - parseYMD(kstTodayISO())) / DAY);
 const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
 const mdw = (iso) => {
@@ -144,36 +202,82 @@ const mdw = (iso) => {
   return `${d.getMonth() + 1}/${d.getDate()}(${WEEKDAYS[d.getDay()]})`;
 };
 
-const TAG_COLOR = { Proxy: "#2563eb", 펌웨어: "#7c3aed", 검증: "#d97706", EVSIS: "#0d9488" };
-const TONE = { blue: "#2563eb", amber: "#d97706", green: "#16a34a" };
+// ═══════════════════════════════════════════════════════════════════════════
+// 렌더
+// ═══════════════════════════════════════════════════════════════════════════
+function roadmap() {
+  const rm = DATA.roadmap;
+  const months = [];
+  for (let m = rm.startMonth; m <= rm.endMonth; m++) months.push(m);
+  const col = (m) => m - rm.startMonth + 2; // 라벨=1열, 첫 달=2열
+  const nCols = months.length;
+
+  const header = months
+    .map((m) => `<div class="rm-h${m === rm.currentMonth ? " cur" : ""}" style="grid-row:1;grid-column:${col(m)}">${m}월</div>`)
+    .join("");
+
+  const lanes = rm.lanes
+    .map((ln, i) => {
+      const row = i + 2;
+      const t = TRACK[ln.track];
+      const c1 = col(ln.from);
+      const c2 = col(ln.to) + 1;
+      return `
+      <div class="rm-lbl" style="grid-row:${row}"><b style="color:${t.color}">${esc(t.label)}</b><small>${esc(ln.sub)}</small></div>
+      <div class="rm-bg" style="grid-row:${row}"></div>
+      <div class="rm-bar" style="grid-row:${row};grid-column:${c1}/${c2};background:${t.bg};color:${t.color};border-color:${t.color}55">${esc(ln.text)}</div>`;
+    })
+    .join("");
+
+  return `<div class="rmwrap"><div class="roadmap" style="grid-template-columns:132px repeat(${nCols},minmax(58px,1fr))">${header}${lanes}</div></div>`;
+}
 
 function keyDateRows() {
-  return DATA.keyDates.map(({ date, label, tag }) => {
-    const d = daysFromToday(date);
-    const dday = d === 0 ? "D-DAY" : d > 0 ? `D-${d}` : "경과";
-    const cls = d === 0 ? "today" : d > 0 ? (d <= 3 ? "soon" : "") : "past";
-    const color = TAG_COLOR[tag] ?? "#64748b";
-    return `<li class="${cls}">
+  return DATA.keyDates
+    .map(({ date, label, track }) => {
+      const d = daysFromToday(date);
+      const dday = d === 0 ? "D-DAY" : d > 0 ? `D-${d}` : "경과";
+      const cls = d === 0 ? "today" : d > 0 ? (d <= 3 ? "soon" : "") : "past";
+      const t = TRACK[track];
+      return `<li class="${cls}">
       <span class="kd">${esc(mdw(date))}<em>${dday}</em></span>
       <span class="kl">${esc(label)}</span>
-      <span class="kt" style="color:${color};background:${color}1a">${esc(tag)}</span>
+      <span class="kt" style="color:${t.color};background:${t.color}1a">${esc(t.label)}</span>
     </li>`;
-  }).join("");
+    })
+    .join("");
+}
+
+function routeCard(r) {
+  const t = TRACK[r.track];
+  const models = r.models
+    .map(
+      (m) => `<div class="mrow">
+      <div class="mh"><span class="mname">${esc(m.name)}</span><span class="mqty">${esc(m.qty)}</span></div>
+      <div class="mfacts">${m.facts.map(([k, v]) => `<div class="mfact"><span class="fk">${esc(k)}</span><span>${esc(v)}</span></div>`).join("")}</div>
+    </div>`,
+    )
+    .join("");
+  return `<div class="route">
+    <div class="rhd" style="background:${t.color}"><b>${esc(t.label)}</b><span>${esc(r.tag)}</span></div>
+    <p class="rdesc">${esc(r.desc)}</p>
+    ${models}
+  </div>`;
 }
 
 function checklist(items) {
-  return `<ul class="cl">${items.map((it) => `
-    <li class="${it.done ? "d" : ""}">
-      <i>${it.done ? "✓" : "•"}</i>
-      <span>${esc(it.text)}${it.was ? ` <del>(기존 ${esc(it.was)})</del>` : ""}</span>
-    </li>`).join("")}</ul>`;
+  return `<ul class="cl">${items
+    .map(
+      (it) => `
+    <li class="${it.done ? "d" : ""}"><i>${it.done ? "✓" : "•"}</i><span>${esc(it.text)}${it.was ? ` <del>(기존 ${esc(it.was)})</del>` : ""}</span></li>`,
+    )
+    .join("")}</ul>`;
 }
 
 function table(t, { firstBold = true } = {}) {
   return `<div class="twrap"><table>
     <thead><tr>${t.head.map((h) => `<th>${esc(h)}</th>`).join("")}</tr></thead>
-    <tbody>${t.rows.map((r) => `<tr>${r.map((c, i) =>
-      `<td${i === 0 && firstBold ? ' class="b"' : ""}>${esc(c)}</td>`).join("")}</tr>`).join("")}</tbody>
+    <tbody>${t.rows.map((r) => `<tr>${r.map((c, i) => `<td${i === 0 && firstBold ? ' class="b"' : ""}>${esc(c)}</td>`).join("")}</tr>`).join("")}</tbody>
   </table></div>`;
 }
 
@@ -188,16 +292,26 @@ function render(generatedAt) {
   :root{--bd:#e2e8f0;--mut:#64748b;--ink:#0f172a}
   *{box-sizing:border-box}
   body{margin:0;background:#f1f5f9;color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic","Segoe UI",Roboto,sans-serif;line-height:1.55;-webkit-font-smoothing:antialiased}
-  .doc{max-width:980px;margin:0 auto;padding:28px 20px 48px}
+  .doc{max-width:1000px;margin:0 auto;padding:28px 20px 48px}
   .card{background:#fff;border:1px solid var(--bd);border-radius:14px;box-shadow:0 1px 2px rgba(15,23,42,.04);margin-bottom:16px;overflow:hidden}
   .muted{color:var(--mut)}
   header.hd{margin-bottom:18px}
   header.hd h1{font-size:22px;margin:0 0 2px;letter-spacing:-.02em}
   header.hd .sub{font-size:13px;color:var(--mut)}
   h2.sec{display:flex;align-items:center;gap:8px;font-size:15px;margin:0;padding:13px 18px;border-bottom:1px solid var(--bd)}
-  h2.sec .no{flex:0 0 auto;width:22px;height:22px;border-radius:7px;background:#2563eb;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center}
+  h2.sec .no{flex:0 0 auto;width:22px;height:22px;border-radius:7px;background:#0f172a;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center}
+  h2.sec .star{background:#f59e0b}
   .body{padding:16px 18px}
   .note{font-size:13px;color:var(--mut);background:#f8fafc;border:1px solid var(--bd);border-radius:9px;padding:9px 13px;margin:0 0 12px}
+  /* 로드맵 */
+  .rmwrap{overflow-x:auto;padding:16px 18px 18px}
+  .roadmap{display:grid;align-items:center;row-gap:8px;min-width:600px}
+  .rm-h{grid-row:1;text-align:center;font-size:11px;color:var(--mut);padding-bottom:6px;border-bottom:2px solid var(--bd)}
+  .rm-h.cur{color:#2563eb;font-weight:800;border-bottom-color:#2563eb}
+  .rm-lbl{grid-column:1;padding-right:12px;display:flex;flex-direction:column;line-height:1.25}
+  .rm-lbl b{font-size:12.5px}.rm-lbl small{font-weight:400;color:var(--mut);font-size:10.5px}
+  .rm-bg{grid-column:2 / -1;height:28px;background:#f1f5f9;border-radius:7px;align-self:center}
+  .rm-bar{height:28px;align-self:center;z-index:1;display:flex;align-items:center;padding:0 11px;font-size:11px;font-weight:600;border:1px solid;border-radius:7px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
   /* 주요 일정 */
   ul.kdl{list-style:none;margin:0;padding:0}
   ul.kdl li{display:flex;align-items:center;gap:12px;padding:8px 18px;border-bottom:1px solid #eef2f6;font-size:13px}
@@ -207,12 +321,26 @@ function render(generatedAt) {
   .kd{flex:0 0 92px;font-weight:700;font-variant-numeric:tabular-nums}
   .kd em{display:block;font-style:normal;font-weight:600;font-size:10px;color:var(--mut)}
   .kl{flex:1;min-width:0}
-  .kt{flex:0 0 auto;font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px}
+  .kt{flex:0 0 auto;font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px;white-space:nowrap}
   /* 전환 일정 */
   .steps{display:flex;gap:12px;flex-wrap:wrap}
   .stepbox{flex:1;min-width:220px;border:1px solid var(--bd);border-radius:10px;padding:13px 15px;background:#f8fafc}
-  .stepbox .w{font-size:12px;font-weight:700;color:#2563eb}
+  .stepbox .w{font-size:12px;font-weight:700;color:#d97706}
   .stepbox .t{font-size:14px;font-weight:600;margin-top:2px}
+  /* 모델별 연동 방식 (경로 카드) */
+  .routes{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .route{border:1px solid var(--bd);border-radius:11px;overflow:hidden}
+  .rhd{display:flex;align-items:center;gap:8px;padding:10px 14px;color:#fff}
+  .rhd b{font-size:14px}
+  .rhd span{font-size:11px;font-weight:700;background:rgba(255,255,255,.22);padding:2px 8px;border-radius:6px}
+  .rdesc{font-size:12px;color:var(--mut);margin:11px 14px 6px}
+  .mrow{padding:10px 14px;border-top:1px solid #eef2f6}
+  .mh{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+  .mname{font-weight:600;font-size:13.5px}
+  .mqty{font-size:11px;font-weight:700;color:var(--mut);background:#f1f5f9;padding:1px 8px;border-radius:6px}
+  .mfacts{margin-top:6px;display:grid;gap:4px;font-size:12.5px}
+  .mfact{display:grid;grid-template-columns:58px 1fr;gap:8px}
+  .mfact .fk{color:var(--mut)}
   /* 체크리스트 */
   .phasebox{border:1px solid var(--bd);border-radius:10px;margin-bottom:12px;overflow:hidden}
   .phasebox:last-child{margin-bottom:0}
@@ -234,7 +362,7 @@ function render(generatedAt) {
   tbody tr:last-child td{border-bottom:0}
   td.b{font-weight:600;white-space:nowrap}
   footer{margin-top:22px;color:var(--mut);font-size:12px;text-align:center;border-top:1px solid var(--bd);padding-top:14px}
-  @media(max-width:640px){.doc{padding:18px 12px 40px}.steps{flex-direction:column}}
+  @media(max-width:640px){.doc{padding:18px 12px 40px}.steps,.routes{grid-template-columns:1fr}}
   @media print{body{background:#fff}.card{box-shadow:none;break-inside:avoid}}
 </style>
 </head>
@@ -246,7 +374,12 @@ function render(generatedAt) {
   </header>
 
   <section class="card">
-    <h2 class="sec"><span class="no">★</span>7월 주요 일정</h2>
+    <h2 class="sec"><span class="no star">★</span>전체 로드맵 <span class="muted" style="font-weight:400;font-size:12px">· 6~12월 · 연동 방식별 진행</span></h2>
+    ${roadmap()}
+  </section>
+
+  <section class="card">
+    <h2 class="sec"><span class="no star">★</span>7월 주요 일정</h2>
     <ul class="kdl">${keyDateRows()}</ul>
   </section>
 
@@ -254,37 +387,33 @@ function render(generatedAt) {
     <h2 class="sec"><span class="no">1</span>전환 일정</h2>
     <div class="body">
       <p class="note">${esc(DATA.transition.note)}</p>
-      <div class="steps">${DATA.transition.items.map((s) => `
-        <div class="stepbox"><div class="w">${esc(s.when)}</div><div class="t">${esc(s.what)}</div></div>`).join("")}
+      <div class="steps">${DATA.transition.items.map((s) => `<div class="stepbox"><div class="w">${esc(s.when)}</div><div class="t">${esc(s.what)}</div></div>`).join("")}</div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2 class="sec"><span class="no">2</span>모델별 연동 방식 <span class="muted" style="font-weight:400;font-size:12px">· 프록시 vs 직접(펌웨어) 구분</span></h2>
+    <div class="body">
+      <div class="routes">
+        ${routeCard(DATA.routing.direct)}
+        ${routeCard(DATA.routing.proxy)}
       </div>
     </div>
   </section>
 
   <section class="card">
-    <h2 class="sec"><span class="no">2</span>Proxy 적용 일정</h2>
+    <h2 class="sec"><span class="no">3</span>프록시 서버 전환 일정 <span class="muted" style="font-weight:400;font-size:12px">· 기존 충전기 인프라</span></h2>
     <div class="body">
-      ${[DATA.proxy.step1, DATA.proxy.step2].map((st) => `
+      ${[DATA.proxyInfra.step1, DATA.proxyInfra.step2].map((st) => `
       <div class="phasebox">
-        <div class="ph">${esc(st.title)}
-          <span class="pstat" style="color:${TONE[st.statusTone]};background:${TONE[st.statusTone]}1a">${esc(st.status)}</span>
-        </div>
+        <div class="ph">${esc(st.title)}<span class="pstat" style="color:${st.statusTone};background:${st.statusTone}1a">${esc(st.status)}</span></div>
         ${checklist(st.items)}
       </div>`).join("")}
     </div>
   </section>
 
   <section class="card">
-    <h2 class="sec"><span class="no">3</span>GS-OCPP 연동 개발 일정</h2>
-    <div class="body">
-      <h3 class="tt">${esc(DATA.ocppDirect.title)}</h3>
-      ${table(DATA.ocppDirect)}
-      <h3 class="tt">${esc(DATA.ocppProxyFirst.title)}</h3>
-      ${table(DATA.ocppProxyFirst)}
-    </div>
-  </section>
-
-  <section class="card">
-    <h2 class="sec"><span class="no">4</span>EVSIS 관련 일정</h2>
+    <h2 class="sec"><span class="no">4</span>EVSIS 상세 <span class="muted" style="font-weight:400;font-size:12px">· UI 시나리오 · 펌웨어 9모델</span></h2>
     <div class="body">
       <h3 class="tt">${esc(DATA.evsisUi.title)}</h3>
       ${table(DATA.evsisUi)}
@@ -338,9 +467,7 @@ async function main() {
 
   if (DO_UPLOAD) {
     const env = loadEnv();
-    await uploadToR2(html, env, {
-      key: env.R2_OBJECT_KEY_SCHEDULE || "연동일정-충전기술지원팀.html",
-    });
+    await uploadToR2(html, env, { key: env.R2_OBJECT_KEY_SCHEDULE || "연동일정-충전기술지원팀.html" });
   } else {
     console.log(`   → R2 업로드까지 하려면: npm run report:schedule:deploy`);
   }
