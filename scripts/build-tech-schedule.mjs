@@ -292,7 +292,7 @@ function render(generatedAt) {
   :root{--bd:#e2e8f0;--mut:#64748b;--ink:#0f172a}
   *{box-sizing:border-box}
   body{margin:0;background:#f1f5f9;color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic","Segoe UI",Roboto,sans-serif;line-height:1.55;-webkit-font-smoothing:antialiased}
-  .doc{max-width:1000px;margin:0 auto;padding:28px 20px 48px}
+  .doc{max-width:1080px;margin:0 auto;padding:28px 20px 48px}
   .card{background:#fff;border:1px solid var(--bd);border-radius:14px;box-shadow:0 1px 2px rgba(15,23,42,.04);margin-bottom:16px;overflow:hidden}
   .muted{color:var(--mut)}
   header.hd{margin-bottom:18px}
@@ -361,6 +361,9 @@ function render(generatedAt) {
   th,td{padding:9px 12px;border-bottom:1px solid #eef2f6;vertical-align:top}
   tbody tr:last-child td{border-bottom:0}
   td.b{font-weight:600;white-space:nowrap}
+  /* 각 열은 한 줄 유지(모델 ID 중간 끊김 방지), 마지막 설명 열만 줄바꿈 */
+  td{white-space:nowrap}
+  td:last-child{white-space:normal;min-width:170px}
   footer{margin-top:22px;color:var(--mut);font-size:12px;text-align:center;border-top:1px solid var(--bd);padding-top:14px}
   @media(max-width:640px){.doc{padding:18px 12px 40px}.steps,.routes{grid-template-columns:1fr}}
   @media print{body{background:#fff}.card{box-shadow:none;break-inside:avoid}}
