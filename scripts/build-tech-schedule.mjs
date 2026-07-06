@@ -62,6 +62,24 @@ const DATA = {
     { date: "2026-07-31", label: "EVSIS UI 시나리오 전달 — 24인치 급속/초급속", track: "proxy" },
   ],
 
+  // 리스크 · 지연 항목 (별표 섹션)
+  risks: [
+    {
+      title: "모니트 프록시 연동 테스트 지연",
+      track: "transfer",
+      detail: "GS차지비 Proxy(단계 2) 테스트가 모니트 측 개발 지연으로 진행 중.",
+      schedule: "테스트 결과 회신 6/29 → 7/7 · GS차지비 전체 검증 ~7/1 → ~7/17",
+      impact: "삼성전자DS 평택 16기 선전환 및 GS차지비 Proxy 전체 검증 지연",
+    },
+    {
+      title: "모니트 대유플러스 연동 개발 지연",
+      track: "direct",
+      detail: "대유플러스 DY1007-11R GS-OCPP 연동을 위한 모니트 개발·시료 전달 지연.",
+      schedule: "시료 전달 6/19 → 7/9(목) 오후 · 검증 완료 목표 → 7/24",
+      impact: "GS-OCPP 직접 연동 검증 착수 지연 (Proxy 테스트가 우선순위)",
+    },
+  ],
+
   transition: {
     note: "기존 5/31 전환 완료 예정이었으나, 계약서 검토 및 전환 동의 확보 일정으로 변경.",
     items: [
@@ -249,6 +267,24 @@ function keyDateRows() {
     .join("");
 }
 
+function riskCards() {
+  return DATA.risks
+    .map((r) => {
+      const t = TRACK[r.track];
+      return `<div class="risk">
+      <span class="rwarn">⚠</span>
+      <div class="rbody">
+        <div class="rhead"><b>${esc(r.title)}</b><span class="rtag">지연중</span></div>
+        <div class="rdetail">${esc(r.detail)}</div>
+        <div class="rline"><span class="rk">일정</span><span>${esc(r.schedule)}</span></div>
+        <div class="rline"><span class="rk">영향</span><span>${esc(r.impact)}</span></div>
+      </div>
+      <span class="kt rtk" style="color:${t.color};background:${t.color}1a">${esc(t.label)}</span>
+    </div>`;
+    })
+    .join("");
+}
+
 function routeCard(r) {
   const t = TRACK[r.track];
   const models = r.models
@@ -336,6 +372,20 @@ function render(generatedAt) {
   h2.sec{display:flex;align-items:center;gap:8px;font-size:15px;margin:0;padding:13px 18px;border-bottom:1px solid var(--bd)}
   h2.sec .no{flex:0 0 auto;width:22px;height:22px;border-radius:7px;background:#0f172a;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center}
   h2.sec .star{background:#f59e0b}
+  h2.sec .rstar{background:#dc2626}
+  /* 리스크 카드 */
+  .risks{padding:14px 18px;display:grid;gap:11px}
+  .risk{display:flex;gap:11px;align-items:flex-start;border:1px solid #fecaca;border-left:4px solid #dc2626;border-radius:10px;padding:12px 14px;background:#fef7f7}
+  .rwarn{flex:0 0 auto;font-size:15px;line-height:1.5}
+  .rbody{flex:1;min-width:0}
+  .rhead{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .rhead b{font-size:14px;font-weight:700}
+  .rtag{font-size:11px;font-weight:700;color:#dc2626;background:#fee2e2;padding:1px 8px;border-radius:6px}
+  .rdetail{font-size:13px;color:#334155;margin-top:5px}
+  .rline{display:flex;gap:8px;font-size:12.5px;margin-top:4px}
+  .rline .rk{flex:0 0 34px;color:var(--mut);font-weight:600}
+  .risk .rtk{flex:0 0 auto;align-self:flex-start}
+  @media(max-width:640px){.risk{flex-wrap:wrap}.risk .rtk{margin-left:26px}}
   .body{padding:16px 18px}
   .note{font-size:13px;color:var(--mut);background:#f8fafc;border:1px solid var(--bd);border-radius:9px;padding:9px 13px;margin:0 0 12px}
   /* 로드맵 */
@@ -421,6 +471,11 @@ function render(generatedAt) {
   <section class="card">
     <h2 class="sec"><span class="no star">★</span>7월 주요 일정</h2>
     <ul class="kdl">${keyDateRows()}</ul>
+  </section>
+
+  <section class="card">
+    <h2 class="sec"><span class="no rstar">★</span>리스크 · 일정 지연 <span class="muted" style="font-weight:400;font-size:12px">· 주의 필요 항목</span></h2>
+    <div class="risks">${riskCards()}</div>
   </section>
 
   <section class="card">
