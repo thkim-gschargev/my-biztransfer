@@ -53,8 +53,7 @@ const DATA = {
   keyDates: [
     { date: "2026-07-03", label: "IMK-EV7 수정 펌웨어 릴리즈 완료", track: "direct" },
     { date: "2026-07-06", label: "IMK-EV7 GS차지비 검증 착수", track: "direct" },
-    { date: "2026-07-07", label: "모니트 프록시 TestCase 문서 회신 (이브이시스·시그넷)", track: "proxy" },
-    { date: "2026-07-07", label: "모니트→GS차지비 프록시 테스트 결과 회신", track: "transfer" },
+    { date: "2026-07-07", label: "모니트→GS차지비 프록시 TestCase 문서 회신", track: "transfer" },
     { date: "2026-07-09", label: "대유플러스 시료 전달 (오후)", track: "direct" },
     { date: "2026-07-09", label: "삼성전자DS 평택 16기 현장 테스트 (GS차지비 Proxy 검증)", track: "transfer" },
     { date: "2026-07-10", label: "EVSIS UI 시나리오 전달 — 12.1인치 급속", track: "proxy" },
