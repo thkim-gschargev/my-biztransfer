@@ -29,6 +29,18 @@ const TRACK = {
   rollout: { color: "#d97706", bg: "#fef3c7", label: "상면 전환" },
 };
 
+// 상단 sticky 탭 네비게이션 (섹션 id 와 일치)
+const NAV = [
+  { id: "sec-roadmap", label: "로드맵" },
+  { id: "sec-keydates", label: "주요 일정" },
+  { id: "sec-risk", label: "리스크" },
+  { id: "sec-transition", label: "전환 일정" },
+  { id: "sec-routing", label: "연동 방식" },
+  { id: "sec-proxy", label: "프록시 전환" },
+  { id: "sec-evsis", label: "EVSIS" },
+  { id: "sec-keep", label: "Proxy 유지" },
+];
+
 // ═══════════════════════════════════════════════════════════════════════════
 // DATA — 일정이 바뀌면 여기만 수정
 // ═══════════════════════════════════════════════════════════════════════════
@@ -365,6 +377,13 @@ function render(generatedAt) {
   body{margin:0;background:#f1f5f9;color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic","Segoe UI",Roboto,sans-serif;line-height:1.55;-webkit-font-smoothing:antialiased}
   .doc{max-width:1080px;margin:0 auto;padding:28px 20px 48px}
   .card{background:#fff;border:1px solid var(--bd);border-radius:14px;box-shadow:0 1px 2px rgba(15,23,42,.04);margin-bottom:16px;overflow:hidden}
+  @media (prefers-reduced-motion: no-preference){html{scroll-behavior:smooth}}
+  section[id]{scroll-margin-top:58px}
+  .tabnav{position:sticky;top:0;z-index:20;display:flex;gap:6px;overflow-x:auto;background:#f1f5f9;padding:8px 0;margin-bottom:16px;border-bottom:1px solid var(--bd)}
+  .tabnav::-webkit-scrollbar{height:0}
+  .tabnav a{flex:0 0 auto;font-size:12.5px;font-weight:600;color:#475569;text-decoration:none;padding:6px 12px;border-radius:8px;white-space:nowrap;border:1px solid transparent;transition:background .12s,color .12s}
+  .tabnav a:hover{background:#e2e8f0;color:var(--ink)}
+  .tabnav a.active{color:#2563eb;background:#dbeafe;border-color:#bfdbfe}
   .muted{color:var(--mut)}
   header.hd{margin-bottom:18px}
   header.hd h1{font-size:22px;margin:0 0 2px;letter-spacing:-.02em}
@@ -453,7 +472,7 @@ function render(generatedAt) {
   .sb{display:inline-block;font-size:11px;font-weight:700;padding:1px 8px;border-radius:6px;white-space:nowrap}
   footer{margin-top:22px;color:var(--mut);font-size:12px;text-align:center;border-top:1px solid var(--bd);padding-top:14px}
   @media(max-width:640px){.doc{padding:18px 12px 40px}.steps,.routes{grid-template-columns:1fr}}
-  @media print{body{background:#fff}.card{box-shadow:none;break-inside:avoid}}
+  @media print{body{background:#fff}.card{box-shadow:none;break-inside:avoid}.tabnav{display:none}}
 </style>
 </head>
 <body>
@@ -463,22 +482,24 @@ function render(generatedAt) {
     <div class="sub">${esc(DATA.subtitle)} · 기준 ${esc(generatedAt)}</div>
   </header>
 
-  <section class="card">
+  <nav class="tabnav" aria-label="섹션 이동">${NAV.map((n) => `<a href="#${n.id}">${esc(n.label)}</a>`).join("")}</nav>
+
+  <section class="card" id="sec-roadmap">
     <h2 class="sec"><span class="no star">★</span>전체 로드맵 <span class="muted" style="font-weight:400;font-size:12px">· 6~12월 · 연동 방식별 진행</span></h2>
     ${roadmap()}
   </section>
 
-  <section class="card">
+  <section class="card" id="sec-keydates">
     <h2 class="sec"><span class="no star">★</span>7월 주요 일정</h2>
     <ul class="kdl">${keyDateRows()}</ul>
   </section>
 
-  <section class="card">
+  <section class="card" id="sec-risk">
     <h2 class="sec"><span class="no rstar">★</span>리스크 · 일정 지연 <span class="muted" style="font-weight:400;font-size:12px">· 주의 필요 항목</span></h2>
     <div class="risks">${riskCards()}</div>
   </section>
 
-  <section class="card">
+  <section class="card" id="sec-transition">
     <h2 class="sec"><span class="no">1</span>전환 일정</h2>
     <div class="body">
       <p class="note">${esc(DATA.transition.note)}</p>
@@ -486,7 +507,7 @@ function render(generatedAt) {
     </div>
   </section>
 
-  <section class="card">
+  <section class="card" id="sec-routing">
     <h2 class="sec"><span class="no">2</span>모델별 연동 방식 <span class="muted" style="font-weight:400;font-size:12px">· 프록시 vs 직접(펌웨어) 구분</span></h2>
     <div class="body">
       <div class="routes">
@@ -496,7 +517,7 @@ function render(generatedAt) {
     </div>
   </section>
 
-  <section class="card">
+  <section class="card" id="sec-proxy">
     <h2 class="sec"><span class="no">3</span>프록시 서버 전환 일정 <span class="muted" style="font-weight:400;font-size:12px">· 기존 충전기 인프라</span></h2>
     <div class="body">
       ${[DATA.proxyInfra.step1, DATA.proxyInfra.step2].map((st) => `
@@ -507,7 +528,7 @@ function render(generatedAt) {
     </div>
   </section>
 
-  <section class="card">
+  <section class="card" id="sec-evsis">
     <h2 class="sec"><span class="no">4</span>EVSIS 상세 <span class="muted" style="font-weight:400;font-size:12px">· UI 시나리오 · 펌웨어 9모델</span></h2>
     <div class="body">
       <h3 class="tt">${esc(DATA.evsisUi.title)}</h3>
@@ -517,7 +538,7 @@ function render(generatedAt) {
     </div>
   </section>
 
-  <section class="card">
+  <section class="card" id="sec-keep">
     <h2 class="sec"><span class="no">5</span>Proxy 계속 사용 대상</h2>
     <div class="body">
       <p class="note">${esc(DATA.proxyKeep.note)}</p>
@@ -527,6 +548,30 @@ function render(generatedAt) {
 
   <footer>기준 ${esc(generatedAt)} · ${esc(DATA.title)} · GS차지비 내부용 (대외비)</footer>
 </main>
+<script>
+(function(){
+  var nav=document.querySelector('.tabnav'); if(!nav) return;
+  var links=nav.querySelectorAll('a'), map={};
+  links.forEach(function(a){ map[a.getAttribute('href').slice(1)]=a; });
+  var secs=[].slice.call(document.querySelectorAll('section[id]'));
+  if(!secs.length) return;
+  var prev=null;
+  function update(){
+    var edge=nav.getBoundingClientRect().bottom+8, cur=secs[0].id;
+    for(var i=0;i<secs.length;i++){ if(secs[i].getBoundingClientRect().top<=edge) cur=secs[i].id; }
+    // 페이지 최하단이면 마지막(짧은) 섹션을 활성화 — top이 nav까지 못 올라오는 문제 보정
+    var doc=document.documentElement;
+    if(window.innerHeight+window.scrollY>=doc.scrollHeight-2){ cur=secs[secs.length-1].id; }
+    links.forEach(function(a){ var on=map[cur]===a; a.classList.toggle('active', on);
+      if(on){ a.setAttribute('aria-current','true'); } else { a.removeAttribute('aria-current'); } });
+    if(cur!==prev && map[cur]){ prev=cur; var a=map[cur];
+      nav.scrollLeft=Math.max(0, a.offsetLeft-(nav.clientWidth-a.offsetWidth)/2); }
+  }
+  window.addEventListener('scroll', update, {passive:true});
+  window.addEventListener('resize', update);
+  update();
+})();
+</script>
 </body>
 </html>`;
 }
