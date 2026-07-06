@@ -557,7 +557,9 @@ function render(generatedAt) {
   if(!secs.length) return;
   var prev=null;
   function update(){
-    var edge=nav.getBoundingClientRect().bottom+8, cur=secs[0].id;
+    // 활성화 기준선은 섹션의 scroll-margin-top(58px)보다 넉넉히 아래여야
+    // 탭 클릭으로 정착한 섹션이 '지나감'으로 잡힌다(직전 탭 잔류 방지).
+    var edge=nav.getBoundingClientRect().bottom+22, cur=secs[0].id;
     for(var i=0;i<secs.length;i++){ if(secs[i].getBoundingClientRect().top<=edge) cur=secs[i].id; }
     // 페이지 최하단이면 마지막(짧은) 섹션을 활성화 — top이 nav까지 못 올라오는 문제 보정
     var doc=document.documentElement;
