@@ -275,10 +275,44 @@ function checklist(items) {
     .join("")}</ul>`;
 }
 
-function table(t, { firstBold = true } = {}) {
+// 상태 배지 (표 셀 내 완료/진행 중/진행 예정/신규 등을 색상 칩으로)
+const SBADGE = {
+  "완료": { bg: "#dcfce7", fg: "#15803d" },       // green
+  "진행 중": { bg: "#dbeafe", fg: "#2563eb" },      // blue
+  "진행중": { bg: "#dbeafe", fg: "#2563eb" },
+  "진행 예정": { bg: "#eef2f6", fg: "#475569" },     // slate
+  "예정": { bg: "#eef2f6", fg: "#475569" },
+  "지연": { bg: "#fee2e2", fg: "#dc2626" },        // red
+  "신규": { bg: "#ede9fe", fg: "#7c3aed" },        // violet
+};
+function sBadge(label) {
+  const k = String(label).trim();
+  const s = SBADGE[k];
+  return s ? `<span class="sb" style="color:${s.fg};background:${s.bg}">${esc(k)}</span>` : esc(label);
+}
+// 셀을 상태 칩으로: "완료" → 칩, "6/30 (완료)" → 날짜+칩, "-" → 흐린 대시
+function statusCell(c) {
+  const raw = String(c).trim();
+  if (raw === "-" || raw === "") return `<span style="color:#cbd5e1">–</span>`;
+  // 순수 상태: "완료"
+  if (SBADGE[raw]) return sBadge(raw);
+  // 후행 "(상태)": "6/30 (완료)"
+  let m = raw.match(/^(.*?)\s*\((완료|예정|진행 중|진행중|지연)\)\s*$/);
+  if (m) return `${m[1] ? esc(m[1]) + " " : ""}${sBadge(m[2])}`;
+  // 선행 상태 + 설명: "진행 중 (개발 예정일 …)"
+  m = raw.match(/^(완료|진행 중|진행중|진행 예정|예정|지연|신규)\s+(.+)$/);
+  if (m) return `${sBadge(m[1])} <span style="color:var(--mut)">${esc(m[2])}</span>`;
+  return esc(c);
+}
+
+function table(t, { firstBold = true, badgeCols = [] } = {}) {
   return `<div class="twrap"><table>
     <thead><tr>${t.head.map((h) => `<th>${esc(h)}</th>`).join("")}</tr></thead>
-    <tbody>${t.rows.map((r) => `<tr>${r.map((c, i) => `<td${i === 0 && firstBold ? ' class="b"' : ""}>${esc(c)}</td>`).join("")}</tr>`).join("")}</tbody>
+    <tbody>${t.rows.map((r) => `<tr>${r.map((c, i) => {
+      const cls = i === 0 && firstBold ? ' class="b"' : "";
+      const inner = badgeCols.includes(i) ? statusCell(c) : esc(c);
+      return `<td${cls}>${inner}</td>`;
+    }).join("")}</tr>`).join("")}</tbody>
   </table></div>`;
 }
 
@@ -366,6 +400,7 @@ function render(generatedAt) {
   /* 각 열은 한 줄 유지(모델 ID 중간 끊김 방지), 마지막 설명 열만 줄바꿈 */
   td{white-space:nowrap}
   td:last-child{white-space:normal;min-width:170px}
+  .sb{display:inline-block;font-size:11px;font-weight:700;padding:1px 8px;border-radius:6px;white-space:nowrap}
   footer{margin-top:22px;color:var(--mut);font-size:12px;text-align:center;border-top:1px solid var(--bd);padding-top:14px}
   @media(max-width:640px){.doc{padding:18px 12px 40px}.steps,.routes{grid-template-columns:1fr}}
   @media print{body{background:#fff}.card{box-shadow:none;break-inside:avoid}}
@@ -421,9 +456,9 @@ function render(generatedAt) {
     <h2 class="sec"><span class="no">4</span>EVSIS 상세 <span class="muted" style="font-weight:400;font-size:12px">· UI 시나리오 · 펌웨어 9모델</span></h2>
     <div class="body">
       <h3 class="tt">${esc(DATA.evsisUi.title)}</h3>
-      ${table(DATA.evsisUi)}
+      ${table(DATA.evsisUi, { badgeCols: [3] })}
       <h3 class="tt">${esc(DATA.evsisFw.title)}</h3>
-      ${table(DATA.evsisFw, { firstBold: false })}
+      ${table(DATA.evsisFw, { firstBold: false, badgeCols: [6, 7, 8] })}
     </div>
   </section>
 
