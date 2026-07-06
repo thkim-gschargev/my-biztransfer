@@ -51,10 +51,9 @@ const DATA = {
 
   // 7월 주요 일정 (D-day 자동). track = 트랙 키.
   keyDates: [
-    { date: "2026-07-02", label: "이브이시스 프록시 TestCase 문서 회신", track: "proxy" },
     { date: "2026-07-03", label: "IMK-EV7 수정 펌웨어 릴리즈 완료", track: "direct" },
     { date: "2026-07-06", label: "IMK-EV7 GS차지비 검증 착수", track: "direct" },
-    { date: "2026-07-07", label: "시그넷 프록시 TestCase 문서 회신", track: "proxy" },
+    { date: "2026-07-07", label: "모니트 프록시 TestCase 문서 회신 (이브이시스·시그넷)", track: "proxy" },
     { date: "2026-07-07", label: "모니트→GS차지비 프록시 테스트 결과 회신", track: "transfer" },
     { date: "2026-07-09", label: "대유플러스 시료 전달 (오후)", track: "direct" },
     { date: "2026-07-09", label: "삼성전자DS 평택 16기 현장 테스트 (GS차지비 Proxy 검증)", track: "transfer" },
@@ -109,7 +108,7 @@ const DATA = {
           name: "EVSIS(이브이시스) 완/급속 9모델",
           qty: "498기",
           facts: [
-            ["TC 회신", "7/2(목)"],
+            ["TC 회신", "7/7(화) · 모니트 제공"],
             ["펌웨어", "~ 12월 개발·현장 적용"],
             ["비고", "기존 운영 중 필드이슈 동일 모델(487기)에도 해당 펌웨어 적용 가능"],
           ],
@@ -118,7 +117,7 @@ const DATA = {
           name: "시그넷 완속 HB14K-EV-C1C1-G1",
           qty: "142기",
           facts: [
-            ["TC 회신", "7/7(화)"],
+            ["TC 회신", "7/7(화) · 모니트 제공"],
             ["펌웨어", "~ 12월 개발·현장 적용"],
           ],
         },
@@ -146,7 +145,7 @@ const DATA = {
       items: [
         { done: true, text: "6/10부터 GS차지비 Proxy 연동 개발 시작, 6/16부터 테스트 진행" },
         { done: false, text: "모니트 측 테스트 진행 중 — 개발 지연으로 7/7(화)까지 프록시 테스트 결과 회신 예정 (모니트→GS차지비)", was: "6/29까지 완료·회신 예정" },
-        { done: false, text: "프록시 TestCase 문서 회신 — 이브이시스 7/2(목) · 시그넷 7/7(화)" },
+        { done: false, text: "모니트 제공 프록시 TestCase 문서 회신 — 이브이시스·시그넷 7/7(화)" },
         { done: false, text: "GS차지비 검증(6/30~): 삼성전자DS 평택 2단지 주차동 16기(미운영 예정) 선전환 — 7/9 현장 테스트 예정 · 모니트 개발 지연으로 전체 검증 ~7/17", was: "~7/1" },
       ],
     },
