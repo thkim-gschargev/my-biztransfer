@@ -241,7 +241,8 @@ function keyDateRows() {
       const cls = d === 0 ? "today" : d > 0 ? (d <= 3 ? "soon" : "") : "past";
       const t = TRACK[track];
       return `<li class="${cls}">
-      <span class="kd">${esc(mdw(date))}<em>${dday}</em></span>
+      <span class="kd">${esc(mdw(date))}</span>
+      <span class="kdd">${dday}</span>
       <span class="kl">${esc(label)}</span>
       <span class="kt" style="color:${t.color};background:${t.color}1a">${esc(t.label)}</span>
     </li>`;
@@ -315,12 +316,13 @@ function render(generatedAt) {
   .rm-bar{height:28px;align-self:center;z-index:1;display:flex;align-items:center;padding:0 11px;font-size:11px;font-weight:600;border:1px solid;border-radius:7px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
   /* 주요 일정 */
   ul.kdl{list-style:none;margin:0;padding:0}
-  ul.kdl li{display:flex;align-items:center;gap:12px;padding:8px 18px;border-bottom:1px solid #eef2f6;font-size:13px}
+  ul.kdl li{display:flex;align-items:center;gap:14px;padding:8px 18px;border-bottom:1px solid #eef2f6;font-size:13px}
   ul.kdl li:last-child{border-bottom:0}
-  ul.kdl li.past{opacity:.5}
-  ul.kdl li.today .kd em,ul.kdl li.soon .kd em{color:#dc2626}
-  .kd{flex:0 0 92px;font-weight:700;font-variant-numeric:tabular-nums}
-  .kd em{display:block;font-style:normal;font-weight:600;font-size:10px;color:var(--mut)}
+  ul.kdl li.past{opacity:.55}
+  .kd{flex:0 0 66px;font-weight:700;font-variant-numeric:tabular-nums}
+  .kdd{flex:0 0 auto;min-width:48px;text-align:center;font-size:10.5px;font-weight:700;color:var(--mut);background:#f1f5f9;border-radius:5px;padding:2px 7px;white-space:nowrap}
+  ul.kdl li.today .kdd{color:#fff;background:#dc2626}
+  ul.kdl li.soon .kdd{color:#dc2626;background:#fee2e2}
   .kl{flex:1;min-width:0}
   .kt{flex:0 0 auto;font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px;white-space:nowrap}
   /* 전환 일정 */
