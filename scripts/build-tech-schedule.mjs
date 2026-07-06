@@ -43,7 +43,7 @@ const DATA = {
     currentMonth: 7,
     lanes: [
       { track: "transfer", sub: "기존 충전기 아이마켓 프록시 주소로 전환", from: 6, to: 7, text: "6/5 개발 완료 · 7월 전환 완료 예정" },
-      { track: "direct", sub: "IMK-EV7 · 대유플러스", from: 6, to: 7, text: "펌웨어 개발·검증 (~7/17)" },
+      { track: "direct", sub: "IMK-EV7 · 대유플러스", from: 6, to: 7, text: "펌웨어 개발·검증 (~7/24)" },
       { track: "proxy", sub: "EVSIS · 시그넷", from: 7, to: 12, text: "프록시 연결 → GS-OCPP 펌웨어 ~12월" },
       { track: "rollout", sub: "이관 동의 상면", from: 7, to: 12, text: "7월 일부 우선 · 8월~ 순차" },
     ],
@@ -58,7 +58,7 @@ const DATA = {
     { date: "2026-07-09", label: "대유플러스 시료 전달 (오후)", track: "direct" },
     { date: "2026-07-10", label: "GS차지비 Proxy 검증 (삼성전자DS 평택 16기 선전환)", track: "transfer" },
     { date: "2026-07-10", label: "EVSIS UI 시나리오 전달 — 12.1인치 급속", track: "proxy" },
-    { date: "2026-07-17", label: "IMK-EV7·대유플러스 GS-OCPP 검증 완료 목표", track: "direct" },
+    { date: "2026-07-24", label: "IMK-EV7·대유플러스 GS-OCPP 검증 완료 목표", track: "direct" },
     { date: "2026-07-31", label: "EVSIS UI 시나리오 전달 — 24인치 급속/초급속", track: "proxy" },
   ],
 
@@ -83,7 +83,7 @@ const DATA = {
           facts: [
             ["시료", "6/24 전달 완료"],
             ["펌웨어", "7/3(금) 오전 릴리즈"],
-            ["검증", "6/25 ~ 7/17"],
+            ["검증", "6/25 ~ 7/24"],
             ["비고", "시료 수령 지연(6/12→6/19→6/24, 모니트 사유) · 펌웨어 수정 위해 모니트 추가 개발"],
           ],
         },
@@ -92,7 +92,7 @@ const DATA = {
           qty: "483기",
           facts: [
             ["시료", "7/9(목) 오후 전달"],
-            ["검증", "~ 7/17"],
+            ["검증", "~ 7/24"],
             ["비고", "시료 수령 지연(6/19→6/30→7/9, 모니트 사유) · Proxy 테스트 우선이라 추가 지연 가능"],
           ],
         },
