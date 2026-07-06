@@ -387,7 +387,7 @@ function render(generatedAt) {
   .muted{color:var(--mut)}
   header.hd{margin-bottom:18px}
   header.hd h1{font-size:22px;margin:0 0 2px;letter-spacing:-.02em}
-  header.hd .sub{font-size:13px;color:var(--mut)}
+  header.hd .sub{font-size:13px;color:#475569}
   h2.sec{display:flex;align-items:center;gap:8px;font-size:15px;margin:0;padding:13px 18px;border-bottom:1px solid var(--bd)}
   h2.sec .no{flex:0 0 auto;width:22px;height:22px;border-radius:7px;background:#0f172a;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center}
   h2.sec .star{background:#f59e0b}
@@ -406,14 +406,14 @@ function render(generatedAt) {
   .risk .rtk{flex:0 0 auto;align-self:flex-start}
   @media(max-width:640px){.risk{flex-wrap:wrap}.risk .rtk{margin-left:26px}}
   .body{padding:16px 18px}
-  .note{font-size:13px;color:var(--mut);background:#f8fafc;border:1px solid var(--bd);border-radius:9px;padding:9px 13px;margin:0 0 12px}
+  .note{font-size:13.5px;font-weight:500;color:#334155;background:#f1f5f9;border:1px solid var(--bd);border-left:3px solid #94a3b8;border-radius:9px;padding:10px 13px;margin:0 0 12px}
   /* 로드맵 */
   .rmwrap{overflow-x:auto;padding:16px 18px 18px}
   .roadmap{display:grid;align-items:center;row-gap:8px;min-width:600px}
-  .rm-h{grid-row:1;text-align:center;font-size:11px;color:var(--mut);padding-bottom:6px;border-bottom:2px solid var(--bd)}
+  .rm-h{grid-row:1;text-align:center;font-size:11.5px;font-weight:600;color:#475569;padding-bottom:6px;border-bottom:2px solid var(--bd)}
   .rm-h.cur{color:#2563eb;font-weight:800;border-bottom-color:#2563eb}
   .rm-lbl{grid-column:1;padding-right:12px;display:flex;flex-direction:column;line-height:1.25}
-  .rm-lbl b{font-size:12.5px}.rm-lbl small{font-weight:400;color:var(--mut);font-size:10.5px}
+  .rm-lbl b{font-size:12.5px}.rm-lbl small{font-weight:400;color:#475569;font-size:11px}
   .rm-bg{grid-column:2 / -1;height:28px;background:#f1f5f9;border-radius:7px;align-self:center}
   .rm-bar{height:28px;align-self:center;z-index:1;display:flex;align-items:center;padding:0 11px;font-size:11px;font-weight:600;border:1px solid;border-radius:7px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
   /* 주요 일정 */
@@ -438,7 +438,7 @@ function render(generatedAt) {
   .rhd{display:flex;align-items:center;gap:8px;padding:10px 14px;color:#fff}
   .rhd b{font-size:14px}
   .rhd span{font-size:11px;font-weight:700;background:rgba(255,255,255,.22);padding:2px 8px;border-radius:6px}
-  .rdesc{font-size:12px;color:var(--mut);margin:11px 14px 6px}
+  .rdesc{font-size:12.5px;color:#475569;margin:11px 14px 6px}
   .mrow{padding:10px 14px;border-top:1px solid #eef2f6}
   .mh{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
   .mname{font-weight:600;font-size:13.5px}
