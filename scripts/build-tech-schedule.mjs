@@ -102,10 +102,10 @@ const DATA = {
 
   // 현재 액션 아이템 (진행 중인 작업 · 담당)
   actions: [
-    { status: "진행 중", text: "JS테크 IMK-EV7 완속충전기 서버 연동 검증", owner: "GS차지비" },
-    { status: "진행 중", text: "GS차지비향 프록시 연동 테스트 · TC 회신", owner: "모니트" },
-    { status: "진행 중", text: "대유플러스 완속충전기 연동 테스트 (완료 후 시료 제공)", owner: "모니트" },
-    { status: "진행 예정", text: "삼성 평택 선전환 대상 모델 프록시 연동 검증", owner: "GS차지비", date: "7/9" },
+    { status: "진행 중", text: "JS테크 IMK-EV7 완속충전기 서버 연동 검증", owner: "GS차지비", due: "7/24" },
+    { status: "진행 중", text: "GS차지비향 프록시 연동 테스트 · TC 회신", owner: "모니트", due: "7/7" },
+    { status: "진행 중", text: "대유플러스 완속충전기 연동 테스트 (완료 후 시료 제공)", owner: "모니트", due: "7/9" },
+    { status: "진행 예정", text: "삼성 평택 선전환 대상 모델 프록시 연동 검증", owner: "GS차지비", due: "7/9" },
   ],
 
   transition: {
@@ -301,7 +301,8 @@ function actionRows() {
       const o = OWNER[a.owner] || { color: "#475569", bg: "#f1f5f9" };
       return `<div class="act">
       ${sBadge(a.status)}
-      <span class="atext">${a.date ? `<b class="adate">${esc(a.date)}</b> ` : ""}${esc(a.text)}</span>
+      <span class="atext">${esc(a.text)}</span>
+      ${a.due ? `<span class="adue">목표 <b>${esc(a.due)}</b></span>` : ""}
       <span class="aowner" style="color:${o.color};background:${o.bg}">${esc(a.owner)}</span>
     </div>`;
     })
@@ -428,7 +429,8 @@ function render(generatedAt) {
   .act:last-child{border-bottom:0}
   .act .sb{flex:0 0 auto;min-width:56px;text-align:center}
   .atext{flex:1;min-width:0;font-size:13.5px}
-  .atext .adate{color:#2563eb;font-weight:700}
+  .adue{flex:0 0 auto;font-size:11.5px;font-weight:600;color:#475569;background:#eef2f6;padding:2px 9px;border-radius:6px;white-space:nowrap}
+  .adue b{color:#1e293b;font-variant-numeric:tabular-nums}
   .aowner{flex:0 0 auto;font-size:11.5px;font-weight:700;padding:2px 9px;border-radius:6px;white-space:nowrap}
   @media(max-width:640px){.act{flex-wrap:wrap}.act .atext{flex:1 0 100%;order:3}}
   /* 리스크 카드 */
