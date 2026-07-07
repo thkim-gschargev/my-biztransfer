@@ -65,7 +65,7 @@ const DATA = {
       { track: "transfer", sub: "기존 충전기 아이마켓 프록시 주소로 전환", from: 6, to: 7, text: "6/5 개발 완료 · 7월 전환 완료 예정" },
       { track: "direct", sub: "IMK-EV7 · 대유플러스", from: 6, to: 7, text: "7/3 펌웨어 완료 · 검증 ~7/24" },
       { track: "proxy", sub: "EVSIS · 시그넷", from: 7, to: 12, text: "프록시 연결 → GS-OCPP 펌웨어 ~12월" },
-      { track: "rollout", sub: "이관 동의 상면", from: 7, to: 12, text: "7월 일부 우선 · 8월~ 순차" },
+      { track: "rollout", sub: "이관 동의 상면", from: 7, to: 12, text: "7/15 리스트 확정 · 8/1~ GS차지비 전환" },
     ],
   },
 
@@ -77,6 +77,7 @@ const DATA = {
     { date: "2026-07-09", label: "대유플러스 시료 전달 (오후)", track: "direct" },
     { date: "2026-07-09", label: "삼성전자DS 평택 16기 현장 테스트 (GS차지비 Proxy 검증)", track: "transfer" },
     { date: "2026-07-10", label: "EVSIS UI 시나리오 전달 — 12.1인치 급속", track: "proxy" },
+    { date: "2026-07-15", label: "이관 동의 상면 리스트 확정 (→ 8/1~ GS차지비 전환)", track: "rollout" },
     { date: "2026-07-17", label: "GS차지비 Proxy 전체 검증 완료 목표", track: "transfer" },
     { date: "2026-07-24", label: "IMK-EV7·대유플러스 GS-OCPP 검증 완료 목표", track: "direct" },
     { date: "2026-07-31", label: "EVSIS UI 시나리오 전달 — 24인치 급속/초급속", track: "proxy" },
@@ -111,8 +112,8 @@ const DATA = {
   transition: {
     note: "기존 5/31 전환 완료 예정이었으나, 계약서 검토 및 전환 동의 확보 일정으로 변경.",
     items: [
-      { when: "7월", what: "일부 상면 우선 전환" },
-      { when: "8월 이후", what: "그 외 상면 순차 전환 예정" },
+      { when: "7/15", what: "이관 동의 상면 리스트 확정" },
+      { when: "8/1 ~", what: "확정 리스트 GS차지비 운영 전환 시작" },
     ],
   },
 
