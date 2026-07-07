@@ -33,6 +33,7 @@ const TRACK = {
 const NAV = [
   { id: "sec-roadmap", label: "로드맵" },
   { id: "sec-keydates", label: "주요 일정" },
+  { id: "sec-actions", label: "액션" },
   { id: "sec-risk", label: "리스크" },
   { id: "sec-transition", label: "전환 일정" },
   { id: "sec-routing", label: "연동 방식" },
@@ -40,6 +41,13 @@ const NAV = [
   { id: "sec-evsis", label: "EVSIS" },
   { id: "sec-keep", label: "Proxy 유지" },
 ];
+
+// 담당(오너) 칩 색상
+const OWNER = {
+  "GS차지비": { color: "#2563eb", bg: "#dbeafe" },
+  "모니트": { color: "#0d9488", bg: "#ccfbf1" },
+  "스마트로": { color: "#d97706", bg: "#fef3c7" },
+};
 
 // ═══════════════════════════════════════════════════════════════════════════
 // DATA — 일정이 바뀌면 여기만 수정
@@ -90,6 +98,14 @@ const DATA = {
       schedule: "시료 전달 6/19 → 7/9(목) 오후 · 검증 완료 목표 → 7/24",
       impact: "GS-OCPP 직접 연동 검증 착수 지연 (Proxy 테스트가 우선순위)",
     },
+  ],
+
+  // 현재 액션 아이템 (진행 중인 작업 · 담당)
+  actions: [
+    { status: "진행 중", text: "JS테크 IMK-EV7 완속충전기 서버 연동 검증", owner: "GS차지비" },
+    { status: "진행 중", text: "GS차지비향 프록시 연동 테스트 · TC 회신", owner: "모니트" },
+    { status: "진행 중", text: "대유플러스 완속충전기 연동 테스트 (완료 후 시료 제공)", owner: "모니트" },
+    { status: "진행 예정", text: "삼성 평택 선전환 대상 모델 프록시 연동 검증", owner: "GS차지비", date: "7/9" },
   ],
 
   transition: {
@@ -279,6 +295,19 @@ function keyDateRows() {
     .join("");
 }
 
+function actionRows() {
+  return DATA.actions
+    .map((a) => {
+      const o = OWNER[a.owner] || { color: "#475569", bg: "#f1f5f9" };
+      return `<div class="act">
+      ${sBadge(a.status)}
+      <span class="atext">${a.date ? `<b class="adate">${esc(a.date)}</b> ` : ""}${esc(a.text)}</span>
+      <span class="aowner" style="color:${o.color};background:${o.bg}">${esc(a.owner)}</span>
+    </div>`;
+    })
+    .join("");
+}
+
 function riskCards() {
   return DATA.risks
     .map((r) => {
@@ -392,6 +421,16 @@ function render(generatedAt) {
   h2.sec .no{flex:0 0 auto;width:22px;height:22px;border-radius:7px;background:#0f172a;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center}
   h2.sec .star{background:#f59e0b}
   h2.sec .rstar{background:#dc2626}
+  h2.sec .astar{background:#2563eb}
+  /* 현재 액션 아이템 */
+  .acts{padding:4px 0}
+  .act{display:flex;align-items:center;gap:11px;padding:10px 18px;border-bottom:1px solid #eef2f6}
+  .act:last-child{border-bottom:0}
+  .act .sb{flex:0 0 auto;min-width:56px;text-align:center}
+  .atext{flex:1;min-width:0;font-size:13.5px}
+  .atext .adate{color:#2563eb;font-weight:700}
+  .aowner{flex:0 0 auto;font-size:11.5px;font-weight:700;padding:2px 9px;border-radius:6px;white-space:nowrap}
+  @media(max-width:640px){.act{flex-wrap:wrap}.act .atext{flex:1 0 100%;order:3}}
   /* 리스크 카드 */
   .risks{padding:14px 18px;display:grid;gap:11px}
   .risk{display:flex;gap:11px;align-items:flex-start;border:1px solid #fecaca;border-left:4px solid #dc2626;border-radius:10px;padding:12px 14px;background:#fef7f7}
@@ -492,6 +531,11 @@ function render(generatedAt) {
   <section class="card" id="sec-keydates">
     <h2 class="sec"><span class="no star">★</span>7월 주요 일정</h2>
     <ul class="kdl">${keyDateRows()}</ul>
+  </section>
+
+  <section class="card" id="sec-actions">
+    <h2 class="sec"><span class="no astar">★</span>현재 액션 아이템 <span class="muted" style="font-weight:400;font-size:12px">· 진행 중인 작업 · 담당</span></h2>
+    <div class="acts">${actionRows()}</div>
   </section>
 
   <section class="card" id="sec-risk">
