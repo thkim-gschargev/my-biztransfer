@@ -75,6 +75,7 @@ const DATA = {
     { date: "2026-07-06", label: "IMK-EV7 GS차지비 검증 착수", track: "direct" },
     { date: "2026-07-10", label: "삼성전자DS 평택 16기 현장 테스트 완료 (JC-92B1-7-F1B7)", track: "transfer", done: true },
     { date: "2026-07-10", label: "EVSIS UI 시나리오 전달 — 12.1인치 급속", track: "proxy" },
+    { date: "2026-07-15", label: "삼성전자DS 농서동 프록시 테스트 (시그넷 HB14K · 버스충전기 HDP300K, 모니트 동행)", track: "transfer" },
     { date: "2026-07-15", label: "이관 동의 상면 리스트 확정 (→ 8/1~ GS차지비 전환)", track: "rollout" },
     { date: "2026-07-20", label: "대유플러스 시료 전달 (오후) — 지연", track: "direct" },
     { date: "2026-07-24", label: "GS차지비 Proxy 전체 검증 완료 목표 (지연)", track: "transfer" },
@@ -85,11 +86,11 @@ const DATA = {
   // 리스크 · 지연 항목 (별표 섹션)
   risks: [
     {
-      title: "모니트 프록시 TestCase 문서 회신 지연",
+      title: "모니트 프록시 TestCase 문서 회신 미수신",
       track: "transfer",
-      detail: "GS차지비 Proxy(단계 2) 전체 검증의 선행 조건인 모니트 TestCase 문서 회신 미수신.",
-      schedule: "TestCase 문서 회신 6/29 → 7/7 미수신 · GS차지비 전체 검증 완료 목표 ~7/17 → 7/24",
-      impact: "TC 문서 회신 지연 → GS차지비 Proxy 전체 검증 착수·완료 지연 (7/24 목표)",
+      detail: "모니트 TestCase 문서 회신 미수신. 7/24 완료 조건으로 TC 회신 여부와 별개로 검증 진행 예정.",
+      schedule: "TestCase 문서 회신 6/29 → 7/7 미수신 (재회신 미정) · 전체 검증 완료 목표 7/24",
+      impact: "TC 미회신 상태로 검증 강행 → 테스트 커버리지·완결성 리스크 (7/24 촉박)",
     },
     {
       title: "모니트 대유플러스 연동 개발·시료 지연",
@@ -103,7 +104,8 @@ const DATA = {
   // 현재 액션 아이템 (진행 중인 작업 · 담당)
   actions: [
     { status: "진행 중", text: "JS테크 IMK-EV7 완속충전기 서버 연동 검증", owner: "GS차지비", due: "7/24" },
-    { status: "진행 중", text: "GS차지비향 프록시 연동 테스트 · TC 회신", owner: "모니트", due: "7/7" },
+    { status: "진행 중", text: "GS차지비향 프록시 연동 검증 (TC 회신과 별개 진행)", owner: "모니트", due: "7/24" },
+    { status: "진행 예정", text: "삼성전자DS 농서동 프록시 테스트 (시그넷 HB14K·버스충전기 HDP300K, 모니트 동행)", owner: "GS차지비", due: "7/15" },
     { status: "진행 중", text: "대유플러스 완속충전기 연동 테스트 (완료 후 시료 제공)", owner: "모니트", due: "7/20" },
     { status: "진행 중", text: "삼성 평택 현장 테스트 TC 후속 확인·회신 (JC-92B1-7-F1B7)", owner: "모니트" },
   ],
@@ -190,7 +192,8 @@ const DATA = {
       items: [
         { done: true, text: "6/10부터 GS차지비 Proxy 연동 개발 시작, 6/16부터 테스트 진행" },
         { done: true, text: "삼성전자DS 평택 2단지 주차동 16기(미운영 예정) 선전환 현장 테스트 완료 (7/10 · JC-92B1-7-F1B7)" },
-        { done: false, text: "모니트 프록시 TestCase 문서 회신 미수신 (7/7 회신 예정 → 지연) — 전체 검증 착수의 선행 조건", was: "6/29까지 완료·회신 예정" },
+        { done: false, text: "7/15 삼성전자DS 농서동 주차장 방문 프록시 테스트 예정 — 시그넷 HB14K-EV-C1C1 · 버스충전기 HDP300K-DCM (모니트 동행)" },
+        { done: false, text: "모니트 프록시 TestCase 문서 회신 미수신 — 7/24 완료 조건으로 일정 촉박, TC 회신 여부와 별개로 검증 진행 예정", was: "6/29까지 완료·회신 예정" },
         { done: false, text: "현장 테스트 후속 TC 3건도 모니트 추가 확인 후 회신 예정 (아래 표 참고)" },
         { done: false, text: "GS차지비 Proxy 전체 검증 완료 목표 7/24 (기존 ~7/17 → 지연)" },
       ],
