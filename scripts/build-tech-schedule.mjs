@@ -208,6 +208,13 @@ const DATA = {
     ],
   },
 
+  // 삼성 상면 프록시 제약 해소 메모 (조건부·한시)
+  proxyMemo: {
+    title: "삼성 상면 프록시 제약 해소 (조건부)",
+    body: "프록시 서버 제약: 원격 충전 시 회원도 비회원 단가로 적용됨. → GS차지비 영업팀 확인 결과, 삼성 상면은 약 1년간 회원/비회원 단가 260원 동일 적용 예정이라 이 제약이 문제되지 않음(해소).",
+    caveat: "삼성 상면 한정 · 약 1년 한시 조건 — 단가 차등 적용 시점에 재검토 필요.",
+  },
+
   evsisUi: {
     title: "UX/UI 시나리오 제공 현황",
     head: ["전달 일정", "화면 크기", "해상도", "전달 여부", "비고"],
@@ -356,6 +363,14 @@ function routeCard(r) {
   </div>`;
 }
 
+function memoBlock(m) {
+  return `<div class="memo">
+    <div class="memo-h">📌 메모 · ${esc(m.title)}</div>
+    <div class="memo-b">${esc(m.body)}</div>
+    <div class="memo-c">※ ${esc(m.caveat)}</div>
+  </div>`;
+}
+
 function checklist(items) {
   return `<ul class="cl">${items
     .map(
@@ -460,6 +475,10 @@ function render(generatedAt) {
   @media(max-width:640px){.risk{flex-wrap:wrap}.risk .rtk{margin-left:26px}}
   .body{padding:16px 18px}
   .note{font-size:13.5px;font-weight:500;color:#334155;background:#f1f5f9;border:1px solid var(--bd);border-left:3px solid #94a3b8;border-radius:9px;padding:10px 13px;margin:0 0 12px}
+  .memo{margin-top:14px;border:1px solid #bbf7d0;border-left:4px solid #16a34a;background:#f0fdf4;border-radius:10px;padding:12px 14px;font-size:13px}
+  .memo-h{font-weight:700;color:#15803d;margin-bottom:5px}
+  .memo-b{color:#334155;line-height:1.55}
+  .memo-c{margin-top:6px;font-size:12.5px;font-weight:600;color:#b45309}
   /* 로드맵 */
   .rmwrap{overflow-x:auto;padding:16px 18px 18px}
   .roadmap{display:grid;align-items:center;row-gap:8px;min-width:600px}
@@ -586,6 +605,7 @@ function render(generatedAt) {
       </div>`).join("")}
       <h3 class="tt" style="margin-top:14px">${esc(DATA.samsungTc.title)}</h3>
       ${table(DATA.samsungTc)}
+      ${memoBlock(DATA.proxyMemo)}
     </div>
   </section>
 
