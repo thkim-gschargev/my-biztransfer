@@ -73,12 +73,11 @@ const DATA = {
   keyDates: [
     { date: "2026-07-03", label: "IMK-EV7 수정 펌웨어 릴리즈 완료", track: "direct" },
     { date: "2026-07-06", label: "IMK-EV7 GS차지비 검증 착수", track: "direct" },
-    { date: "2026-07-07", label: "모니트→GS차지비 프록시 TestCase 문서 회신", track: "transfer" },
     { date: "2026-07-10", label: "삼성전자DS 평택 16기 현장 테스트 완료 (JC-92B1-7-F1B7)", track: "transfer", done: true },
     { date: "2026-07-10", label: "EVSIS UI 시나리오 전달 — 12.1인치 급속", track: "proxy" },
     { date: "2026-07-15", label: "이관 동의 상면 리스트 확정 (→ 8/1~ GS차지비 전환)", track: "rollout" },
-    { date: "2026-07-17", label: "GS차지비 Proxy 전체 검증 완료 목표", track: "transfer" },
     { date: "2026-07-20", label: "대유플러스 시료 전달 (오후) — 지연", track: "direct" },
+    { date: "2026-07-24", label: "GS차지비 Proxy 전체 검증 완료 목표 (지연)", track: "transfer" },
     { date: "2026-07-24", label: "IMK-EV7 GS-OCPP 검증 완료 목표", track: "direct" },
     { date: "2026-07-31", label: "EVSIS UI 시나리오 전달 — 24인치 급속/초급속", track: "proxy" },
   ],
@@ -86,11 +85,11 @@ const DATA = {
   // 리스크 · 지연 항목 (별표 섹션)
   risks: [
     {
-      title: "모니트 프록시 연동 테스트 지연",
+      title: "모니트 프록시 TestCase 문서 회신 지연",
       track: "transfer",
-      detail: "GS차지비 Proxy(단계 2) 테스트가 모니트 측 개발 지연으로 진행 중.",
-      schedule: "테스트 결과 회신 6/29 → 7/7 · GS차지비 전체 검증 ~7/1 → ~7/17",
-      impact: "삼성전자DS 평택 16기 선전환 및 GS차지비 Proxy 전체 검증 지연",
+      detail: "GS차지비 Proxy(단계 2) 전체 검증의 선행 조건인 모니트 TestCase 문서 회신 미수신.",
+      schedule: "TestCase 문서 회신 6/29 → 7/7 미수신 · GS차지비 전체 검증 완료 목표 ~7/17 → 7/24",
+      impact: "TC 문서 회신 지연 → GS차지비 Proxy 전체 검증 착수·완료 지연 (7/24 목표)",
     },
     {
       title: "모니트 대유플러스 연동 개발·시료 지연",
@@ -154,7 +153,7 @@ const DATA = {
           name: "EVSIS(이브이시스) 완/급속 9모델",
           qty: "498기",
           facts: [
-            ["TC 회신", "7/7(화) · 모니트 제공"],
+            ["TC 회신", "미수신 (7/7 예정) · 모니트"],
             ["펌웨어", "~ 12월 개발·현장 적용"],
             ["비고", "기존 운영 중 필드이슈 동일 모델(487기)에도 해당 펌웨어 적용 가능"],
           ],
@@ -163,7 +162,7 @@ const DATA = {
           name: "시그넷 완속 HB14K-EV-C1C1-G1",
           qty: "142기",
           facts: [
-            ["TC 회신", "7/7(화) · 모니트 제공"],
+            ["TC 회신", "미수신 (7/7 예정) · 모니트"],
             ["펌웨어", "~ 12월 개발·현장 적용"],
           ],
         },
@@ -190,10 +189,10 @@ const DATA = {
       statusTone: "#d97706",
       items: [
         { done: true, text: "6/10부터 GS차지비 Proxy 연동 개발 시작, 6/16부터 테스트 진행" },
-        { done: false, text: "모니트 측 테스트 진행 중 — 개발 지연으로 7/7(화)까지 프록시 테스트 결과 회신 예정 (모니트→GS차지비)", was: "6/29까지 완료·회신 예정" },
-        { done: false, text: "모니트 제공 프록시 TestCase 문서 회신 — 이브이시스·시그넷 7/7(화)" },
-        { done: true, text: "GS차지비 검증 — 삼성전자DS 평택 2단지 주차동 16기(미운영 예정) 선전환 현장 테스트 완료 (7/10 · JC-92B1-7-F1B7)" },
-        { done: false, text: "현장 테스트 후속 TC 3건 — 모니트 추가 확인 후 회신 예정 (아래 표 참고) · 전체 검증 ~7/17" },
+        { done: true, text: "삼성전자DS 평택 2단지 주차동 16기(미운영 예정) 선전환 현장 테스트 완료 (7/10 · JC-92B1-7-F1B7)" },
+        { done: false, text: "모니트 프록시 TestCase 문서 회신 미수신 (7/7 회신 예정 → 지연) — 전체 검증 착수의 선행 조건", was: "6/29까지 완료·회신 예정" },
+        { done: false, text: "현장 테스트 후속 TC 3건도 모니트 추가 확인 후 회신 예정 (아래 표 참고)" },
+        { done: false, text: "GS차지비 Proxy 전체 검증 완료 목표 7/24 (기존 ~7/17 → 지연)" },
       ],
     },
   },
