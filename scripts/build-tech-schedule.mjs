@@ -75,7 +75,7 @@ const DATA = {
     { date: "2026-07-06", label: "IMK-EV7 GS차지비 검증 착수", track: "direct" },
     { date: "2026-07-07", label: "모니트→GS차지비 프록시 TestCase 문서 회신", track: "transfer" },
     { date: "2026-07-09", label: "대유플러스 시료 전달 (오후)", track: "direct" },
-    { date: "2026-07-10", label: "삼성전자DS 평택 16기 현장 테스트 (GS차지비 Proxy 검증)", track: "transfer" },
+    { date: "2026-07-10", label: "삼성전자DS 평택 16기 현장 테스트 완료 (JC-92B1-7-F1B7)", track: "transfer", done: true },
     { date: "2026-07-10", label: "EVSIS UI 시나리오 전달 — 12.1인치 급속", track: "proxy" },
     { date: "2026-07-15", label: "이관 동의 상면 리스트 확정 (→ 8/1~ GS차지비 전환)", track: "rollout" },
     { date: "2026-07-17", label: "GS차지비 Proxy 전체 검증 완료 목표", track: "transfer" },
@@ -106,7 +106,7 @@ const DATA = {
     { status: "진행 중", text: "JS테크 IMK-EV7 완속충전기 서버 연동 검증", owner: "GS차지비", due: "7/24" },
     { status: "진행 중", text: "GS차지비향 프록시 연동 테스트 · TC 회신", owner: "모니트", due: "7/7" },
     { status: "진행 중", text: "대유플러스 완속충전기 연동 테스트 (완료 후 시료 제공)", owner: "모니트", due: "7/9" },
-    { status: "진행 예정", text: "삼성 평택 선전환 대상 모델 프록시 연동 검증", owner: "GS차지비", due: "7/10" },
+    { status: "진행 중", text: "삼성 평택 현장 테스트 TC 후속 확인·회신 (JC-92B1-7-F1B7)", owner: "모니트" },
   ],
 
   transition: {
@@ -192,9 +192,21 @@ const DATA = {
         { done: true, text: "6/10부터 GS차지비 Proxy 연동 개발 시작, 6/16부터 테스트 진행" },
         { done: false, text: "모니트 측 테스트 진행 중 — 개발 지연으로 7/7(화)까지 프록시 테스트 결과 회신 예정 (모니트→GS차지비)", was: "6/29까지 완료·회신 예정" },
         { done: false, text: "모니트 제공 프록시 TestCase 문서 회신 — 이브이시스·시그넷 7/7(화)" },
-        { done: false, text: "GS차지비 검증(6/30~): 삼성전자DS 평택 2단지 주차동 16기(미운영 예정) 선전환 — 7/10 현장 테스트 예정 · 모니트 개발 지연으로 전체 검증 ~7/17", was: "~7/1" },
+        { done: true, text: "GS차지비 검증 — 삼성전자DS 평택 2단지 주차동 16기(미운영 예정) 선전환 현장 테스트 완료 (7/10 · JC-92B1-7-F1B7)" },
+        { done: false, text: "현장 테스트 후속 TC 3건 — 모니트 추가 확인 후 회신 예정 (아래 표 참고) · 전체 검증 ~7/17" },
       ],
     },
+  },
+
+  // 삼성 평택 현장 테스트 후속 TC (모니트 회신 예정)
+  samsungTc: {
+    title: "삼성 평택 현장 테스트 후속 · 모니트 회신 예정 (JC-92B1-7-F1B7)",
+    head: ["TC", "확인 항목 (모니트 추가 확인 후 회신 예정)"],
+    rows: [
+      ["TC 9-10", "chargingTimeMax 반영 기능 추가 예정"],
+      ["TC 11-1 / 11-2 / 11-4 / 12-1 / 12-2", "통신장애 관련 충전기 동작사항 확인 후 회신 예정"],
+      ["TC 13-1 ~ 13-3", "RCD 감지 관련 충전기 동작사항 확인 후 회신 예정"],
+    ],
   },
 
   evsisUi: {
@@ -281,10 +293,10 @@ function roadmap() {
 
 function keyDateRows() {
   return DATA.keyDates
-    .map(({ date, label, track }) => {
+    .map(({ date, label, track, done }) => {
       const d = daysFromToday(date);
-      const dday = d === 0 ? "D-DAY" : d > 0 ? `D-${d}` : "경과";
-      const cls = d === 0 ? "today" : d > 0 ? (d <= 3 ? "soon" : "") : "past";
+      const dday = done ? "완료" : d === 0 ? "D-DAY" : d > 0 ? `D-${d}` : "경과";
+      const cls = done ? "done" : d === 0 ? "today" : d > 0 ? (d <= 3 ? "soon" : "") : "past";
       const t = TRACK[track];
       return `<li class="${cls}">
       <span class="kd">${esc(mdw(date))}</span>
@@ -467,6 +479,7 @@ function render(generatedAt) {
   .kdd{flex:0 0 auto;min-width:48px;text-align:center;font-size:10.5px;font-weight:700;color:var(--mut);background:#f1f5f9;border-radius:5px;padding:2px 7px;white-space:nowrap}
   ul.kdl li.today .kdd{color:#fff;background:#dc2626}
   ul.kdl li.soon .kdd{color:#dc2626;background:#fee2e2}
+  ul.kdl li.done .kdd{color:#15803d;background:#dcfce7}
   .kl{flex:1;min-width:0}
   .kt{flex:0 0 auto;font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px;white-space:nowrap}
   /* 전환 일정 */
@@ -572,6 +585,8 @@ function render(generatedAt) {
         <div class="ph">${esc(st.title)}<span class="pstat" style="color:${st.statusTone};background:${st.statusTone}1a">${esc(st.status)}</span></div>
         ${checklist(st.items)}
       </div>`).join("")}
+      <h3 class="tt" style="margin-top:14px">${esc(DATA.samsungTc.title)}</h3>
+      ${table(DATA.samsungTc)}
     </div>
   </section>
 
