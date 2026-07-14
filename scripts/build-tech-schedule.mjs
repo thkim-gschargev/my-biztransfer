@@ -63,7 +63,7 @@ const DATA = {
     currentMonth: 7,
     lanes: [
       { track: "transfer", sub: "기존 충전기 아이마켓 프록시 주소로 전환", from: 6, to: 7, text: "6/5 개발 완료 · 7월 전환 완료 예정" },
-      { track: "direct", sub: "IMK-EV7 · 대유플러스", from: 6, to: 7, text: "7/3 펌웨어 완료 · 검증 ~7/24" },
+      { track: "direct", sub: "IMK-EV7 · 대유플러스", from: 6, to: 8, text: "IMK-EV7 검증 ~7/24 · 대유 시료 7/20 지연" },
       { track: "proxy", sub: "EVSIS · 시그넷", from: 7, to: 12, text: "프록시 연결 → GS-OCPP 펌웨어 ~12월" },
       { track: "rollout", sub: "이관 동의 상면", from: 7, to: 12, text: "7/15 리스트 확정 · 8/1~ GS차지비 전환" },
     ],
@@ -74,12 +74,12 @@ const DATA = {
     { date: "2026-07-03", label: "IMK-EV7 수정 펌웨어 릴리즈 완료", track: "direct" },
     { date: "2026-07-06", label: "IMK-EV7 GS차지비 검증 착수", track: "direct" },
     { date: "2026-07-07", label: "모니트→GS차지비 프록시 TestCase 문서 회신", track: "transfer" },
-    { date: "2026-07-09", label: "대유플러스 시료 전달 (오후)", track: "direct" },
     { date: "2026-07-10", label: "삼성전자DS 평택 16기 현장 테스트 완료 (JC-92B1-7-F1B7)", track: "transfer", done: true },
     { date: "2026-07-10", label: "EVSIS UI 시나리오 전달 — 12.1인치 급속", track: "proxy" },
     { date: "2026-07-15", label: "이관 동의 상면 리스트 확정 (→ 8/1~ GS차지비 전환)", track: "rollout" },
     { date: "2026-07-17", label: "GS차지비 Proxy 전체 검증 완료 목표", track: "transfer" },
-    { date: "2026-07-24", label: "IMK-EV7·대유플러스 GS-OCPP 검증 완료 목표", track: "direct" },
+    { date: "2026-07-20", label: "대유플러스 시료 전달 (오후) — 지연", track: "direct" },
+    { date: "2026-07-24", label: "IMK-EV7 GS-OCPP 검증 완료 목표", track: "direct" },
     { date: "2026-07-31", label: "EVSIS UI 시나리오 전달 — 24인치 급속/초급속", track: "proxy" },
   ],
 
@@ -93,11 +93,11 @@ const DATA = {
       impact: "삼성전자DS 평택 16기 선전환 및 GS차지비 Proxy 전체 검증 지연",
     },
     {
-      title: "모니트 대유플러스 연동 개발 지연",
+      title: "모니트 대유플러스 연동 개발·시료 지연",
       track: "direct",
-      detail: "대유플러스 DY1007-11R GS-OCPP 연동을 위한 모니트 개발·시료 전달 지연.",
-      schedule: "시료 전달 6/19 → 7/9(목) 오후 · 검증 완료 목표 → 7/24",
-      impact: "GS-OCPP 직접 연동 검증 착수 지연 (Proxy 테스트가 우선순위)",
+      detail: "대유플러스 DY1007-11R GS-OCPP 연동을 위한 모니트 개발·시료 전달 지속 지연.",
+      schedule: "시료 전달 6/19 → 7/9 → 7/20(월) 오후 (재지연) · 검증 착수·완료 지연",
+      impact: "7/24 검증 완료 목표 불가 → 완료 재산정 필요 (Proxy 테스트 우선순위)",
     },
   ],
 
@@ -105,7 +105,7 @@ const DATA = {
   actions: [
     { status: "진행 중", text: "JS테크 IMK-EV7 완속충전기 서버 연동 검증", owner: "GS차지비", due: "7/24" },
     { status: "진행 중", text: "GS차지비향 프록시 연동 테스트 · TC 회신", owner: "모니트", due: "7/7" },
-    { status: "진행 중", text: "대유플러스 완속충전기 연동 테스트 (완료 후 시료 제공)", owner: "모니트", due: "7/9" },
+    { status: "진행 중", text: "대유플러스 완속충전기 연동 테스트 (완료 후 시료 제공)", owner: "모니트", due: "7/20" },
     { status: "진행 중", text: "삼성 평택 현장 테스트 TC 후속 확인·회신 (JC-92B1-7-F1B7)", owner: "모니트" },
   ],
 
@@ -138,9 +138,9 @@ const DATA = {
           name: "대유플러스 완속 DY1007-11R",
           qty: "483기",
           facts: [
-            ["시료", "7/9(목) 오후 전달"],
-            ["검증", "6/30 ~ 7/24 (7/24 완료 예정)"],
-            ["비고", "시료 수령 지연 6/19→7/9 (모니트 사유)"],
+            ["시료", "7/20(월) 오후 전달 예정"],
+            ["검증", "시료 수령(7/20) 후 착수 · 완료 재산정"],
+            ["비고", "시료 수령 지연 6/19→7/9→7/20 (모니트 사유) · Proxy 테스트 우선"],
           ],
         },
       ],
