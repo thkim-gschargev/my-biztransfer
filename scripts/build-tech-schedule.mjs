@@ -38,6 +38,7 @@ const NAV = [
   { id: "sec-transition", label: "전환 일정" },
   { id: "sec-routing", label: "연동 방식" },
   { id: "sec-proxy", label: "프록시 전환" },
+  { id: "sec-readiness", label: "전환 준비" },
   { id: "sec-evsis", label: "EVSIS" },
   { id: "sec-keep", label: "Proxy 유지" },
 ];
@@ -214,6 +215,27 @@ const DATA = {
     ],
   },
 
+  // 프록시 전환 준비 체크리스트 (제조사/모델별 프록시 연동 테스트 완료 여부)
+  proxyReadiness: {
+    title: "프록시 전환 준비 체크리스트",
+    head: ["제조사 / 모델", "유형", "프록시 연동 테스트", "테스트 일정·현장"],
+    rows: [
+      ["아이마켓코리아 운영 충전기", "기존 전환", "완료", "6/5 개발 · 6~7월 프록시 전환"],
+      ["이브이시스 JC-92B1-7-F1B7", "완속 4.3″", "완료", "삼성 평택 7/10"],
+      ["시그넷 HB14K-EV-C1C1-G1", "완속", "예정", "농서동 7/15"],
+      ["버스충전기 HDP300K-DCM", "버스", "예정", "농서동 7/15"],
+      ["이브이시스 JC-9111KE-TP-BC", "완속 8″", "예정", "거제 7/20~22"],
+      ["이브이시스 JC-91B2-14-0A1", "완속 8″", "예정", "거제 7/20~22"],
+      ["이브이시스 JC-96S1-200-0W", "초급속 24″", "예정", "거제 7/20~22"],
+      ["이브이시스 JC-9932-100-CU07", "급속 24″", "예정", "거제 7/20~22"],
+      ["이브이시스 JC-92B1-7-01B", "완속 4.3″", "미실시", "-"],
+      ["이브이시스 JC-9931-50-3", "급속 12.1″", "미실시", "-"],
+      ["이브이시스 JC-9932-100-821", "급속 12.1″", "미실시", "-"],
+      ["이브이시스 JC-9932-100-8216", "급속 12.1″", "미실시", "-"],
+      ["시그넷 급속 100/300kW", "급속", "상시 Proxy", "펌웨어 수정 불가 · Proxy 유지(11기)"],
+    ],
+  },
+
   // 삼성 상면 프록시 제약 해소 메모 (조건부·한시)
   proxyMemo: {
     title: "삼성 상면 프록시 제약 해소 (조건부)",
@@ -369,6 +391,10 @@ function routeCard(r) {
   </div>`;
 }
 
+function readyCount(status) {
+  return DATA.proxyReadiness.rows.filter((r) => r[2] === status).length;
+}
+
 function memoBlock(m) {
   return `<div class="memo">
     <div class="memo-h">📌 메모 · ${esc(m.title)}</div>
@@ -395,6 +421,7 @@ const SBADGE = {
   "예정": { bg: "#eef2f6", fg: "#475569" },
   "지연": { bg: "#fee2e2", fg: "#dc2626" },        // red
   "신규": { bg: "#ede9fe", fg: "#7c3aed" },        // violet
+  "미실시": { bg: "#f8fafc", fg: "#94a3b8" },      // muted gray
 };
 function sBadge(label) {
   const k = String(label).trim();
@@ -615,8 +642,16 @@ function render(generatedAt) {
     </div>
   </section>
 
+  <section class="card" id="sec-readiness">
+    <h2 class="sec"><span class="no">4</span>프록시 전환 준비 체크리스트 <span class="muted" style="font-weight:400;font-size:12px">· 제조사/모델별 프록시 연동 테스트</span></h2>
+    <div class="body">
+      <p class="note">프록시 연동 테스트 현황 — 완료 ${readyCount("완료")} · 예정 ${readyCount("예정")} · 미실시 ${readyCount("미실시")} (총 ${DATA.proxyReadiness.rows.length}종)</p>
+      ${table(DATA.proxyReadiness, { badgeCols: [2] })}
+    </div>
+  </section>
+
   <section class="card" id="sec-evsis">
-    <h2 class="sec"><span class="no">4</span>EVSIS 상세 <span class="muted" style="font-weight:400;font-size:12px">· UI 시나리오 · 펌웨어 9모델</span></h2>
+    <h2 class="sec"><span class="no">5</span>EVSIS 상세 <span class="muted" style="font-weight:400;font-size:12px">· UI 시나리오 · 펌웨어 9모델</span></h2>
     <div class="body">
       <h3 class="tt">${esc(DATA.evsisUi.title)}</h3>
       ${table(DATA.evsisUi, { badgeCols: [3] })}
@@ -626,7 +661,7 @@ function render(generatedAt) {
   </section>
 
   <section class="card" id="sec-keep">
-    <h2 class="sec"><span class="no">5</span>Proxy 계속 사용 대상</h2>
+    <h2 class="sec"><span class="no">6</span>Proxy 계속 사용 대상</h2>
     <div class="body">
       <p class="note">${esc(DATA.proxyKeep.note)}</p>
       ${table(DATA.proxyKeep)}
