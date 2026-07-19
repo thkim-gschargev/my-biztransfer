@@ -75,7 +75,7 @@ const DATA = {
     { date: "2026-07-03", label: "IMK-EV7 수정 펌웨어 릴리즈 완료", track: "direct" },
     { date: "2026-07-06", label: "IMK-EV7 GS차지비 검증 착수", track: "direct" },
     { date: "2026-07-10", label: "삼성전자DS 평택 16기 현장 테스트 완료 (JC-92B1-7-F1B7)", track: "transfer", done: true },
-    { date: "2026-07-10", label: "EVSIS UI 시나리오 전달 — 12.1인치 급속", track: "proxy" },
+    { date: "2026-07-14", label: "EVSIS UI 시나리오 전달 — 12.1인치 급속 (7/10 → 7/14)", track: "proxy", done: true },
     { date: "2026-07-15", label: "삼성전자DS 농서동 프록시 테스트 — HDP300K 완료(모니트) · HB14K는 신용카드 결제단말기 오류로 중단", track: "transfer", halted: true },
     { date: "2026-07-15", label: "이관 동의 상면 리스트 확정 (→ 8/1~ GS차지비 전환)", track: "rollout" },
     { date: "2026-07-20", label: "삼성바이오로직스 P4 주차타워 프록시 재테스트 — 시그넷 HB14K (7/15 중단분)", track: "transfer" },
@@ -250,7 +250,7 @@ const DATA = {
   refs: {
     title: "참고사항 · 모니트 제공 예정 자료",
     items: [
-      "JSTech 완속 충전기 업데이트 매뉴얼 — 모니트 제공 예정",
+      "JS테크(JSTech) 완속 충전기 업데이트 매뉴얼 — 모니트 제공 예정",
       "신용카드 결제단말기 설정 변경 매뉴얼 — 모니트 제공 예정",
     ],
   },
@@ -668,7 +668,6 @@ function render(generatedAt) {
       <h3 class="tt" style="margin-top:14px">${esc(DATA.samsungTc.title)}</h3>
       ${table(DATA.samsungTc)}
       ${memoBlock(DATA.proxyMemo)}
-      ${refBlock(DATA.refs)}
     </div>
   </section>
 
@@ -697,6 +696,8 @@ function render(generatedAt) {
       ${table(DATA.proxyKeep)}
     </div>
   </section>
+
+  ${refBlock(DATA.refs)}
 
   <footer>기준 ${esc(generatedAt)} · ${esc(DATA.title)} · GS차지비 내부용 (대외비)</footer>
 </main>
