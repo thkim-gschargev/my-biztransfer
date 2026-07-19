@@ -76,10 +76,11 @@ const DATA = {
     { date: "2026-07-06", label: "IMK-EV7 GS차지비 검증 착수", track: "direct" },
     { date: "2026-07-10", label: "삼성전자DS 평택 16기 현장 테스트 완료 (JC-92B1-7-F1B7)", track: "transfer", done: true },
     { date: "2026-07-10", label: "EVSIS UI 시나리오 전달 — 12.1인치 급속", track: "proxy" },
-    { date: "2026-07-15", label: "삼성전자DS 농서동 프록시 테스트 (시그넷 HB14K · 시그넷 HDP300K, 모니트 동행)", track: "transfer" },
+    { date: "2026-07-15", label: "삼성전자DS 농서동 프록시 테스트 — HDP300K 완료(모니트) · HB14K는 신용카드 결제단말기 오류로 중단", track: "transfer", halted: true },
     { date: "2026-07-15", label: "이관 동의 상면 리스트 확정 (→ 8/1~ GS차지비 전환)", track: "rollout" },
+    { date: "2026-07-20", label: "삼성바이오로직스 P4 주차타워 프록시 재테스트 — 시그넷 HB14K (7/15 중단분)", track: "transfer" },
     { date: "2026-07-20", label: "대유플러스 시료 전달 (오후) — 지연", track: "direct" },
-    { date: "2026-07-20", label: "EVSIS 프록시 거제시 현장 테스트 (7/20~22 · 4모델)", track: "proxy" },
+    { date: "2026-07-21", label: "EVSIS 프록시 거제시 현장 테스트 (7/21~23 · 4모델)", track: "proxy" },
     { date: "2026-07-24", label: "GS차지비 Proxy 전체 검증 완료 목표 (지연)", track: "transfer" },
     { date: "2026-07-24", label: "IMK-EV7 GS-OCPP 검증 완료 목표", track: "direct" },
     { date: "2026-07-31", label: "EVSIS UI 시나리오 전달 — 24인치 급속/초급속", track: "proxy" },
@@ -107,8 +108,8 @@ const DATA = {
   actions: [
     { status: "진행 중", text: "JS테크 IMK-EV7 완속충전기 서버 연동 검증", owner: "GS차지비", due: "7/24" },
     { status: "진행 중", text: "GS차지비향 프록시 연동 검증 (TC 회신과 별개 진행)", owner: "모니트", due: "7/24" },
-    { status: "진행 예정", text: "삼성전자DS 농서동 프록시 테스트 (시그넷 HB14K·시그넷 HDP300K, 모니트 동행)", owner: "GS차지비", due: "7/15" },
-    { status: "진행 예정", text: "EVSIS 프록시 거제시 현장 테스트 (4모델)", owner: "GS차지비", due: "7/20" },
+    { status: "진행 예정", text: "삼성바이오로직스 P4 주차타워 프록시 재테스트 — 시그넷 HB14K (7/15 농서동 중단분)", owner: "GS차지비", due: "7/20" },
+    { status: "진행 예정", text: "EVSIS 프록시 거제시 현장 테스트 (4모델)", owner: "GS차지비", due: "7/21~23" },
     { status: "진행 중", text: "대유플러스 완속충전기 연동 테스트 (완료 후 시료 제공)", owner: "모니트", due: "7/20" },
     { status: "진행 중", text: "삼성 평택 현장 테스트 TC 후속 확인·회신 (JC-92B1-7-F1B7)", owner: "모니트" },
   ],
@@ -195,8 +196,9 @@ const DATA = {
       items: [
         { done: true, text: "6/10부터 GS차지비 Proxy 연동 개발 시작, 6/16부터 테스트 진행" },
         { done: true, text: "삼성전자DS 평택 2단지 주차동 16기(미운영 예정) 선전환 현장 테스트 완료 (7/10 · JC-92B1-7-F1B7)" },
-        { done: false, text: "7/15 삼성전자DS 농서동 주차장 방문 프록시 테스트 예정 — 시그넷 HB14K-EV-C1C1 · 시그넷 HDP300K-DCM (모니트 동행)" },
-        { done: false, text: "7/20~22 EVSIS 프록시 거제시 현장 방문 테스트 예정 — JC-9111KE-TP-BC · JC-91B2-14-0A1 · JC-96S1-200-0W · JC-9932-100-CU (4모델)" },
+        { done: true, text: "7/15 삼성전자DS 농서동 주차장 프록시 테스트 — HDP300K-DCM 테스트 완료 (모니트)" },
+        { done: false, text: "7/15 시그넷 HB14K-EV-C1C1은 신용카드 결제단말기 오류로 테스트 중단 → 7/20 삼성바이오로직스 P4 주차타워에서 재테스트 예정" },
+        { done: false, text: "7/21~23 EVSIS 프록시 거제시 현장 방문 테스트 예정 — JC-9111KE-TP-BC · JC-91B2-14-0A1 · JC-96S1-200-0W · JC-9932-100-CU (4모델)" },
         { done: false, text: "모니트 프록시 TestCase 문서 회신 미수신 — 7/24 완료 조건으로 일정 촉박, TC 회신 여부와 별개로 검증 진행 예정", was: "6/29까지 완료·회신 예정" },
         { done: false, text: "현장 테스트 후속 TC 3건도 모니트 추가 확인 후 회신 예정 (아래 표 참고)" },
         { done: false, text: "GS차지비 Proxy 전체 검증 완료 목표 7/24 (기존 ~7/17 → 지연)" },
@@ -222,12 +224,12 @@ const DATA = {
     rows: [
       ["아이마켓코리아", "운영 충전기 (자체 서버→Proxy)", "기존", "-", "완료", "6/5 개발 · 6~7월 전환"],
       ["이브이시스", "JC-92B1-7-F1B7", "완속 7kW", "112", "완료", "삼성 평택 7/10"],
-      ["시그넷", "HB14K-EV-C1C1-G1", "완속 14kW", "142", "예정", "농서동 7/15"],
-      ["시그넷", "HDP300K-DCM", "초급속 300kW", "3", "예정", "농서동 7/15"],
-      ["이브이시스", "JC-9111KE-TP-BC", "완속 7kW", "104", "예정", "거제 7/20~22"],
-      ["이브이시스", "JC-91B2-14-0A1", "완속 14kW", "11", "예정", "거제 7/20~22"],
-      ["이브이시스", "JC-96S1-200-0W", "초급속 200kW", "4", "예정", "거제 7/20~22"],
-      ["이브이시스", "JC-9932-100-CU", "급속 100kW", "112", "예정", "거제 7/20~22"],
+      ["시그넷", "HB14K-EV-C1C1-G1", "완속 14kW", "142", "예정", "삼성바이오로직스 P4 7/20 (농서동 7/15 중단)"],
+      ["시그넷", "HDP300K-DCM", "초급속 300kW", "3", "완료", "농서동 7/15 (모니트)"],
+      ["이브이시스", "JC-9111KE-TP-BC", "완속 7kW", "104", "예정", "거제 7/21~23"],
+      ["이브이시스", "JC-91B2-14-0A1", "완속 14kW", "11", "예정", "거제 7/21~23"],
+      ["이브이시스", "JC-96S1-200-0W", "초급속 200kW", "4", "예정", "거제 7/21~23"],
+      ["이브이시스", "JC-9932-100-CU", "급속 100kW", "112", "예정", "거제 7/21~23"],
       ["이브이시스", "JC-92B1-7-01B", "완속 7kW", "170", "미실시", "-"],
       ["이브이시스", "JC-9931-50-3", "급속 50kW", "4", "미실시", "-"],
       ["이브이시스", "JC-9932-100-821", "급속 100kW", "11", "미실시", "-"],
@@ -242,6 +244,15 @@ const DATA = {
     title: "삼성 상면 프록시 제약 해소 (조건부)",
     body: "프록시 서버 제약: 원격 충전 시 회원도 비회원 단가로 적용됨. → GS차지비 영업팀 확인 결과, 삼성 상면은 약 1년간 회원/비회원 단가 260원 동일 적용 예정이라 이 제약이 문제되지 않음(해소).",
     caveat: "삼성 상면 한정 · 약 1년 한시 조건 — 단가 차등 적용 시점에 재검토 필요.",
+  },
+
+  // 참고사항 (모니트 제공 예정 자료)
+  refs: {
+    title: "참고사항 · 모니트 제공 예정 자료",
+    items: [
+      "JSTech 완속 충전기 업데이트 매뉴얼 — 모니트 제공 예정",
+      "신용카드 결제단말기 설정 변경 매뉴얼 — 모니트 제공 예정",
+    ],
   },
 
   evsisUi: {
@@ -275,7 +286,7 @@ const DATA = {
     head: ["제조사/모델", "수량(기)", "비고"],
     rows: [
       ["시그넷 FC100K-DCM-PS / -PS-H1", "8", "급속 100kW · 펌웨어 수정 불가 (설치 2021~2022)"],
-      ["시그넷 HDP300K-DCM", "3", "초급속 300kW · 펌웨어 수정 불가 · 농서동 7/15 프록시 테스트"],
+      ["시그넷 HDP300K-DCM", "3", "초급속 300kW · 펌웨어 수정 불가 · 농서동 7/15 프록시 테스트 완료"],
     ],
   },
 };
@@ -331,10 +342,10 @@ function roadmap() {
 
 function keyDateRows() {
   return DATA.keyDates
-    .map(({ date, label, track, done }) => {
+    .map(({ date, label, track, done, halted }) => {
       const d = daysFromToday(date);
-      const dday = done ? "완료" : d === 0 ? "D-DAY" : d > 0 ? `D-${d}` : "경과";
-      const cls = done ? "done" : d === 0 ? "today" : d > 0 ? (d <= 3 ? "soon" : "") : "past";
+      const dday = done ? "완료" : halted ? "중단" : d === 0 ? "D-DAY" : d > 0 ? `D-${d}` : "경과";
+      const cls = done ? "done" : halted ? "halted" : d === 0 ? "today" : d > 0 ? (d <= 3 ? "soon" : "") : "past";
       const t = TRACK[track];
       return `<li class="${cls}">
       <span class="kd">${esc(mdw(date))}</span>
@@ -404,6 +415,13 @@ function memoBlock(m) {
     <div class="memo-h">📌 메모 · ${esc(m.title)}</div>
     <div class="memo-b">${esc(m.body)}</div>
     <div class="memo-c">※ ${esc(m.caveat)}</div>
+  </div>`;
+}
+
+function refBlock(r) {
+  return `<div class="memo ref">
+    <div class="memo-h">📎 ${esc(r.title)}</div>
+    <ul class="reflist">${r.items.map((t) => `<li>${esc(t)}</li>`).join("")}</ul>
   </div>`;
 }
 
@@ -516,6 +534,11 @@ function render(generatedAt) {
   .memo-h{font-weight:700;color:#15803d;margin-bottom:5px}
   .memo-b{color:#334155;line-height:1.55}
   .memo-c{margin-top:6px;font-size:12.5px;font-weight:600;color:#b45309}
+  /* 참고사항 블록 (중립 슬레이트 톤) */
+  .memo.ref{border-color:#cbd5e1;border-left-color:#64748b;background:#f8fafc}
+  .memo.ref .memo-h{color:#334155}
+  ul.reflist{margin:0;padding-left:18px;color:#334155;line-height:1.7}
+  ul.reflist li{margin:2px 0}
   /* 로드맵 */
   .rmwrap{overflow-x:auto;padding:16px 18px 18px}
   .roadmap{display:grid;align-items:center;row-gap:8px;min-width:600px}
@@ -535,6 +558,8 @@ function render(generatedAt) {
   ul.kdl li.today .kdd{color:#fff;background:#dc2626}
   ul.kdl li.soon .kdd{color:#dc2626;background:#fee2e2}
   ul.kdl li.done .kdd{color:#15803d;background:#dcfce7}
+  ul.kdl li.halted{opacity:.8}
+  ul.kdl li.halted .kdd{color:#c2410c;background:#ffedd5}
   .kl{flex:1;min-width:0}
   .kt{flex:0 0 auto;font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px;white-space:nowrap}
   /* 전환 일정 */
@@ -643,6 +668,7 @@ function render(generatedAt) {
       <h3 class="tt" style="margin-top:14px">${esc(DATA.samsungTc.title)}</h3>
       ${table(DATA.samsungTc)}
       ${memoBlock(DATA.proxyMemo)}
+      ${refBlock(DATA.refs)}
     </div>
   </section>
 
